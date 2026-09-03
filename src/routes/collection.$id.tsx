@@ -32,9 +32,9 @@ export const Route = createFileRoute("/collection/$id")({
     return { imageUrl };
   },
   head: ({ loaderData }) => {
-    const title = "Shared Project Collection — Enreach Concepts";
-    const desc = "Check out this curated building materials project quotation request on Enreach Concepts.";
-    const img = (loaderData as any)?.imageUrl || "https://enreachconcepts.com/logo.png";
+    const title = "Shared Project Collection — APEX SECURITY LIMITED";
+    const desc = "Check out this curated security doors and architectural project quotation request on APEX SECURITY LIMITED.";
+    const img = (loaderData as any)?.imageUrl || "https://apex-security-ltd.vercel.app/icon-512.png";
     return {
       meta: [
         { title: title },

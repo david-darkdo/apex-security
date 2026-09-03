@@ -9,7 +9,7 @@ import { Settings as SettingsIcon, ShieldAlert } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 
 export const Route = createFileRoute("/_authenticated/settings")({
-  head: () => ({ meta: [{ title: "Company Settings — SOLIDAS TILES AND MARBLE NIG. LIMITED" }] }),
+  head: () => ({ meta: [{ title: "Company Settings — APEX SECURITY LIMITED" }] }),
   component: SettingsPage,
 });
 
@@ -54,7 +54,7 @@ function SettingsPage() {
       toast.error(error.message);
       return;
     }
-    toast.success("SOLIDAS Company Settings saved");
+    toast.success("APEX SECURITY Company Settings saved");
     await queryClient.invalidateQueries({ queryKey: APP_SETTINGS_QUERY_KEY });
   };
 
@@ -72,7 +72,7 @@ function SettingsPage() {
               <h1 className="font-display text-lg font-bold">Super Admin Only</h1>
             </div>
             <p className="mt-2 text-xs text-muted-foreground">
-              SOLIDAS company settings can only be edited by a super admin.
+              APEX SECURITY company settings can only be edited by a super admin.
             </p>
             <Link to="/account" className="mt-4 inline-block rounded-lg border border-border bg-white px-4 py-2 text-xs font-bold hover:bg-surface-2">
               Back to Account
@@ -89,7 +89,7 @@ function SettingsPage() {
         <div className="flex items-center gap-2 border-b border-border pb-4">
           <SettingsIcon className="h-6 w-6 text-[#1E82A6]" />
           <div>
-            <h1 className="font-display text-2xl font-bold text-foreground">SOLIDAS Company Settings</h1>
+            <h1 className="font-display text-2xl font-bold text-foreground">APEX SECURITY Company Settings</h1>
             <p className="text-xs text-muted-foreground">
               Configure corporate phone numbers, WhatsApp, addresses, and Search Console verification tokens.
             </p>
@@ -115,7 +115,7 @@ function SettingsPage() {
               disabled={saving}
               className="rounded-lg bg-[#C0262D] px-6 py-3 text-xs font-bold uppercase tracking-wider text-white hover:bg-[#9A1B21] disabled:opacity-60 transition shadow-sm"
             >
-              {saving ? "Saving…" : "Save SOLIDAS Settings"}
+              {saving ? "Saving…" : "Save APEX SECURITY Settings"}
             </button>
           </div>
         </form>
