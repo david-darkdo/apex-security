@@ -290,4 +290,156 @@ function TopBar() {
                 )}
               </button>
 
-              {showNotifications && (\n                <>\n                  <div \n                    onClick={() => setShowNotifications(false)}\n                    className=\"fixed inset-0 bg-black/40 backdrop-blur-xs z-40 md:hidden\"\n                  />\n                  \n                  <div className=\"fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-[340px] rounded-xl border border-border bg-white shadow-2xl p-4 text-xs space-y-3 z-50 md:absolute md:top-auto md:left-auto md:right-0 md:translate-x-0 md:translate-y-0 md:mt-2 md:w-80 md:rounded-lg md:shadow-xl md:p-4\">\n                    <div className=\"flex items-center justify-between border-b border-border pb-2\">\n                      <span className=\"font-bold text-foreground text-sm md:text-xs\">Notifications</span>\n                      <button onClick={() => setShowNotifications(false)} className=\"text-muted-foreground hover:text-foreground p-1 rounded-full hover:bg-muted\"><X className=\"h-4 w-4\" /></button>\n                    </div>\n\n                    <div className=\"space-y-2 max-h-60 overflow-y-auto pr-1\">\n                      {notifications.map((notif) => (\n                        <div key={notif.id} className=\"p-2.5 border border-border rounded bg-surface-2 flex gap-2 relative group text-left\">\n                          <AlertCircle className=\"h-4 w-4 text-[#1E82A6] shrink-0 mt-0.5\" />\n                          <div className=\"flex-1 min-w-0\">\n                            <div className=\"font-semibold text-foreground truncate\">{notif.subject || \"Alert\"}</div>\n                            <p className=\"text-[10px] text-muted-foreground mt-0.5 leading-tight\">{notif.body}</p>\n                          </div>\n                          <button\n                            onClick={(e) => { e.stopPropagation(); clearNotification(notif.id); }}\n                            className=\"absolute right-2 top-2 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-[#C0262D] transition\"\n                          >\n                            <Trash2 className=\"h-3.5 w-3.5\" />\n                          </button>\n                        </div>\n                      ))}\n                      {notifications.length === 0 && (\n                        <div className=\"text-muted-foreground italic text-center py-4\">No notifications yet.</div>\n                      )}\n                    </div>\n                  </div>\n                </>\n              )}\n            </div>\n          )}\n\n          {/* Account Menu */}\n          <div className=\"relative\">\n            <button\n              onClick={() => {\n                setMenuOpen((o) => !o);\n                setShowNotifications(false);\n              }}\n              aria-label=\"Account menu\"\n              className=\"grid h-9 w-9 place-items-center rounded-full border border-border bg-white text-[#1E82A6] hover:border-[#1E82A6]\"\n            >\n              <User className=\"h-4 w-4\" />\n            </button>\n            {menuOpen && (\n              <div className=\"absolute right-0 mt-2 w-52 rounded-lg border border-border bg-white py-1.5 shadow-xl z-50\">\n                <Link\n                  to=\"/collection\"\n                  search={{ autoPush: false }}\n                  onClick={() => setMenuOpen(false)}\n                  className=\"flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-[#1E82A6]/10 hover:text-[#1E82A6]\"\n                >\n                  <Bookmark className=\"h-4 w-4 text-[#1E82A6]\" />\n                  <span>Active Workspace</span>\n                </Link>\n                <Link\n                  to=\"/my-collections\"\n                  onClick={() => setMenuOpen(false)}\n                  className=\"flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-[#1E82A6]/10 hover:text-[#1E82A6]\"\n                >\n                  <Bookmark className=\"h-4 w-4 text-[#C0262D]\" />\n                  <span>Collection History</span>\n                </Link>\n                {isAdmin && (\n                  <Link\n                    to=\"/admin\"\n                    onClick={() => setMenuOpen(false)}\n                    className=\"flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-[#1E82A6]/10 hover:text-[#1E82A6]\"\n                  >\n                    <Shield className=\"h-4 w-4 text-[#1E82A6]\" />\n                    <span>Admin Command Center</span>\n                  </Link>\n                )}\n                <button\n                  onClick={handleSignOut}\n                  className=\"flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-[#C0262D] hover:bg-[#C0262D]/10\"\n                >\n                  <LogOut className=\"h-4 w-4\" />\n                  <span>Sign out</span>\n                </button>\n              </div>\n            )}\n          </div>\n        </div>\n      </div>\n    </header>\n  );\n}\n\nfunction BottomNav() {\n  const { user } = useAuth();\n  const searchState = useRouterState({ select: (s) => s.location.pathname });\n  \n  const [collectionCount, setCollectionCount] = useState(0);\n\n  const loadCollectionCount = useCallback(() => {\n    if (user?.id) {\n      const cached = getCachedUserCollectionItems(user.id);\n      setCollectionCount(cached.items.length);\n    } else {\n      setCollectionCount(getGuestCollection().length);\n    }\n  }, [user?.id]);\n\n  useEffect(() => {\n    void loadCollectionCount();\n    window.addEventListener(\"collection:change\", loadCollectionCount);\n    return () => {\n      window.removeEventListener(\"collection:change\", loadCollectionCount);\n    };\n  }, [loadCollectionCount]);\n\n  const nav = [\n    { to: \"/home\" as const, label: \"Home\", icon: Home, active: searchState === \"/home\" },\n    { to: \"/search\" as const, label: \"Search\", icon: Search, active: searchState.startsWith(\"/search\") },\n    { to: \"/\" as const, label: \"Feed\", icon: Compass, active: searchState === \"/\" },\n    { to: \"/collection\" as const, label: \"Collection\", icon: Bookmark, active: searchState.startsWith(\"/collection\") },\n    { to: user ? (\"/account\" as const) : (\"/auth\" as const), label: \"Account\", icon: User, active: searchState.startsWith(\"/account\") || searchState.startsWith(\"/auth\") },\n  ];\n\n  return (\n    <nav className=\"fixed bottom-0 left-0 right-0 z-30 border-t border-border bg-white/95 py-2 backdrop-blur md:hidden\">\n      <div className=\"flex justify-around\">\n        {nav.map((t) => (\n          <Link\n            key={t.label}\n            to={t.to}\n            className={`flex flex-col items-center gap-0.5 text-[10px] font-medium transition ${\n              t.active ? \"text-[#1E82A6] font-bold\" : \"text-muted-foreground hover:text-foreground\"\n            }`}\n          >\n            <div className=\"relative\">\n              <t.icon className=\"h-5 w-5\" />\n              {t.label === \"Collection\" && collectionCount > 0 && (\n                <span className=\"absolute -top-1.5 -right-2 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[#C0262D] text-[8px] font-bold text-white shadow-sm\">\n                  +{collectionCount}\n                </span>\n              )}\n            </div>\n            <span>{t.label}</span>\n          </Link>\n        ))}\n      </div>\n    </nav>\n  );\n}\n
+              {showNotifications && (
+                <>
+                  <div 
+                    onClick={() => setShowNotifications(false)}
+                    className="fixed inset-0 bg-black/40 backdrop-blur-xs z-40 md:hidden"
+                  />
+                  
+                  <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-[340px] rounded-xl border border-border bg-white shadow-2xl p-4 text-xs space-y-3 z-50 md:absolute md:top-auto md:left-auto md:right-0 md:translate-x-0 md:translate-y-0 md:mt-2 md:w-80 md:rounded-lg md:shadow-xl md:p-4">
+                    <div className="flex items-center justify-between border-b border-border pb-2">
+                      <span className="font-bold text-foreground text-sm md:text-xs">Notifications</span>
+                      <button onClick={() => setShowNotifications(false)} className="text-muted-foreground hover:text-foreground p-1 rounded-full hover:bg-muted"><X className="h-4 w-4" /></button>
+                    </div>
+
+                    <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+                      {notifications.map((notif) => (
+                        <div key={notif.id} className="p-2.5 border border-border rounded bg-surface-2 flex gap-2 relative group text-left">
+                          <AlertCircle className="h-4 w-4 text-[#1E82A6] shrink-0 mt-0.5" />
+                          <div className="flex-1 min-w-0">
+                            <div className="font-semibold text-foreground truncate">{notif.subject || "Alert"}</div>
+                            <p className="text-[10px] text-muted-foreground mt-0.5 leading-tight">{notif.body}</p>
+                          </div>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); clearNotification(notif.id); }}
+                            className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-[#C0262D] transition"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                      {notifications.length === 0 && (
+                        <div className="text-muted-foreground italic text-center py-4">No notifications yet.</div>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+
+          {/* Account Menu */}
+          <div className="relative">
+            <button
+              onClick={() => {
+                setMenuOpen((o) => !o);
+                setShowNotifications(false);
+              }}
+              aria-label="Account menu"
+              className="grid h-9 w-9 place-items-center rounded-full border border-border bg-white text-[#1E82A6] hover:border-[#1E82A6]"
+            >
+              <User className="h-4 w-4" />
+            </button>
+            {menuOpen && (
+              <div className="absolute right-0 mt-2 w-52 rounded-lg border border-border bg-white py-1.5 shadow-xl z-50">
+                <Link
+                  to="/collection"
+                  search={{ autoPush: false }}
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-[#1E82A6]/10 hover:text-[#1E82A6]"
+                >
+                  <Bookmark className="h-4 w-4 text-[#1E82A6]" />
+                  <span>Active Workspace</span>
+                </Link>
+                <Link
+                  to="/my-collections"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-[#1E82A6]/10 hover:text-[#1E82A6]"
+                >
+                  <Bookmark className="h-4 w-4 text-[#C0262D]" />
+                  <span>Collection History</span>
+                </Link>
+                {isAdmin && (
+                  <Link
+                    to="/admin"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-[#1E82A6]/10 hover:text-[#1E82A6]"
+                  >
+                    <Shield className="h-4 w-4 text-[#1E82A6]" />
+                    <span>Admin Command Center</span>
+                  </Link>
+                )}
+                <button
+                  onClick={handleSignOut}
+                  className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-[#C0262D] hover:bg-[#C0262D]/10"
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span>Sign out</span>
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function BottomNav() {
+  const { user } = useAuth();
+  const searchState = useRouterState({ select: (s) => s.location.pathname });
+  
+  const [collectionCount, setCollectionCount] = useState(0);
+
+  const loadCollectionCount = useCallback(() => {
+    if (user?.id) {
+      const cached = getCachedUserCollectionItems(user.id);
+      setCollectionCount(cached.items.length);
+    } else {
+      setCollectionCount(getGuestCollection().length);
+    }
+  }, [user?.id]);
+
+  useEffect(() => {
+    void loadCollectionCount();
+    window.addEventListener("collection:change", loadCollectionCount);
+    return () => {
+      window.removeEventListener("collection:change", loadCollectionCount);
+    };
+  }, [loadCollectionCount]);
+
+  const nav = [
+    { to: "/home" as const, label: "Home", icon: Home, active: searchState === "/home" },
+    { to: "/search" as const, label: "Search", icon: Search, active: searchState.startsWith("/search") },
+    { to: "/" as const, label: "Feed", icon: Compass, active: searchState === "/" },
+    { to: "/collection" as const, label: "Collection", icon: Bookmark, active: searchState.startsWith("/collection") },
+    { to: user ? ("/account" as const) : ("/auth" as const), label: "Account", icon: User, active: searchState.startsWith("/account") || searchState.startsWith("/auth") },
+  ];
+
+  return (
+    <nav className="fixed bottom-0 left-0 right-0 z-30 border-t border-border bg-white/95 py-2 backdrop-blur md:hidden">
+      <div className="flex justify-around">
+        {nav.map((t) => (
+          <Link
+            key={t.label}
+            to={t.to}
+            className={`flex flex-col items-center gap-0.5 text-[10px] font-medium transition ${
+              t.active ? "text-[#1E82A6] font-bold" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <div className="relative">
+              <t.icon className="h-5 w-5" />
+              {t.label === "Collection" && collectionCount > 0 && (
+                <span className="absolute -top-1.5 -right-2 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[#C0262D] text-[8px] font-bold text-white shadow-sm">
+                  +{collectionCount}
+                </span>
+              )}
+            </div>
+            <span>{t.label}</span>
+          </Link>
+        ))}
+      </div>
+    </nav>
+  );
+}
