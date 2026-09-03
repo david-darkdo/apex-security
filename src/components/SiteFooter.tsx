@@ -56,16 +56,15 @@ export function SiteFooter() {
       <div className="container-app grid gap-8 py-12 sm:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-3">
           <div className="flex items-center gap-2.5">
-            <img src="/logo.png" alt="SOLIDAS Logo" className="h-8 w-auto object-contain" />
             <div className="font-display text-lg font-bold tracking-tight text-[#1E82A6]">
-              SOLIDAS
+              APEX SECURITY LIMITED
             </div>
           </div>
           <p className="text-xs font-semibold text-[#C0262D]">
-            SOLIDAS TILES AND MARBLE NIG. LIMITED
+            APEX SECURITY LIMITED
           </p>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Dealers & Suppliers of General Building Materials Such As Tiles & Marble, Granite, Crack Tiles, Foreign Security Doors, Wooden Doors, PVC Ceiling & General Contracts.
+            Dealers & Suppliers of Premium Security Doors, Armored Gates, Architectural Hardware & General Contracts.
           </p>
           <p className="text-[11px] font-mono text-muted-foreground/70">
             RC Registration: 1218629
@@ -96,10 +95,10 @@ export function SiteFooter() {
                     rel="noopener noreferrer"
                     className="hover:text-[#1E82A6] hover:underline transition"
                   >
-                    Plot 469, Solidas Plaza, Saburi District Opp Timber Shed Dei Dei Building Material Mkt. FCT - Abuja
+                    Plot 469, Apex Security Plaza, Saburi District Opp Timber Shed Dei Dei Building Material Mkt. FCT - Abuja
                   </a>
                 ) : (
-                  <span>Plot 469, Solidas Plaza, Saburi District Opp Timber Shed Dei Dei Building Material Mkt. FCT - Abuja</span>
+                  <span>Plot 469, Apex Security Plaza, Saburi District Opp Timber Shed Dei Dei Building Material Mkt. FCT - Abuja</span>
                 )}
               </div>
             </li>
@@ -141,7 +140,7 @@ export function SiteFooter() {
           </p>
           <div className="mt-4">
             <a
-              href={`https://wa.me/${(s?.sales_whatsapp || "2348035186355").replace(/[^\d]/g, "")}?text=${encodeURIComponent("Hello SOLIDAS, I would like to inquire about building materials.")}`}
+              href={`https://wa.me/${(s?.sales_whatsapp || "2348035186355").replace(/[^\d]/g, "")}?text=${encodeURIComponent("Hello APEX SECURITY LIMITED, I would like to inquire about your products.")}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-lg bg-[#C0262D] px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-[#9A1B21]"
@@ -202,7 +201,7 @@ export function SiteFooter() {
       </div>
 
       <div className="border-t border-border py-4 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} SOLIDAS TILES AND MARBLE NIG. LIMITED. All rights reserved.
+        © {new Date().getFullYear()} APEX SECURITY LIMITED. All rights reserved.
       </div>
     </footer>
   );

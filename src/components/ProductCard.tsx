@@ -22,10 +22,8 @@ export function ProductCardSkeleton() {
           animation: cardBreathing 2s ease-in-out infinite;
         }
       `}</style>
-      <div className="aspect-square bg-muted/15 relative flex items-center justify-center overflow-hidden">
-        <div className="animate-card-breathing">
-          <img src="/logo.png" alt="Loading" className="h-9 w-auto object-contain opacity-40 dark:opacity-60" />
-        </div>
+      <div className="aspect-square bg-muted/15 relative flex items-center justify-center overflow-hidden animate-pulse">
+        <div className="h-10 w-10 rounded-full bg-muted/30" />
       </div>
       <div className="flex flex-1 flex-col gap-2 p-3">
         <div className="space-y-2">
