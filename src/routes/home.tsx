@@ -30,16 +30,16 @@ import {
 export const Route = createFileRoute("/home")({
   head: () => ({
     meta: [
-      { title: "SOLIDAS TILES AND MARBLE NIG. LIMITED — Architectural Showroom" },
+      { title: "APEX SECURITY LIMITED — Security Doors & Architectural Hardware" },
       {
         name: "description",
         content:
-          "SOLIDAS TILES AND MARBLE NIG. LIMITED is your trusted supplier of premium tiles, marble, granite, foreign security doors, wooden doors, PVC ceiling and architectural building materials in Abuja.",
+          "APEX SECURITY LIMITED is your trusted supplier of premium security doors, armored doors, architectural hardware, luxury tiles, marble, and building materials in Abuja.",
       },
-      { property: "og:title", content: "SOLIDAS — Premium Building Materials Showroom" },
+      { property: "og:title", content: "APEX SECURITY LIMITED — Security & Building Materials Showroom" },
       {
         property: "og:description",
-        content: "Dealers & Suppliers of Tiles, Marble, Granite, Security Doors & Architectural Finishes.",
+        content: "Dealers & Suppliers of Premium Security Doors, Armored Gates, Architectural Hardware & Finishes.",
       },
     ],
   }),
@@ -158,7 +158,7 @@ function HomePage() {
     const targetWa = s?.sales_whatsapp || "2348035186355";
     setBusy(true);
     try {
-      const msg = `Hello SOLIDAS! My name is ${name}. Please contact me regarding building materials at ${phone}.`;
+      const msg = `Hello APEX SECURITY LIMITED! My name is ${name}. Please contact me regarding security doors and architectural products at ${phone}.`;
       window.open(waLink(targetWa, msg), "_blank", "noopener,noreferrer");
       toast.success("Opening WhatsApp Sales Inquiry…");
       setName("");
@@ -202,13 +202,13 @@ function HomePage() {
             </span>
 
             <h1 className="font-display text-4xl sm:text-6xl font-extrabold leading-none tracking-tight text-white uppercase">
-              SOLIDAS
+              APEX SECURITY LIMITED
             </h1>
             <p className="font-display text-lg sm:text-2xl text-[#1E82A6] font-bold">
-              SOLIDAS TILES AND MARBLE NIG. LIMITED
+              APEX SECURITY LIMITED
             </p>
             <p className="text-xs sm:text-sm text-gray-200 max-w-xl leading-relaxed">
-              Dealers & Suppliers of General Building Materials: Premium Tiles, Marble, Granite, Crack Tiles, Foreign Security Doors, Wooden Doors, PVC Ceilings & General Contracts.
+              Dealers & Suppliers of Premium Security Doors, Armored Gates, Architectural Hardware, Tiles, Marble & General Contracts.
             </p>
 
             <div className="flex flex-wrap gap-3 pt-3">
@@ -273,7 +273,7 @@ function HomePage() {
         </div>
       </section>
 
-      {/* SOLIDAS Showcase Video Slider (Continuous Showcase) */}
+      {/* APEX SECURITY Showcase Video Slider (Continuous Showcase) */}
       {showcaseVideos.length > 0 && (
         <section className="bg-slate-950 text-white py-12 border-y border-slate-800 shadow-2xl relative overflow-hidden">
           {/* Ambient Background Glow */}
@@ -287,11 +287,11 @@ function HomePage() {
                   <Film className="h-3.5 w-3.5 text-[#C0262D]" /> Architectural Showcase Reel
                 </div>
                 <h3 className="font-display text-2xl sm:text-3xl font-extrabold text-white uppercase tracking-tight mt-1">
-                  SOLIDAS Video Showcase
+                  APEX SECURITY Video Showcase
                 </h3>
               </div>
               <p className="text-xs text-slate-400 max-w-md">
-                Watch our latest product videos, showroom installations, imported doors, and premium marble craftsmanship.
+                Watch our latest product videos, showroom installations, imported security doors, and premium craftsmanship.
               </p>
             </div>
 
@@ -393,11 +393,11 @@ function HomePage() {
       <section className="container-app mt-12">
         <div className="text-center max-w-xl mx-auto mb-8 space-y-2">
           <h2 className="font-display text-xs uppercase tracking-[0.2em] font-bold text-[#1E82A6]">
-            Get In Touch With SOLIDAS
+            Get In Touch With APEX SECURITY LIMITED
           </h2>
           <h3 className="font-display text-3xl font-extrabold text-foreground">Visit Our Showrooms & Offices</h3>
           <p className="text-xs text-muted-foreground">
-            Contact our building material specialists for samples, project quantities, or site delivery quotes.
+            Contact our architectural & security specialists for samples, project quantities, or site delivery quotes.
           </p>
         </div>
 
@@ -414,7 +414,7 @@ function HomePage() {
                   <MapPin className="h-6 w-6 text-[#C0262D] shrink-0 group-hover:scale-110 transition-transform" />
                   <div>
                     <span className="text-[10px] font-bold uppercase tracking-wider text-[#C0262D]">Head Office (Click for Map)</span>
-                    <div className="font-bold text-sm text-foreground group-hover:text-[#C0262D] transition">Plot 469, Solidas Plaza</div>
+                    <div className="font-bold text-sm text-foreground group-hover:text-[#C0262D] transition">Plot 469, Apex Security Plaza</div>
                     <p className="text-xs text-muted-foreground">Saburi District Opp Timber Shed Dei Dei Building Material Mkt. FCT - Abuja</p>
                   </div>
                 </div>
@@ -425,7 +425,7 @@ function HomePage() {
                   <MapPin className="h-6 w-6 text-[#C0262D] shrink-0" />
                   <div>
                     <span className="text-[10px] font-bold uppercase tracking-wider text-[#C0262D]">Head Office</span>
-                    <div className="font-bold text-sm text-foreground">Plot 469, Solidas Plaza</div>
+                    <div className="font-bold text-sm text-foreground">Plot 469, Apex Security Plaza</div>
                     <p className="text-xs text-muted-foreground">Saburi District Opp Timber Shed Dei Dei Building Material Mkt. FCT - Abuja</p>
                   </div>
                 </div>
@@ -491,7 +491,7 @@ function HomePage() {
             <div>
               <h3 className="font-display text-xl font-bold text-foreground">Request Architectural Callback</h3>
               <p className="mt-1 text-xs text-muted-foreground">
-                Enter your details to initiate a WhatsApp order or material consultation with SOLIDAS sales team.
+                Enter your details to initiate a WhatsApp order or material consultation with APEX SECURITY sales team.
               </p>
               <div className="mt-5 space-y-4">
                 <div>
