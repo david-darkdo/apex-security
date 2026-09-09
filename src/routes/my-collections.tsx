@@ -218,4 +218,26 @@ function MyCollectionsHistoryPage() {
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {prods.map((p, idx) => (\n                        <div key={`${col.id}-${p.id || idx}`} className=\"rounded-lg border border-border bg-background p-3 flex items-start gap-3\">\n                          <img src={publicImageUrl(p.generated_studio_image) || publicImageUrl(p.image_url) || \"\"} alt={p.name} className=\"h-12 w-12 rounded-md object-cover bg-muted border border-border/40 shrink-0\" />\n                          <div className=\"min-w-0 flex-1 text-xs space-y-0.5\">\n                            <p className=\"font-semibold text-foreground truncate\">{p.name}</p>\n                            <p className=\"text-muted-foreground\">Code: {p.code} — <strong className=\"text-primary\">{p.quantity} {p.unit}</strong></p>\n                            {p.location && <p className=\"text-muted-foreground/80 truncate\">Loc: {p.location}</p>}\n                            {p.delivery && <p className=\"text-muted-foreground/80 truncate\">Delivery: {p.delivery}</p>}\n                            {p.notes && <p className=\"text-muted-foreground/80 italic truncate\">Notes: {p.notes}</p>}\n                          </div>\n                        </div>\n                      ))}\n                    </div>\n                  </div>\n                )}\n              </div>\n            );\n          })}\n        </div>\n      )}\n    </div>\n  );\n}\n
+                      {prods.map((p, idx) => (
+                        <div key={`${col.id}-${p.id || idx}`} className="rounded-lg border border-border bg-background p-3 flex items-start gap-3">
+                          <img src={publicImageUrl(p.generated_studio_image) || publicImageUrl(p.image_url) || ""} alt={p.name} className="h-12 w-12 rounded-md object-cover bg-muted border border-border/40 shrink-0" />
+                          <div className="min-w-0 flex-1 text-xs space-y-0.5">
+                            <p className="font-semibold text-foreground truncate">{p.name}</p>
+                            <p className="text-muted-foreground">Code: {p.code} — <strong className="text-primary">{p.quantity} {p.unit}</strong></p>
+                            {p.location && <p className="text-muted-foreground/80 truncate">Loc: {p.location}</p>}
+                            {p.delivery && <p className="text-muted-foreground/80 truncate">Delivery: {p.delivery}</p>}
+                            {p.notes && <p className="text-muted-foreground/80 italic truncate">Notes: {p.notes}</p>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
