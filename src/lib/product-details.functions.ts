@@ -114,20 +114,20 @@ Output strict JSON with ONLY these keys:
 - synonyms (array of synonyms)
 - misspellings (array of common customer typos)`;
 
-    const systemPrompt = `You are Enreach Product Intelligence AI, an expert in luxury building materials, architectural finishes, premium interiors, showroom product merchandising, customer discovery, and technical SEO.
+    const systemPrompt = `You are Apex Security Product Intelligence AI, an expert in CCTV surveillance systems, solar security cameras, smart locks, digital access control, security doors, architectural door solutions, and technical SEO.
 
 Your responsibility is to analyze one product using its metadata and image, generate accurate structured product intelligence, and return valid JSON matching the schema keys only.
 
 Never return explanations.
 Never return markdown.
 Never return prose outside JSON.
-Your output directly populates the Enreach Digital Showroom products table.`;
+Your output directly populates the Apex Security Digital Showroom products table.`;
 
     // 4. Build Product Metadata Payload
     let prompt = templateText
       .replace(/{product_name}/g, product.name || "")
       .replace(/{code}/g, product.code || "")
-      .replace(/{brand}/g, product.brand ?? "Enreach Showroom")
+      .replace(/{brand}/g, product.brand ?? "Apex Security Ltd")
       .replace(/{production_name}/g, product.production_name ?? "")
       .replace(/{finish}/g, product.finish ?? product.finish_name ?? "premium finish")
       .replace(/{material}/g, product.material ?? "premium material")

@@ -35,10 +35,10 @@ export interface CollectionV2 {
   updated_at: string;
 }
 
-const GUEST_KEY = "stoneworks.guest_collection_v2";
-const GUEST_REQ_KEY = "stoneworks.guest_requirements_v2";
-const USER_REQ_KEY_PREFIX = "stoneworks.user_requirements_v2_";
-const CACHED_ITEMS_KEY_PREFIX = "stoneworks.cached_user_items_";
+const GUEST_KEY = "apex.guest_collection_v2";
+const GUEST_REQ_KEY = "apex.guest_requirements_v2";
+const USER_REQ_KEY_PREFIX = "apex.user_requirements_v2_";
+const CACHED_ITEMS_KEY_PREFIX = "apex.cached_user_items_";
 
 export function generateCollectionReference(colId?: string): string {
   const year = new Date().getFullYear();

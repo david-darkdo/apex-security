@@ -16,7 +16,7 @@ async function callLLM(provider: any, prompt: string, system: string): Promise<s
 
 async function tryJSON<T = any>(provider: any, prompt: string, system: string): Promise<T | null> {
   const raw = await callLLM(provider, prompt + "\n\nReturn ONLY compact JSON.", system);
-  const m = raw.match(/\{[sS]*\}/);
+  const m = raw.match(/\{[\s\S]*\}/);
   if (!m) return null;
   try { return JSON.parse(m[0]) as T; } catch { return null; }
 }
@@ -159,11 +159,10 @@ async function interpolatePrompt(supabase: any, templateText: string, product: a
     .replace(/{context}/g, contextName)
     .replace(/{category}/g, categoryName)
     .replace(/{type}/g, typeName)
-    .replace(/{product_type}/g, typeName)
-    .replace(/{company_name}/g, "Enreach Concepts")
-    .replace(/{company_email}/g, settings?.company_email ?? "")
-    .replace(/{company_address}/g, settings?.company_address ?? "")
-    .replace(/{company_phone}/g, settings?.sales_whatsapp ?? settings?.support_whatsapp ?? "");
+    .replace(/{company_name}/g, settings?.company_name ?? "Apex Security Ltd")
+    .replace(/{company_email}/g, settings?.company_email ?? "igwezegift@gmail.com")
+    .replace(/{company_address}/g, settings?.company_address ?? "Opposite Timber Shed, Dei-Dei, Abuja, Nigeria")
+    .replace(/{company_phone}/g, settings?.company_phone ?? settings?.sales_whatsapp ?? "07063492581");
 }
 
 export const runProductPipeline = createServerFn({ method: "POST" })
