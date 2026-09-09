@@ -1,39 +1,29 @@
 import { supabase } from "@/integrations/supabase/client";
 
 /**
- * Triggered automatically upon product creation or updates.
- * Guarantees that every product page and product image is immediately
- * included and updated across all XML sitemaps and search engines.
+ * Publishes indexnow / search console pings for newly added products or modified categories.
  */
-export async function triggerSitemapUpdate(productId?: string): Promise<void> {
+export async function pingSearchEngines(url: string) {
   try {
-    const origin = typeof window !== "undefined" ? window.location.origin : "https://showroom.enreach.concepts";
+    const { data: settings } = await supabase
+      .from("app_settings")
+      .select("google_site_verification, bing_site_verification")
+      .limit(1)
+      .maybeSingle();
 
-    // 1. Touch product updated_at if productId is provided
-    if (productId) {
-      await supabase
-        .from("products" as any)
-        .update({ updated_at: new Date().toISOString() } as any)
-        .eq("id", productId);
-    }
+    if (!settings?.bing_site_verification) return;
 
-    // 2. Ping sitemaps to refresh server caches
-    const endpoints = [
-      `${origin}/sitemap.xml`,
-      `${origin}/sitemap-products.xml`,
-      `${origin}/sitemap-categories.xml`,
-      `${origin}/sitemap-images.xml`,
-      `${origin}/sitemap-pages.xml`,
-    ];
-
-    if (typeof window !== "undefined") {
-      void Promise.allSettled(
-        endpoints.map((url) =>
-          fetch(url, { method: "HEAD", cache: "no-cache" }).catch(() => {})
-        )
-      );
-    }
+    // IndexNow standard endpoint
+    await fetch("https://api.indexnow.org/indexnow", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        host: "apex-security-ltd.vercel.app",
+        key: settings.bing_site_verification,
+        urlList: [url],
+      }),
+    });
   } catch (err) {
-    console.error("Auto sitemap publisher error:", err);
+    console.warn("IndexNow ping notice:", err);
   }
 }

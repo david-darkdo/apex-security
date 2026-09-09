@@ -218,7 +218,7 @@ const hierarchyQuery = (splat: string, origin: string) =>
 
 export const Route = createFileRoute("/$")({
   loader: async ({ context, params }) => {
-    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://showroom.enreach.concepts';
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://apex-security-ltd.vercel.app';
     const data = await context.queryClient.ensureQueryData(hierarchyQuery((params as any)._splat ?? "", origin));
     return data;
   },
@@ -231,17 +231,17 @@ export const Route = createFileRoute("/$")({
     let description = "";
 
     if (family) {
-      title = `${family.name} Collection — Premium ${category.name} | Enreach Concepts`;
-      description = `Explore the beautiful ${family.name} collection of premium ${category.name} ${type.name} at Enreach Concepts. View available colors, finishes, and specs.`;
+      title = `${family.name} Collection — Premium ${category.name} | Apex Security Ltd`;
+      description = `Explore the beautiful ${family.name} collection of premium ${category.name} ${type.name} at Apex Security Ltd. View available models, finishes, and specs.`;
     } else if (subcategory) {
-      title = `Luxury ${subcategory.name} ${category.name} ${type.name} | Enreach Concepts`;
-      description = `Browse our catalog of premium ${subcategory.name} sized ${category.name} ${type.name} building materials curated by Enreach Concepts.`;
+      title = `${subcategory.name} ${category.name} ${type.name} | Apex Security Ltd`;
+      description = `Browse our catalog of ${subcategory.name} ${category.name} ${type.name} curated by Apex Security Ltd.`;
     } else if (category) {
-      title = `Premium ${category.name} ${type.name} | Enreach Concepts`;
-      description = `Discover high-quality, luxury ${category.name} ${type.name} building products at Enreach Concepts. Explore our curated collections.`;
+      title = `${category.name} ${type.name} | Apex Security Ltd`;
+      description = `Discover high-quality ${category.name} ${type.name} solutions at Apex Security Ltd. Explore our curated collections.`;
     } else {
-      title = `${type.name} Catalog | Enreach Concepts`;
-      description = `Curated luxury ${type.name} collections and building materials. Discover premium tiles, doors, plumbing, and surfaces at Enreach Concepts.`;
+      title = `${type.name} Catalog | Apex Security Ltd`;
+      description = `Curated ${type.name} collections, CCTV systems, smart locks, and door solutions at Apex Security Ltd.`;
     }
 
     const firstImage = loaderData.products[0]?.generated_studio_image || loaderData.products[0]?.image_url || "";
@@ -347,7 +347,7 @@ function HierarchyLandingPage() {
           </p>
           <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
             {family?.custom_ai_prompt_override ||
-              `Browse our catalog of premium ${type.name.toLowerCase()} materials. Enreach Concepts curates state of the art finishes for custom builder specifications.`}
+              `Browse our catalog of ${type.name.toLowerCase()} products and security solutions curated by Apex Security Ltd.`}
           </p>
         </div>
 
