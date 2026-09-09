@@ -138,63 +138,64 @@ export function SiteFooter() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-lg bg-[#C0262D] px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-[#9A1B21]"
             >
-              <Phone className="h-4 w-4" />
-              <span>WhatsApp Sales Consultation</span>
+              <Phone className="h-3.5 w-3.5" />
+              <span>Direct WhatsApp Chat</span>
             </a>
           </div>
-          
-          {/* Official 4 Social Platforms — Beautified Official Brand Icons */}
-          <ul className="mt-6 flex flex-wrap items-center gap-3">
-            <li>
+          <div className="mt-5 flex items-center gap-2.5">
+            {s?.facebook_url && (
               <a
-                href={s?.facebook_url || "https://facebook.com"}
+                href={s.facebook_url}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
-                className="grid h-10 w-10 place-items-center rounded-full bg-[#1877F2] text-white shadow-md transition-all duration-200 ease-out hover:-translate-y-0.5 hover:scale-110 hover:shadow-lg motion-reduce:hover:translate-y-0 motion-reduce:hover:scale-100"
+                className="grid h-8 w-8 place-items-center rounded-full bg-[#1877F2] text-white transition hover:opacity-90"
               >
-                <FacebookBrandIcon className="h-5 w-5 fill-white" />
+                <FacebookBrandIcon className="h-4 w-4" />
               </a>
-            </li>
-            <li>
+            )}
+            {s?.instagram_url && (
               <a
-                href={s?.instagram_url || "https://instagram.com"}
+                href={s.instagram_url}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
-                className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-tr from-[#fdf497] via-[#fd5949] to-[#d6249f] text-white shadow-md transition-all duration-200 ease-out hover:-translate-y-0.5 hover:scale-110 hover:shadow-lg motion-reduce:hover:translate-y-0 motion-reduce:hover:scale-100"
+                className="grid h-8 w-8 place-items-center rounded-full bg-gradient-to-tr from-[#fdf497] via-[#fd5949] to-[#d6249f] text-white transition hover:opacity-90"
               >
-                <InstagramBrandIcon className="h-5 w-5 fill-white" />
+                <InstagramBrandIcon className="h-4 w-4" />
               </a>
-            </li>
-            <li>
+            )}
+            {s?.tiktok_url && (
               <a
-                href={s?.tiktok_url || "https://tiktok.com"}
+                href={s.tiktok_url}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="TikTok"
-                className="grid h-10 w-10 place-items-center rounded-full bg-black text-white shadow-md ring-1 ring-white/20 transition-all duration-200 ease-out hover:-translate-y-0.5 hover:scale-110 hover:shadow-lg motion-reduce:hover:translate-y-0 motion-reduce:hover:scale-100"
+                className="grid h-8 w-8 place-items-center rounded-full bg-black text-white ring-1 ring-white/20 transition hover:opacity-90"
               >
-                <TikTokBrandIcon className="h-5 w-5 fill-white" />
+                <TikTokBrandIcon className="h-4 w-4" />
               </a>
-            </li>
-            <li>
+            )}
+            {s?.youtube_url && (
               <a
-                href={s?.youtube_url || "https://youtube.com"}
+                href={s.youtube_url}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="YouTube"
-                className="grid h-10 w-10 place-items-center rounded-full bg-[#FF0000] text-white shadow-md transition-all duration-200 ease-out hover:-translate-y-0.5 hover:scale-110 hover:shadow-lg motion-reduce:hover:translate-y-0 motion-reduce:hover:scale-100"
+                className="grid h-8 w-8 place-items-center rounded-full bg-[#FF0000] text-white transition hover:opacity-90"
               >
-                <YouTubeBrandIcon className="h-5 w-5 fill-white" />
+                <YouTubeBrandIcon className="h-4 w-4" />
               </a>
-            </li>
-          </ul>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="border-t border-border py-4 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} APEX SECURITY LIMITED. All rights reserved.
+      <div className="border-t border-border/80 bg-surface-2 py-4 text-center text-xs text-muted-foreground">
+        <div className="container-app flex flex-col sm:flex-row items-center justify-between gap-2">
+          <span>&copy; {new Date().getFullYear()} {companyName}. All rights reserved.</span>
+          <span className="text-[11px]">Modern Security Electronics & Contemporary Door Systems · Abuja, Nigeria</span>
+        </div>
       </div>
     </footer>
   );

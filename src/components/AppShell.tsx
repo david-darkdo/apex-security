@@ -24,6 +24,7 @@ import { FloatingWhatsApp } from "./FloatingWhatsApp";
 import { syncOfflineActions, getGuestCollection, getCachedUserCollectionItems } from "@/lib/collection";
 import { toast } from "sonner";
 import { SiteFooter } from "./SiteFooter";
+import { useAppSettings } from "@/lib/settings";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [trustFeatures, setTrustFeatures] = useState<any[]>([]);
@@ -135,6 +136,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 }
 
 function TopBar() {
+  const { data: s } = useAppSettings();
+  const companyName = s?.company_name || "Apex Security Ltd";
   const navigate = useNavigate();
   const search = useRouterState({ select: (s) => s.location.search as { q?: string } });
   const { user, isAdmin } = useAuth();
@@ -214,10 +217,10 @@ function TopBar() {
     <header className="sticky top-0 z-30 border-b border-border bg-white/95 backdrop-blur shadow-xs">
       <div className="container-app flex items-center gap-4 py-3">
         <Link to="/" className="flex items-center gap-2.5 group">
-          <img src="/logo.png" alt="Apex Security Ltd" className="h-8 w-auto object-contain" />
+          <img src="/logo.png" alt={`${companyName} Logo`} className="h-8 w-auto object-contain" />
           <div className="flex flex-col">
-            <span className="font-display text-base sm:text-lg font-bold tracking-tight text-[#1E82A6] leading-none">
-              APEX SECURITY LIMITED
+            <span className="font-display text-base sm:text-lg font-bold tracking-tight text-[#1E82A6] leading-none uppercase">
+              {companyName}
             </span>
             <span className="hidden text-[9px] font-semibold tracking-wider text-muted-foreground uppercase sm:block mt-0.5">
               Security Electronics & Door Solutions
