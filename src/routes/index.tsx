@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { AppShell } from "@/components/AppShell";
 import { ProductCard, ProductCardSkeleton } from "@/components/ProductCard";
 import { fetchFeedProductsPaginated, fetchTaxonomy, type FeedFilters, type CursorParam } from "@/lib/catalog";
+import { useAppSettings } from "@/lib/settings";
 import { Sparkles, ChevronDown, Loader2 } from "lucide-react";
 
 type FeedSearch = {
@@ -61,6 +62,10 @@ export const Route = createFileRoute("/")({
 });
 
 function FeedPage() {
+  const { data: s } = useAppSettings();
+  const companyName = s?.company_name || "Apex Security Ltd";
+  const shortDesc = s?.short_description || "Apex Security Ltd provides CCTV systems, smart locks, security doors and modern door solutions for homes, businesses and building projects across Abuja and Nigeria.";
+
   const search = Route.useSearch();
   const navigate = useNavigate();
   const { data: tax } = useSuspenseQuery(taxonomyQuery);
@@ -114,6 +119,42 @@ function FeedPage() {
   return (
     <AppShell>
       <div className="container-app pt-4 pb-12 space-y-4">
+        {/* Apex Security Ltd Brand Intro Card */}
+        <div className="rounded-2xl border border-border bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 p-5 sm:p-7 text-white shadow-md relative overflow-hidden">
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
+            <div className="flex items-start sm:items-center gap-4">
+              <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl bg-white p-2.5 shadow-md shrink-0 flex items-center justify-center">
+                <img src="/logo.png" alt={`${companyName} Logo`} className="h-full w-full object-contain" />
+              </div>
+              <div className="space-y-1">
+                <div className="inline-flex items-center gap-1.5 rounded-full bg-[#1E82A6]/20 border border-[#1E82A6]/30 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#1E82A6]">
+                  <Sparkles className="h-3 w-3" /> Official Showroom
+                </div>
+                <h1 className="font-display text-xl sm:text-2xl font-extrabold text-white tracking-tight">
+                  {companyName}
+                </h1>
+                <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+                  {shortDesc}
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-2.5 shrink-0 pt-1 md:pt-0">
+              <Link
+                to="/home"
+                className="rounded-lg bg-[#C0262D] px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-white hover:bg-[#9A1B21] transition shadow-sm"
+              >
+                About Showroom
+              </Link>
+              <Link
+                to="/contact"
+                className="rounded-lg border border-white/20 bg-white/10 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-white hover:bg-white/20 transition"
+              >
+                Contact & Location
+              </Link>
+            </div>
+          </div>
+        </div>
+
         {/* Type row */}
         <FilterRow>
           <Pill active={!search.type} onClick={() => setType(undefined)}>

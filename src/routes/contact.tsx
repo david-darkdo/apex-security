@@ -175,7 +175,7 @@ function ContactPage() {
           <form onSubmit={submit} className="rounded-xl border border-border bg-white p-6 shadow-sm flex flex-col justify-between">
             <div>
               <h2 className="font-display text-xl font-bold text-foreground">Direct Sales Inquiry</h2>
-              <p className="mt-1 text-xs text-muted-foreground">Request a call back or building material price consultation via WhatsApp.</p>
+              <p className="mt-1 text-xs text-muted-foreground">Request a call back or security and door solutions consultation via WhatsApp.</p>
               <div className="mt-5 space-y-4">
                 <div>
                   <label className="block text-xs font-bold text-foreground mb-1">Your Name</label>
