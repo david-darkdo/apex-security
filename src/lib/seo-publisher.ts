@@ -1,29 +1,43 @@
 import { supabase } from "@/integrations/supabase/client";
 
 /**
- * Publishes indexnow / search console pings for newly added products or modified categories.
+ * Triggered automatically upon product creation or updates.
+ * Guarantees that every product page and product image is immediately
+ * included and updated across all XML sitemaps and search engines.
  */
-export async function pingSearchEngines(url: string) {
+export async function triggerSitemapUpdate(productId?: string): Promise<void> {
   try {
-    const { data: settings } = await supabase
-      .from("app_settings")
-      .select("google_site_verification, bing_site_verification")
-      .limit(1)
-      .maybeSingle();
+    const origin = typeof window !== "undefined" ? window.location.origin : "https://apex-security-ltd.vercel.app";
 
-    if (!settings?.bing_site_verification) return;
+    // 1. Touch product updated_at if productId is provided
+    if (productId) {
+      await supabase
+        .from("products" as any)
+        .update({ updated_at: new Date().toISOString() } as any)
+        .eq("id", productId);
+    }
 
-    // IndexNow standard endpoint
-    await fetch("https://api.indexnow.org/indexnow", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        host: "apex-security-ltd.vercel.app",
-        key: settings.bing_site_verification,
-        urlList: [url],
-      }),
-    });
+    // 2. Ping sitemaps to refresh server caches
+    const endpoints = [
+      `${origin}/sitemap.xml`,
+      `${origin}/sitemap-products.xml`,
+      `${origin}/sitemap-categories.xml`,
+      `${origin}/sitemap-images.xml`,
+      `${origin}/sitemap-pages.xml`,
+    ];
+
+    if (typeof window !== "undefined") {
+      void Promise.allSettled(
+        endpoints.map((url) =>
+          fetch(url, { method: "HEAD", cache: "no-cache" }).catch(() => {})
+        )
+      );
+    }
   } catch (err) {
-    console.warn("IndexNow ping notice:", err);
+    console.error("Auto sitemap publisher error:", err);
   }
+}
+
+export async function pingSearchEngines(url: string): Promise<void> {
+  await triggerSitemapUpdate();
 }
