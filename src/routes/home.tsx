@@ -30,16 +30,16 @@ import {
 export const Route = createFileRoute("/home")({
   head: () => ({
     meta: [
-      { title: "APEX SECURITY LIMITED — Security Doors & Architectural Hardware" },
+      { title: "Apex Security Ltd — CCTV Cameras, Smart Locks & Security Doors" },
       {
         name: "description",
         content:
-          "APEX SECURITY LIMITED is your trusted supplier of premium security doors, armored doors, architectural hardware, luxury tiles, marble, and building materials in Abuja.",
+          "Secure your space with modern technology and dependable door solutions. Apex Security Ltd brings CCTV cameras, solar security cameras, smart locks and quality security doors together for homes, businesses and building projects across Abuja and Nigeria.",
       },
-      { property: "og:title", content: "APEX SECURITY LIMITED — Security & Building Materials Showroom" },
+      { property: "og:title", content: "Apex Security Ltd — Security Electronics & Modern Doors" },
       {
         property: "og:description",
-        content: "Dealers & Suppliers of Premium Security Doors, Armored Gates, Architectural Hardware & Finishes.",
+        content: "Apex Security Ltd provides CCTV systems, smart locks, security doors and modern door solutions for homes, businesses and building projects across Abuja and Nigeria.",
       },
     ],
   }),
@@ -51,6 +51,9 @@ function HomePage() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [busy, setBusy] = useState(false);
+
+  const companyName = s?.company_name || "Apex Security Ltd";
+  const homepageDesc = s?.homepage_description || "Secure your space with modern technology and dependable door solutions. Apex Security Ltd brings CCTV cameras, solar security cameras, smart locks and quality security doors together for homes, businesses and building projects across Abuja and Nigeria.";
 
   // Hero Videos State
   const [heroVideos, setHeroVideos] = useState<any[]>([]);
@@ -103,17 +106,17 @@ function HomePage() {
             {
               id: "sc-1",
               url: "https://assets.mixkit.co/videos/preview/mixkit-interior-of-a-modern-apartment-39907-large.mp4",
-              title: "Luxury Marble & Porcelain Floor Installation"
+              title: "CCTV Surveillance & Solar Camera Systems"
             },
             {
               id: "sc-2",
               url: "https://assets.mixkit.co/videos/preview/mixkit-modern-apartment-interior-design-39908-large.mp4",
-              title: "Imported Security & Architectural Doors Showcase"
+              title: "Smart Locks & Digital Access Solutions"
             },
             {
               id: "sc-3",
               url: "https://assets.mixkit.co/videos/preview/mixkit-architectural-model-design-details-39909-large.mp4",
-              title: "Precision Granite & Wall Cladding Solutions"
+              title: "Armored Security & Contemporary Doors"
             }
           ]);
         }
@@ -155,10 +158,10 @@ function HomePage() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const targetWa = s?.sales_whatsapp || "2348035186355";
+    const targetWa = s?.sales_whatsapp || s?.support_whatsapp || "07063492581";
     setBusy(true);
     try {
-      const msg = `Hello APEX SECURITY LIMITED! My name is ${name}. Please contact me regarding security doors and architectural products at ${phone}.`;
+      const msg = `Hello ${companyName}! My name is ${name}. Please contact me regarding CCTV cameras, smart locks, and security doors at ${phone}.`;
       window.open(waLink(targetWa, msg), "_blank", "noopener,noreferrer");
       toast.success("Opening WhatsApp Sales Inquiry…");
       setName("");
@@ -189,7 +192,7 @@ function HomePage() {
               src={heroVideos[currentVideoIndex]?.url}
               preload="auto"
             />
-            {/* Architectural Dark Gradient Overlay */}
+            {/* Dark Gradient Overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-slate-950/20" />
           </div>
         )}
@@ -198,17 +201,14 @@ function HomePage() {
         <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-14 text-white">
           <div className="max-w-3xl space-y-4">
             <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.25em] backdrop-blur">
-              <Sparkles className="h-3.5 w-3.5 text-[#1E82A6]" /> Architectural Materials Showroom
+              <Sparkles className="h-3.5 w-3.5 text-[#1E82A6]" /> Security & Door Solutions Showroom
             </span>
 
             <h1 className="font-display text-4xl sm:text-6xl font-extrabold leading-none tracking-tight text-white uppercase">
-              APEX SECURITY LIMITED
+              {companyName}
             </h1>
-            <p className="font-display text-lg sm:text-2xl text-[#1E82A6] font-bold">
-              APEX SECURITY LIMITED
-            </p>
-            <p className="text-xs sm:text-sm text-gray-200 max-w-xl leading-relaxed">
-              Dealers & Suppliers of Premium Security Doors, Armored Gates, Architectural Hardware, Tiles, Marble & General Contracts.
+            <p className="font-display text-sm sm:text-base text-gray-200 max-w-xl leading-relaxed">
+              {homepageDesc}
             </p>
 
             <div className="flex flex-wrap gap-3 pt-3">
@@ -252,22 +252,22 @@ function HomePage() {
           <div className="flex items-start gap-4 p-4 rounded-xl border border-border bg-surface-2">
             <Building2 className="h-8 w-8 text-[#1E82A6] shrink-0" />
             <div>
-              <h4 className="font-bold text-sm text-foreground">Direct Wholesale Supplier</h4>
-              <p className="text-xs text-muted-foreground mt-1">Direct importer & dealer in premium architectural tiles, marble, and foreign doors.</p>
+              <h4 className="font-bold text-sm text-foreground">Security Electronics & CCTV</h4>
+              <p className="text-xs text-muted-foreground mt-1">Solar & wired CCTV cameras, high-definition surveillance, and intelligent property monitoring.</p>
             </div>
           </div>
           <div className="flex items-start gap-4 p-4 rounded-xl border border-border bg-surface-2">
             <ShieldCheck className="h-8 w-8 text-[#C0262D] shrink-0" />
             <div>
-              <h4 className="font-bold text-sm text-foreground">Verified RC: 1218629</h4>
-              <p className="text-xs text-muted-foreground mt-1">Officially registered Nigerian company operating out of Dei Dei Building Materials Market, Abuja.</p>
+              <h4 className="font-bold text-sm text-foreground">Smart Locks & Security Doors</h4>
+              <p className="text-xs text-muted-foreground mt-1">Biometric digital door locks, armored security doors, flush doors, pivot doors & toilet doors.</p>
             </div>
           </div>
           <div className="flex items-start gap-4 p-4 rounded-xl border border-border bg-surface-2">
             <MessageCircle className="h-8 w-8 text-[#1E82A6] shrink-0" />
             <div>
-              <h4 className="font-bold text-sm text-foreground">Instant WhatsApp Quotes</h4>
-              <p className="text-xs text-muted-foreground mt-1">Curate your project lookbook and receive formatted WhatsApp quotes instantly.</p>
+              <h4 className="font-bold text-sm text-foreground">Nationwide Service & Quotes</h4>
+              <p className="text-xs text-muted-foreground mt-1">Dei-Dei Abuja showroom presence serving residential, commercial & building projects nationwide.</p>
             </div>
           </div>
         </div>
@@ -393,94 +393,80 @@ function HomePage() {
       <section className="container-app mt-12">
         <div className="text-center max-w-xl mx-auto mb-8 space-y-2">
           <h2 className="font-display text-xs uppercase tracking-[0.2em] font-bold text-[#1E82A6]">
-            Get In Touch With APEX SECURITY LIMITED
+            Get In Touch With {companyName}
           </h2>
-          <h3 className="font-display text-3xl font-extrabold text-foreground">Visit Our Showrooms & Offices</h3>
+          <h3 className="font-display text-3xl font-extrabold text-foreground">Visit Our Showroom & Offices</h3>
           <p className="text-xs text-muted-foreground">
-            Contact our architectural & security specialists for samples, project quantities, or site delivery quotes.
+            Contact our security and door specialists for systems consultation, product specs, or nationwide site delivery.
           </p>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2 pb-4">
           <div className="space-y-4">
-            {s?.map_url ? (
-              <a
-                href={s.map_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block rounded-xl border border-border bg-white p-5 shadow-xs space-y-3 hover:border-[#C0262D] transition group"
-              >
-                <div className="flex items-center gap-3">
-                  <MapPin className="h-6 w-6 text-[#C0262D] shrink-0 group-hover:scale-110 transition-transform" />
-                  <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#C0262D]">Head Office (Click for Map)</span>
-                    <div className="font-bold text-sm text-foreground group-hover:text-[#C0262D] transition">Plot 469, Apex Security Plaza</div>
-                    <p className="text-xs text-muted-foreground">Saburi District Opp Timber Shed Dei Dei Building Material Mkt. FCT - Abuja</p>
+            <a
+              href={s?.map_url || "https://maps.google.com/?q=Opposite+Timber+Shed+Dei-Dei+Abuja+Nigeria"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block rounded-xl border border-border bg-white p-5 shadow-xs space-y-3 hover:border-[#C0262D] transition group"
+            >
+              <div className="flex items-center gap-3">
+                <MapPin className="h-6 w-6 text-[#C0262D] shrink-0 group-hover:scale-110 transition-transform" />
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#C0262D]">Business Address (Click for Map)</span>
+                  <div className="font-bold text-sm text-foreground group-hover:text-[#C0262D] transition">
+                    {s?.company_address || "Opposite Timber Shed, Dei-Dei, Abuja, Nigeria"}
                   </div>
-                </div>
-              </a>
-            ) : (
-              <div className="rounded-xl border border-border bg-white p-5 shadow-xs space-y-3">
-                <div className="flex items-center gap-3">
-                  <MapPin className="h-6 w-6 text-[#C0262D] shrink-0" />
-                  <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#C0262D]">Head Office</span>
-                    <div className="font-bold text-sm text-foreground">Plot 469, Apex Security Plaza</div>
-                    <p className="text-xs text-muted-foreground">Saburi District Opp Timber Shed Dei Dei Building Material Mkt. FCT - Abuja</p>
-                  </div>
+                  <p className="text-xs text-muted-foreground">Dei-Dei Building Materials Market area · Serving Abuja & Nationwide</p>
                 </div>
               </div>
-            )}
-
-            {s?.map_url ? (
-              <a
-                href={s.map_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block rounded-xl border border-border bg-white p-5 shadow-xs space-y-3 hover:border-[#1E82A6] transition group"
-              >
-                <div className="flex items-center gap-3">
-                  <MapPin className="h-6 w-6 text-[#1E82A6] shrink-0 group-hover:scale-110 transition-transform" />
-                  <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#1E82A6]">Branch Office (Click for Map)</span>
-                    <div className="font-bold text-sm text-foreground group-hover:text-[#1E82A6] transition">Shop 819 C2 Extension</div>
-                    <p className="text-xs text-muted-foreground">Int'l Building Material Mkt Dei Dei, FCT Abuja</p>
-                  </div>
-                </div>
-              </a>
-            ) : (
-              <div className="rounded-xl border border-border bg-white p-5 shadow-xs space-y-3">
-                <div className="flex items-center gap-3">
-                  <MapPin className="h-6 w-6 text-[#1E82A6] shrink-0" />
-                  <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#1E82A6]">Branch Office</span>
-                    <div className="font-bold text-sm text-foreground">Shop 819 C2 Extension</div>
-                    <p className="text-xs text-muted-foreground">Int'l Building Material Mkt Dei Dei, FCT Abuja</p>
-                  </div>
-                </div>
-              </div>
-            )}
+            </a>
 
             <div className="rounded-xl border border-border bg-white p-5 shadow-xs space-y-3">
               <div className="flex items-center gap-3">
                 <Phone className="h-6 w-6 text-[#1E82A6] shrink-0" />
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#1E82A6]">Telephone Lines</span>
-                  <div className="font-bold text-sm text-foreground">0803 518 6355 | 0815 149 5663 | 0904 032 7777</div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#1E82A6]">Customer Service Line</span>
+                  <div className="font-bold text-sm text-foreground">
+                    <a href={`tel:${s?.company_phone || "07063492581"}`} className="hover:text-[#1E82A6] transition">
+                      {s?.company_phone || "07063492581"}
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-border bg-white p-5 shadow-xs space-y-3">
+              <div className="flex items-center gap-3">
+                <Phone className="h-6 w-6 text-[#25D366] shrink-0" />
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#25D366]">WhatsApp Consultation</span>
+                  <div className="font-bold text-sm text-foreground">
+                    <a
+                      href={`https://wa.me/${(s?.sales_whatsapp || s?.support_whatsapp || "07063492581").replace(/[^\d]/g, "")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-[#25D366] transition"
+                    >
+                      {s?.sales_whatsapp || s?.support_whatsapp || "07063492581"} (Click to Chat)
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
 
             {s?.company_email && (
-              <div className="rounded-xl border border-border bg-white p-5 shadow-xs space-y-3">
+              <a
+                href={`mailto:${s.company_email}`}
+                className="block rounded-xl border border-border bg-white p-5 shadow-xs space-y-3 hover:border-[#1E82A6] transition group"
+              >
                 <div className="flex items-center gap-3">
                   <Mail className="h-6 w-6 text-[#1E82A6] shrink-0" />
                   <div>
                     <span className="text-[10px] font-bold uppercase tracking-wider text-[#1E82A6]">Email Inquiry</span>
-                    <div className="font-bold text-sm text-foreground">{s.company_email}</div>
+                    <div className="font-bold text-sm text-foreground group-hover:text-[#1E82A6] transition">{s.company_email}</div>
                   </div>
                 </div>
-              </div>
+              </a>
             )}
           </div>
 
@@ -489,9 +475,9 @@ function HomePage() {
             className="rounded-xl border border-border bg-white p-6 shadow-sm flex flex-col justify-between"
           >
             <div>
-              <h3 className="font-display text-xl font-bold text-foreground">Request Architectural Callback</h3>
+              <h3 className="font-display text-xl font-bold text-foreground">Request Security & Door Consultation</h3>
               <p className="mt-1 text-xs text-muted-foreground">
-                Enter your details to initiate a WhatsApp order or material consultation with APEX SECURITY sales team.
+                Enter your details to initiate a direct WhatsApp quote or product consultation with {companyName}.
               </p>
               <div className="mt-5 space-y-4">
                 <div>
@@ -500,7 +486,7 @@ function HomePage() {
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="e.g. Chief Japhet / Engr. Musa"
+                    placeholder="e.g. Arc. Johnson / Engr. Musa"
                     className="w-full rounded-lg border border-border bg-surface-2 px-3.5 py-2.5 text-sm outline-none focus:border-[#1E82A6] focus:bg-white"
                   />
                 </div>
@@ -510,7 +496,7 @@ function HomePage() {
                     required
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder="e.g. 0803 123 4567"
+                    placeholder="e.g. 0706 349 2581"
                     className="w-full rounded-lg border border-border bg-surface-2 px-3.5 py-2.5 text-sm outline-none focus:border-[#1E82A6] focus:bg-white"
                   />
                 </div>

@@ -213,13 +213,14 @@ function TopBar() {
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-white/95 backdrop-blur shadow-xs">
       <div className="container-app flex items-center gap-4 py-3">
-        <Link to="/" className="flex items-center gap-3 group">
+        <Link to="/" className="flex items-center gap-2.5 group">
+          <img src="/logo.png" alt="Apex Security Ltd" className="h-8 w-auto object-contain" />
           <div className="flex flex-col">
-            <span className="font-display text-lg font-bold tracking-tight text-[#1E82A6] leading-none">
+            <span className="font-display text-base sm:text-lg font-bold tracking-tight text-[#1E82A6] leading-none">
               APEX SECURITY LIMITED
             </span>
             <span className="hidden text-[9px] font-semibold tracking-wider text-muted-foreground uppercase sm:block mt-0.5">
-              Security & Architectural Solutions
+              Security Electronics & Door Solutions
             </span>
           </div>
         </Link>
@@ -236,7 +237,7 @@ function TopBar() {
           <input
             name="q"
             defaultValue={search?.q ?? ""}
-            placeholder="Search Tiles, Marble, Security Doors & Finishes…"
+            placeholder="Search CCTV Cameras, Smart Locks, Security Doors & Finishes…"
             className="w-full rounded-full border border-border bg-surface-2 py-2 pl-10 pr-4 text-sm text-foreground outline-none transition focus:border-[#1E82A6] focus:bg-white focus:ring-1 focus:ring-[#1E82A6]"
           />
         </form>

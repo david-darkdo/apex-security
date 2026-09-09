@@ -49,85 +49,78 @@ function YouTubeBrandIcon({ className = "h-5 w-5" }: { className?: string }) {
 
 export function SiteFooter() {
   const { data: s } = useAppSettings();
-  const mapUrl = s?.map_url || null;
+  const mapUrl = s?.map_url || "https://maps.google.com/?q=Opposite+Timber+Shed+Dei-Dei+Abuja+Nigeria";
+  const companyName = s?.company_name || "Apex Security Ltd";
+  const phone = s?.company_phone || "07063492581";
+  const whatsapp = s?.sales_whatsapp || s?.support_whatsapp || "07063492581";
+  const email = s?.company_email || "igwezegift@gmail.com";
+  const address = s?.company_address || "Opposite Timber Shed, Dei-Dei, Abuja, Nigeria";
+  const footerDesc = s?.footer_description || "Apex Security Ltd — CCTV, smart locks and security door solutions for homes, businesses and building projects across Abuja and Nigeria.";
 
   return (
     <footer className="mt-6 border-t border-border bg-white text-foreground">
       <div className="container-app grid gap-8 py-12 sm:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-3">
           <div className="flex items-center gap-2.5">
-            <div className="font-display text-lg font-bold tracking-tight text-[#1E82A6]">
-              APEX SECURITY LIMITED
+            <img src="/logo.png" alt={`${companyName} Logo`} className="h-9 w-auto object-contain" />
+            <div className="font-display text-base font-bold tracking-tight text-[#1E82A6]">
+              {companyName}
             </div>
           </div>
-          <p className="text-xs font-semibold text-[#C0262D]">
-            APEX SECURITY LIMITED
-          </p>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Dealers & Suppliers of Premium Security Doors, Armored Gates, Architectural Hardware & General Contracts.
+            {footerDesc}
           </p>
-          <p className="text-[11px] font-mono text-muted-foreground/70">
-            RC Registration: 1218629
-          </p>
+          <div className="text-[11px] text-muted-foreground/80 space-y-0.5">
+            <p><span className="font-medium text-foreground">Service Area:</span> {s?.company_service_area || "Nationwide"}</p>
+            <p><span className="font-medium text-foreground">Presence:</span> Dei-Dei Building Materials Market, Abuja</p>
+          </div>
         </div>
 
         <div>
           <div className="text-xs font-bold uppercase tracking-wider text-[#1E82A6]">Showroom Discovery</div>
           <ul className="mt-4 space-y-2.5 text-sm">
             <li><Link to="/home" className="text-muted-foreground hover:text-[#1E82A6] transition">Showroom Home</Link></li>
-            <li><Link to="/search" search={{ q: "" }} className="text-muted-foreground hover:text-[#1E82A6] transition">Material Catalog & Search</Link></li>
+            <li><Link to="/search" search={{ q: "" }} className="text-muted-foreground hover:text-[#1E82A6] transition">Catalog & Search</Link></li>
             <li><Link to="/collection" className="text-muted-foreground hover:text-[#1E82A6] transition">Project Collection Workspace</Link></li>
-            <li><Link to="/contact" className="text-muted-foreground hover:text-[#1E82A6] transition">Contact & Head Office</Link></li>
+            <li><Link to="/contact" className="text-muted-foreground hover:text-[#1E82A6] transition">Contact & Business Location</Link></li>
           </ul>
         </div>
 
         <div>
-          <div className="text-xs font-bold uppercase tracking-wider text-[#1E82A6]">Offices & Contacts</div>
+          <div className="text-xs font-bold uppercase tracking-wider text-[#1E82A6]">Location & Contacts</div>
           <ul className="mt-4 space-y-3 text-xs text-muted-foreground">
             <li className="flex items-start gap-2">
               <MapPin className="mt-0.5 h-4 w-4 text-[#C0262D] shrink-0" />
               <div>
-                <strong className="block text-foreground font-semibold">Head Office:</strong>
-                {mapUrl ? (
-                  <a
-                    href={mapUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-[#1E82A6] hover:underline transition"
-                  >
-                    Plot 469, Apex Security Plaza, Saburi District Opp Timber Shed Dei Dei Building Material Mkt. FCT - Abuja
-                  </a>
-                ) : (
-                  <span>Plot 469, Apex Security Plaza, Saburi District Opp Timber Shed Dei Dei Building Material Mkt. FCT - Abuja</span>
-                )}
-              </div>
-            </li>
-            <li className="flex items-start gap-2">
-              <MapPin className="mt-0.5 h-4 w-4 text-[#1E82A6] shrink-0" />
-              <div>
-                <strong className="block text-foreground font-semibold">Branch Office:</strong>
-                {mapUrl ? (
-                  <a
-                    href={mapUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-[#1E82A6] hover:underline transition"
-                  >
-                    Shop 819 C2 Extension Int'l Building Material Mkt Dei Dei, FCT Abuja
-                  </a>
-                ) : (
-                  <span>Shop 819 C2 Extension Int'l Building Material Mkt Dei Dei, FCT Abuja</span>
-                )}
+                <strong className="block text-foreground font-semibold">Business Address:</strong>
+                <a
+                  href={mapUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-[#1E82A6] hover:underline transition block"
+                >
+                  {address}
+                </a>
               </div>
             </li>
             <li className="flex items-center gap-2">
               <Phone className="h-4 w-4 text-[#1E82A6] shrink-0" />
-              <span>Tel: 0803 518 6355 | 0815 149 5663 | 0904 032 7777</span>
+              <div>
+                <strong className="text-foreground font-semibold">Phone: </strong>
+                <a href={`tel:${phone}`} className="hover:text-[#1E82A6] transition">{phone}</a>
+              </div>
             </li>
-            {s?.company_email && (
+            <li className="flex items-center gap-2">
+              <Phone className="h-4 w-4 text-[#25D366] shrink-0" />
+              <div>
+                <strong className="text-foreground font-semibold">WhatsApp: </strong>
+                <a href={`https://wa.me/${whatsapp.replace(/[^\d]/g, "")}`} target="_blank" rel="noopener noreferrer" className="hover:text-[#1E82A6] transition">{whatsapp}</a>
+              </div>
+            </li>
+            {email && (
               <li className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-[#1E82A6] shrink-0" />
-                <a href={`mailto:${s.company_email}`} className="hover:text-[#1E82A6]">{s.company_email}</a>
+                <a href={`mailto:${email}`} className="hover:text-[#1E82A6] transition">{email}</a>
               </li>
             )}
           </ul>
@@ -136,11 +129,11 @@ export function SiteFooter() {
         <div>
           <div className="text-xs font-bold uppercase tracking-wider text-[#1E82A6]">Connect & Inquiries</div>
           <p className="mt-4 text-xs text-muted-foreground leading-relaxed">
-            Need custom quotes, bulk orders, or architectural samples? Speak directly with our sales team via WhatsApp.
+            Need pricing, security consultation, or project quotes? Speak directly with our team via WhatsApp.
           </p>
           <div className="mt-4">
             <a
-              href={`https://wa.me/${(s?.sales_whatsapp || "2348035186355").replace(/[^\d]/g, "")}?text=${encodeURIComponent("Hello APEX SECURITY LIMITED, I would like to inquire about your products.")}`}
+              href={`https://wa.me/${whatsapp.replace(/[^\d]/g, "")}?text=${encodeURIComponent(`Hello ${companyName}, I would like to inquire about your security solutions and door products.`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-lg bg-[#C0262D] px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-[#9A1B21]"
