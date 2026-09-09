@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { Search, Settings as SettingsIcon, Package, Users } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
-  head: () => ({ meta: [{ title: "Admin — Stoneworks" }] }),
+  head: () => ({ meta: [{ title: "Admin Command Center — Apex Security Ltd" }] }),
   component: AdminPage,
 });
 
@@ -282,116 +282,4 @@ function AdminPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {users.map((u) => (
-                  <tr key={u.auth_id}>
-                    <td className="py-2 pr-3 font-medium">{u.full_name || "—"}</td>
-                    <td className="py-2 pr-3 text-muted-foreground">{u.email || "—"}</td>
-                    <td className="py-2 pr-3">
-                      <span className="inline-flex rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[11px] uppercase tracking-wider text-primary">
-                        {u.role}
-                      </span>
-                    </td>
-                    <td className="py-2 pr-3">
-                      <select
-                        value={u.role}
-                        onChange={(e) => updateUserRole(u, e.target.value as AppRole)}
-                        className="rounded-md border border-border bg-background px-2 py-1 text-sm outline-none focus:border-primary"
-                      >
-                        {ROLE_OPTIONS.map((r) => (
-                          <option key={r} value={r}>
-                            {r}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                  </tr>
-                ))}
-                {users.length === 0 && (
-                  <tr>
-                    <td colSpan={4} className="py-4 text-center text-xs text-muted-foreground">
-                      No users found.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </section>
-      )}
-
-      <section className="rounded-xl border border-border bg-card p-5">
-        <h2 className="flex items-center gap-2 font-display text-lg font-semibold">
-          <Package className="h-4 w-4 text-primary" /> Products
-        </h2>
-        <p className="text-xs text-muted-foreground">Most recent 50 products.</p>
-        <ul className="mt-3 divide-y divide-border">
-          {products.map((p) => (
-            <li key={p.id} className="flex flex-wrap items-center gap-2 py-2 text-sm">
-              <div className="min-w-0 flex-1">
-                <Link to="/product/$slug" params={{ slug: p.slug }} className="block truncate font-medium hover:text-primary">
-                  {p.name}
-                </Link>
-                <div className="text-xs text-muted-foreground">
-                  Code · {p.code} · {p.is_published ? "Published" : "Draft"}
-                  {p.is_ai_processing ? " · AI processing…" : ""}
-                </div>
-              </div>
-              <button
-                onClick={() => toggleAiProcessing(p.id, p.is_ai_processing)}
-                className="rounded-md border border-primary/40 px-2 py-1 text-xs text-primary hover:bg-primary/10"
-              >
-                {p.is_ai_processing ? "Regenerate AI Assets" : "Generate AI Assets"}
-              </button>
-              <button onClick={() => deleteProduct(p.id)} className="rounded-md border border-border px-2 py-1 text-xs text-destructive hover:bg-destructive/10">
-                Delete
-              </button>
-            </li>
-          ))}
-        </ul>
-      </section>
-    </div>
-  );
-}
-
-function CustomerAnalyticsCards() {
-  const [stats, setStats] = useState<Record<string, number>>({});
-  useEffect(() => {
-    (async () => {
-      const [{ data: profs }, { data: roles }, { data: colls }, { data: inqs }, { data: camps }] = await Promise.all([
-        supabase.from("profiles").select("email,vip_status"),
-        supabase.from("user_roles").select("account_status"),
-        supabase.from("collections").select("id"),
-        supabase.from("whatsapp_inquiries").select("id"),
-        supabase.from("email_campaigns" as any).select("status"),
-      ]);
-      const total = profs?.length ?? 0;
-      const google = (profs ?? []).filter((p: any) => p.email && /@gmail\./i.test(p.email)).length;
-      const email = total - google;
-      const active = (roles ?? []).filter((r: any) => (r.account_status ?? "ACTIVE") === "ACTIVE").length;
-      const suspended = (roles ?? []).filter((r: any) => r.account_status === "SUSPENDED" || r.account_status === "BLOCKED").length;
-      const vip = (profs ?? []).filter((p: any) => p.vip_status).length;
-      const campsTotal = camps?.length ?? 0;
-      const campsSent = (camps ?? []).filter((c: any) => c.status === "SENT").length;
-      setStats({ total, google, email, active, suspended, vip, colls: colls?.length ?? 0, inqs: inqs?.length ?? 0, campsTotal, campsSent });
-    })();
-  }, []);
-  const cards = [
-    ["Total users", stats.total], ["Google", stats.google], ["Email", stats.email],
-    ["Active", stats.active], ["Suspended", stats.suspended], ["VIP", stats.vip],
-    ["Collections", stats.colls], ["WhatsApp inquiries", stats.inqs],
-    ["Campaigns created", stats.campsTotal], ["Campaigns sent", stats.campsSent],
-  ] as const;
-  return (
-    <section>
-      <h2 className="mb-2 font-display text-sm font-semibold uppercase tracking-wide text-muted-foreground">Customer Analytics</h2>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-5">
-        {cards.map(([label, v]) => (
-          <div key={label} className="rounded-lg border border-border bg-card p-3">
-            <div className="text-[10px] uppercase text-muted-foreground">{label}</div>
-            <div className="mt-1 text-xl font-semibold">{v ?? 0}</div>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
+                {users.map((u) => (\n                  <tr key={u.auth_id}>\n                    <td className=\"py-2 pr-3 font-medium\">{u.full_name || \"—\"}</td>\n                    <td className=\"py-2 pr-3 text-muted-foreground\">{u.email || \"—\"}</td>\n                    <td className=\"py-2 pr-3\">\n                      <span className=\"inline-flex rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[11px] uppercase tracking-wider text-primary\">\n                        {u.role}\n                      </span>\n                    </td>\n                    <td className=\"py-2 pr-3\">\n                      <select\n                        value={u.role}\n                        onChange={(e) => updateUserRole(u, e.target.value as AppRole)}\n                        className=\"rounded-md border border-border bg-background px-2 py-1 text-sm outline-none focus:border-primary\"\n                      >\n                        {ROLE_OPTIONS.map((r) => (\n                          <option key={r} value={r}>\n                            {r}\n                          </option>\n                        ))}\n                      </select>\n                    </td>\n                  </tr>\n                ))}\n                {users.length === 0 && (\n                  <tr>\n                    <td colSpan={4} className=\"py-4 text-center text-xs text-muted-foreground\">\n                      No users found.\n                    </td>\n                  </tr>\n                )}\n              </tbody>\n            </table>\n          </div>\n        </section>\n      )}\n\n      <section className=\"rounded-xl border border-border bg-card p-5\">\n        <h2 className=\"flex items-center gap-2 font-display text-lg font-semibold\">\n          <Package className=\"h-4 w-4 text-primary\" /> Products\n        </h2>\n        <p className=\"text-xs text-muted-foreground\">Most recent 50 products.</p>\n        <ul className=\"mt-3 divide-y divide-border\">\n          {products.map((p) => (\n            <li key={p.id} className=\"flex flex-wrap items-center gap-2 py-2 text-sm\">\n              <div className=\"min-w-0 flex-1\">\n                <Link to=\"/product/$slug\" params={{ slug: p.slug }} className=\"block truncate font-medium hover:text-primary\">\n                  {p.name}\n                </Link>\n                <div className=\"text-xs text-muted-foreground\">\n                  Code · {p.code} · {p.is_published ? \"Published\" : \"Draft\"}\n                  {p.is_ai_processing ? \" · AI processing…\" : \"\"}\n                </div>\n              </div>\n              <button\n                onClick={() => toggleAiProcessing(p.id, p.is_ai_processing)}\n                className=\"rounded-md border border-primary/40 px-2 py-1 text-xs text-primary hover:bg-primary/10\"\n              >\n                {p.is_ai_processing ? \"Regenerate AI Assets\" : \"Generate AI Assets\"}\n              </button>\n              <button onClick={() => deleteProduct(p.id)} className=\"rounded-md border border-border px-2 py-1 text-xs text-destructive hover:bg-destructive/10\">\n                Delete\n              </button>\n            </li>\n          ))}\n        </ul>\n      </section>\n    </div>\n  );\n}\n\nfunction CustomerAnalyticsCards() {\n  const [stats, setStats] = useState<Record<string, number>>({});\n  useEffect(() => {\n    (async () => {\n      const [{ data: profs }, { data: roles }, { data: colls }, { data: inqs }, { data: camps }] = await Promise.all([\n        supabase.from(\"profiles\").select(\"email,vip_status\"),\n        supabase.from(\"user_roles\").select(\"account_status\"),\n        supabase.from(\"collections\").select(\"id\"),\n        supabase.from(\"whatsapp_inquiries\").select(\"id\"),\n        supabase.from(\"email_campaigns\" as any).select(\"status\"),\n      ]);\n      const total = profs?.length ?? 0;\n      const google = (profs ?? []).filter((p: any) => p.email && /@gmail\\./i.test(p.email)).length;\n      const email = total - google;\n      const active = (roles ?? []).filter((r: any) => (r.account_status ?? \"ACTIVE\") === \"ACTIVE\").length;\n      const suspended = (roles ?? []).filter((r: any) => r.account_status === \"SUSPENDED\" || r.account_status === \"BLOCKED\").length;\n      const vip = (profs ?? []).filter((p: any) => p.vip_status).length;\n      const campsTotal = camps?.length ?? 0;\n      const campsSent = (camps ?? []).filter((c: any) => c.status === \"SENT\").length;\n      setStats({ total, google, email, active, suspended, vip, colls: colls?.length ?? 0, inqs: inqs?.length ?? 0, campsTotal, campsSent });\n    })();\n  }, []);\n  const cards = [\n    [\"Total users\", stats.total], [\"Google\", stats.google], [\"Email\", stats.email],\n    [\"Active\", stats.active], [\"Suspended\", stats.suspended], [\"VIP\", stats.vip],\n    [\"Collections\", stats.colls], [\"WhatsApp inquiries\", stats.inqs],\n    [\"Campaigns created\", stats.campsTotal], [\"Campaigns sent\", stats.campsSent],\n  ] as const;\n  return (\n    <section>\n      <h2 className=\"mb-2 font-display text-sm font-semibold uppercase tracking-wide text-muted-foreground\">Customer Analytics</h2>\n      <div className=\"grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-5\">\n        {cards.map(([label, v]) => (\n          <div key={label} className=\"rounded-lg border border-border bg-card p-3\">\n            <div className=\"text-[10px] uppercase text-muted-foreground\">{label}</div>\n            <div className=\"mt-1 text-xl font-semibold\">{v ?? 0}</div>\n          </div>\n        ))}\n      </div>\n    </section>\n  );\n}\n
