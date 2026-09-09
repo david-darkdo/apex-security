@@ -43,10 +43,10 @@ export const Route = createFileRoute("/")({
   },
   head: () => ({
     meta: [
-      { title: "Discover — Enreach Building Materials Showroom" },
+      { title: "Discover — Apex Security Showroom" },
       {
         name: "description",
-        content: "Browse curated tiles, security doors, plumbing and custom architectural finishes.",
+        content: "Apex Security Ltd provides CCTV systems, smart locks, security doors and modern door solutions for homes, businesses and building projects across Abuja and Nigeria.",
       },
     ],
   }),

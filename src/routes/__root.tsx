@@ -93,27 +93,29 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   },
   head: ({ loaderData }) => {
     const settings = loaderData?.settings;
+    const companyName = settings?.company_name || "Apex Security Ltd";
+    const seoDesc = settings?.seo_description || "Apex Security Ltd provides CCTV cameras, solar CCTV systems, smart locks, security doors and modern door solutions in Abuja, Nigeria. Serving residential, commercial and building projects nationwide, our showroom connects customers with practical security technology and quality door solutions around Dei-Dei Building Materials Market.";
     const googleVerify = settings?.google_site_verification;
     const bingVerify = settings?.bing_site_verification;
 
     const meta = [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { name: "theme-color", content: "#2f5240" },
-      { title: "Enreach Concepts — Luxury Building Materials Showroom" },
+      { name: "theme-color", content: "#1E82A6" },
+      { title: `${companyName} — Security Electronics & Modern Door Solutions` },
       {
         name: "description",
-        content: "Discover luxury tiles, security doors, plumbing, lighting and custom finishes. Curated premium building materials at Enreach Concepts Abuja.",
+        content: seoDesc,
       },
-      { property: "og:title", content: "Enreach Concepts — Luxury Building Materials Showroom" },
+      { property: "og:title", content: `${companyName} — Security Electronics & Modern Door Solutions` },
       {
         property: "og:description",
-        content: "A curated catalogue of premium tiles, doors and finishes — built for professional builders and custom residential developments.",
+        content: seoDesc,
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Enreach Concepts — Luxury Building Materials Showroom" },
-      { name: "twitter:description", content: "A curated catalogue of premium tiles, doors and finishes — built for professional builders." },
+      { name: "twitter:title", content: `${companyName} — Security Electronics & Modern Door Solutions` },
+      { name: "twitter:description", content: seoDesc },
       { property: "og:image", content: "/logo.png" },
       { name: "twitter:image", content: "/logo.png" },
     ];
@@ -130,8 +132,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       links: [
         { rel: "stylesheet", href: appCss },
         { rel: "manifest", href: "/manifest.webmanifest" },
-        { rel: "apple-touch-icon", href: "/icon-512.png" },
-        { rel: "icon", href: "/icon-512.png", type: "image/png" },
+        { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
+        { rel: "icon", href: "/favicon.png", type: "image/png" },
       ],
     };
   },
@@ -145,25 +147,31 @@ function RootShell({ children }: { children: ReactNode }) {
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "Enreach Concepts",
-    "url": "https://showroom.enreach.concepts",
-    "logo": "https://showroom.enreach.concepts/logo.png",
-    "description": "Luxury building materials showroom in Abuja specializing in premium tiles, armored security doors, sanitaryware, and architectural finishes.",
+    "name": "Apex Security Ltd",
+    "url": "https://apex-security-ltd.vercel.app",
+    "logo": "https://apex-security-ltd.vercel.app/logo.png",
+    "description": "Apex Security Ltd is a security solutions company serving customers across Abuja and nationwide Nigeria, with a business presence around Dei-Dei Building Materials Market. We provide modern security electronics and door solutions for homes, businesses and building projects, including CCTV cameras, solar CCTV systems, smart locks, security doors, flush doors, pivot doors and toilet doors.",
     "address": {
       "@type": "PostalAddress",
-      "addressLocality": "Abuja",
+      "streetAddress": "Opposite Timber Shed",
+      "addressLocality": "Dei-Dei, Abuja",
       "addressCountry": "NG"
+    },
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "07063492581",
+      "contactType": "sales & customer support"
     }
   };
 
   const websiteSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "Enreach Concepts Digital Showroom",
-    "url": "https://showroom.enreach.concepts",
+    "name": "Apex Security Ltd Showroom",
+    "url": "https://apex-security-ltd.vercel.app",
     "potentialAction": {
       "@type": "SearchAction",
-      "target": "https://showroom.enreach.concepts/search?q={search_term_string}",
+      "target": "https://apex-security-ltd.vercel.app/search?q={search_term_string}",
       "query-input": "required name=search_term_string"
     }
   };
@@ -271,9 +279,9 @@ function RootAppWrapper() {
   const orgSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": (settings as any)?.company_name || "Enreach Concepts",
-    "url": typeof window !== "undefined" ? window.location.origin : "https://enreachconcepts.com",
-    "logo": (settings as any)?.company_logo || (typeof window !== "undefined" ? `${window.location.origin}/logo.png` : "https://enreachconcepts.com/logo.png"),
+    "name": (settings as any)?.company_name || "APEX SECURITY LIMITED",
+    "url": typeof window !== "undefined" ? window.location.origin : "https://apex-security-ltd.vercel.app",
+    "logo": (settings as any)?.company_logo || (typeof window !== "undefined" ? `${window.location.origin}/icon-512.png` : "https://apex-security-ltd.vercel.app/icon-512.png"),
     "contactPoint": {
       "@type": "ContactPoint",
       "telephone": settings?.support_whatsapp || "",
@@ -287,7 +295,7 @@ function RootAppWrapper() {
         type="application/ld+json" 
         dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }} 
       />
-      {/* Full Page Breathing Logo Loading Screen */}
+      {/* Full Page Breathing Loading Screen */}
       {(() => {
         const isApiRoute = pathname === "/robots.txt" || pathname === "/sitemap.xml" || pathname.startsWith("/api/");
         const showGlobalLoader = (showLoader || initialLoading) && !isApiRoute;
@@ -296,26 +304,9 @@ function RootAppWrapper() {
           <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-background/30 backdrop-blur-[1px] transition-all duration-300 animate-fade-in">
             <style>{`
               @keyframes breathing {
-                0%, 100% { transform: scale(0.95); opacity: 0.35; }
-                50% { transform: scale(1.05); opacity: 0.7; }
-              }
-              @keyframes fadeIn {
-                from { opacity: 0; }
-                to { opacity: 1; }
-              }
-              .animate-breathing {
-                animation: breathing 2s ease-in-out infinite;
-              }
-              .animate-fade-in {
-                animation: fadeIn 0.2s ease-out forwards;
-              }
-            `}</style>
-            <div className="flex flex-col items-center gap-4 animate-breathing">
-              <img
-                src="/logo.png"
-                alt="Enreach Concepts Logo"
-                className="h-16 w-auto object-contain"
-              />
+                0%, 100% { transform: scale(0.95); opacity: 0.35; }\n                50% { transform: scale(1.05); opacity: 0.7; }\n              }\n              @keyframes fadeIn {\n                from { opacity: 0; }\n                to { opacity: 1; }\n              }\n              .animate-breathing {\n                animation: breathing 2s ease-in-out infinite;\n              }\n              .animate-fade-in {\n                animation: fadeIn 0.2s ease-out forwards;\n              }\n            `}</style>
+            <div className="flex flex-col items-center gap-3 animate-breathing">
+              <img src="/logo.png" alt="Apex Security Ltd Logo" className="h-16 w-auto object-contain" />
               <p className="font-display text-[9px] tracking-widest text-muted-foreground/80 uppercase">
                 Loading
               </p>

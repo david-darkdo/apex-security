@@ -29,8 +29,8 @@ export const Route = createFileRoute("/search")({
   validateSearch: validateSearch,
   head: () => ({
     meta: [
-      { title: "Search — Stoneworks" },
-      { name: "description", content: "Search across the catalogue." },
+      { title: "Search Catalog — Apex Security Ltd" },
+      { name: "description", content: "Search CCTV cameras, solar security systems, smart locks, security doors, and modern door solutions at Apex Security Ltd." },
     ],
   }),
   component: SearchPage,
@@ -79,11 +79,7 @@ function SearchPage() {
           />
         </form>
 
-        {(search.type || search.category || search.subcategory) && (
-          <p className="mt-3 text-xs text-muted-foreground">
-            Limited to filters: {[search.type, search.category, search.subcategory].filter(Boolean).join(" · ")}
-          </p>
-        )}
+        {(search.type || search.category || search.subcategory) && (\n          <p className="mt-3 text-xs text-muted-foreground">\n            Limited to filters: {[search.type, search.category, search.subcategory].filter(Boolean).join(" · ")}\n          </p>\n        )}
 
         <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {search.q.trim() === "" ? (
