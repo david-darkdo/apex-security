@@ -22,6 +22,7 @@ import appCss from "../styles.css?url";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
+import { BrandLogo } from "@/components/BrandLogo";
 
 function NotFoundComponent() {
   return (
@@ -319,7 +320,7 @@ function RootAppWrapper() {
               }
             `}</style>
             <div className="flex flex-col items-center gap-3 animate-breathing">
-              <img src="/logo.png" alt="Apex Security Ltd Logo" className="h-16 w-auto object-contain" />
+              <BrandLogo alt="Apex Security Ltd Logo" className="h-16 w-auto object-contain" />
               <p className="font-display text-[9px] tracking-widest text-muted-foreground/80 uppercase">
                 Loading
               </p>

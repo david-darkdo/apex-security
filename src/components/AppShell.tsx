@@ -23,6 +23,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { FloatingWhatsApp } from "./FloatingWhatsApp";
 import { syncOfflineActions, getGuestCollection, getCachedUserCollectionItems } from "@/lib/collection";
 import { toast } from "sonner";
+import { BrandLogo } from "@/components/BrandLogo";
 import { SiteFooter } from "./SiteFooter";
 import { useAppSettings } from "@/lib/settings";
 
@@ -217,7 +218,7 @@ function TopBar() {
     <header className="sticky top-0 z-30 border-b border-border bg-white/95 backdrop-blur shadow-xs">
       <div className="container-app flex items-center gap-4 py-3">
         <Link to="/" className="flex items-center gap-2.5 group">
-          <img src="/logo.png" alt={`${companyName} Logo`} className="h-8 w-auto object-contain" />
+          <BrandLogo alt={`${companyName} Logo`} className="h-8 w-auto object-contain" />
           <div className="flex flex-col">
             <span className="font-display text-base sm:text-lg font-bold tracking-tight text-[#1E82A6] leading-none uppercase">
               {companyName}

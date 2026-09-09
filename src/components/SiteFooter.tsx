@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useAppSettings } from "@/lib/settings";
+import { BrandLogo } from "@/components/BrandLogo";
 import { Mail, MapPin, Phone } from "lucide-react";
 
 function FacebookBrandIcon({ className = "h-5 w-5" }: { className?: string }) {
@@ -62,7 +63,7 @@ export function SiteFooter() {
       <div className="container-app grid gap-8 py-12 sm:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-3">
           <div className="flex items-center gap-2.5">
-            <img src="/logo.png" alt={`${companyName} Logo`} className="h-9 w-auto object-contain" />
+            <BrandLogo alt={`${companyName} Logo`} className="h-9 w-auto object-contain" />
             <div className="font-display text-base font-bold tracking-tight text-[#1E82A6]">
               {companyName}
             </div>
@@ -138,64 +139,63 @@ export function SiteFooter() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-lg bg-[#C0262D] px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-[#9A1B21]"
             >
-              <Phone className="h-3.5 w-3.5" />
-              <span>Direct WhatsApp Chat</span>
+              <Phone className="h-4 w-4" />
+              <span>WhatsApp Sales Consultation</span>
             </a>
           </div>
-          <div className="mt-5 flex items-center gap-2.5">
-            {s?.facebook_url && (
+          
+          {/* Official 4 Social Platforms — Beautified Official Brand Icons */}
+          <ul className="mt-6 flex flex-wrap items-center gap-3">
+            <li>
               <a
-                href={s.facebook_url}
+                href={s?.facebook_url || "https://facebook.com"}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
-                className="grid h-8 w-8 place-items-center rounded-full bg-[#1877F2] text-white transition hover:opacity-90"
+                className="grid h-10 w-10 place-items-center rounded-full bg-[#1877F2] text-white shadow-md transition-all duration-200 ease-out hover:-translate-y-0.5 hover:scale-110 hover:shadow-lg motion-reduce:hover:translate-y-0 motion-reduce:hover:scale-100"
               >
-                <FacebookBrandIcon className="h-4 w-4" />
+                <FacebookBrandIcon className="h-5 w-5 fill-white" />
               </a>
-            )}
-            {s?.instagram_url && (
+            </li>
+            <li>
               <a
-                href={s.instagram_url}
+                href={s?.instagram_url || "https://instagram.com"}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
-                className="grid h-8 w-8 place-items-center rounded-full bg-gradient-to-tr from-[#fdf497] via-[#fd5949] to-[#d6249f] text-white transition hover:opacity-90"
+                className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-tr from-[#fdf497] via-[#fd5949] to-[#d6249f] text-white shadow-md transition-all duration-200 ease-out hover:-translate-y-0.5 hover:scale-110 hover:shadow-lg motion-reduce:hover:translate-y-0 motion-reduce:hover:scale-100"
               >
-                <InstagramBrandIcon className="h-4 w-4" />
+                <InstagramBrandIcon className="h-5 w-5 fill-white" />
               </a>
-            )}
-            {s?.tiktok_url && (
+            </li>
+            <li>
               <a
-                href={s.tiktok_url}
+                href={s?.tiktok_url || "https://tiktok.com"}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="TikTok"
-                className="grid h-8 w-8 place-items-center rounded-full bg-black text-white ring-1 ring-white/20 transition hover:opacity-90"
+                className="grid h-10 w-10 place-items-center rounded-full bg-black text-white shadow-md ring-1 ring-white/20 transition-all duration-200 ease-out hover:-translate-y-0.5 hover:scale-110 hover:shadow-lg motion-reduce:hover:translate-y-0 motion-reduce:hover:scale-100"
               >
-                <TikTokBrandIcon className="h-4 w-4" />
+                <TikTokBrandIcon className="h-5 w-5 fill-white" />
               </a>
-            )}
-            {s?.youtube_url && (
+            </li>
+            <li>
               <a
-                href={s.youtube_url}
+                href={s?.youtube_url || "https://youtube.com"}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="YouTube"
-                className="grid h-8 w-8 place-items-center rounded-full bg-[#FF0000] text-white transition hover:opacity-90"
+                className="grid h-10 w-10 place-items-center rounded-full bg-[#FF0000] text-white shadow-md transition-all duration-200 ease-out hover:-translate-y-0.5 hover:scale-110 hover:shadow-lg motion-reduce:hover:translate-y-0 motion-reduce:hover:scale-100"
               >
-                <YouTubeBrandIcon className="h-4 w-4" />
+                <YouTubeBrandIcon className="h-5 w-5 fill-white" />
               </a>
-            )}
-          </div>
+            </li>
+          </ul>
         </div>
       </div>
 
-      <div className="border-t border-border/80 bg-surface-2 py-4 text-center text-xs text-muted-foreground">
-        <div className="container-app flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>&copy; {new Date().getFullYear()} {companyName}. All rights reserved.</span>
-          <span className="text-[11px]">Modern Security Electronics & Contemporary Door Systems · Abuja, Nigeria</span>
-        </div>
+      <div className="border-t border-border py-4 text-center text-xs text-muted-foreground">
+        © {new Date().getFullYear()} APEX SECURITY LIMITED. All rights reserved.
       </div>
     </footer>
   );

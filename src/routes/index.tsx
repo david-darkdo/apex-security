@@ -5,6 +5,7 @@ import { AppShell } from "@/components/AppShell";
 import { ProductCard, ProductCardSkeleton } from "@/components/ProductCard";
 import { fetchFeedProductsPaginated, fetchTaxonomy, type FeedFilters, type CursorParam } from "@/lib/catalog";
 import { useAppSettings } from "@/lib/settings";
+import { BrandLogo } from "@/components/BrandLogo";
 import { Sparkles, ChevronDown, Loader2 } from "lucide-react";
 
 type FeedSearch = {
@@ -124,7 +125,7 @@ function FeedPage() {
           <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
             <div className="flex items-start sm:items-center gap-4">
               <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl bg-white p-2.5 shadow-md shrink-0 flex items-center justify-center">
-                <img src="/logo.png" alt={`${companyName} Logo`} className="h-full w-full object-contain" />
+                <BrandLogo alt={`${companyName} Logo`} className="h-full w-full object-contain" />
               </div>
               <div className="space-y-1">
                 <div className="inline-flex items-center gap-1.5 rounded-full bg-[#1E82A6]/20 border border-[#1E82A6]/30 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#1E82A6]">
