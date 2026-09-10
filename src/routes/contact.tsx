@@ -52,7 +52,7 @@ function ContactPage() {
     <AppShell>
       <div className="container-app py-10 space-y-8">
         <div>
-          <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#1E82A6]">Corporate Contacts</span>
+          <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-orange">Corporate Contacts</span>
           <h1 className="font-display text-3xl font-extrabold text-foreground mt-1">{companyName}</h1>
           <p className="mt-1 text-xs text-muted-foreground leading-relaxed max-w-2xl">{contactDesc}</p>
         </div>
@@ -63,31 +63,31 @@ function ContactPage() {
               href={mapUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="block rounded-xl border border-border bg-white p-5 shadow-xs hover:border-[#C0262D] transition group"
+              className="block rounded-xl border border-border bg-surface p-5 shadow-xs hover:border-brand-orange transition group"
             >
               <div className="flex items-start gap-3">
-                <MapPin className="h-6 w-6 text-[#C0262D] shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                <MapPin className="h-6 w-6 text-brand-orange shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#C0262D]">Business Address (Click for Map)</span>
-                  <div className="font-bold text-sm text-foreground group-hover:text-[#C0262D] transition">{address}</div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-brand-orange">Business Address (Click for Map)</span>
+                  <div className="font-bold text-sm text-foreground group-hover:text-brand-orange transition">{address}</div>
                   <p className="text-xs text-muted-foreground mt-0.5">Dei-Dei Building Materials Market area · Serving Abuja & Nationwide</p>
                 </div>
               </div>
             </a>
 
-            <div className="rounded-xl border border-border bg-white p-5 shadow-xs space-y-3">
+            <div className="rounded-xl border border-border bg-surface p-5 shadow-xs space-y-3">
               <div className="flex items-start gap-3">
-                <Phone className="h-6 w-6 text-[#1E82A6] shrink-0 mt-0.5" />
+                <Phone className="h-6 w-6 text-brand-blue shrink-0 mt-0.5" />
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#1E82A6]">Customer Service Telephone</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-brand-blue">Customer Service Telephone</span>
                   <div className="font-bold text-sm text-foreground">
-                    <a href={`tel:${telPhone}`} className="hover:text-[#1E82A6] transition">{telPhone}</a>
+                    <a href={`tel:${telPhone}`} className="hover:text-brand-orange transition">{telPhone}</a>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="rounded-xl border border-border bg-white p-5 shadow-xs space-y-3">
+            <div className="rounded-xl border border-border bg-surface p-5 shadow-xs space-y-3">
               <div className="flex items-start gap-3">
                 <Phone className="h-6 w-6 text-[#25D366] shrink-0 mt-0.5" />
                 <div>
@@ -102,10 +102,10 @@ function ContactPage() {
             </div>
 
             {email && (
-              <a href={`mailto:${email}`} className="flex items-center gap-3 rounded-xl border border-border bg-white p-5 shadow-xs hover:border-[#1E82A6] transition">
-                <Mail className="h-6 w-6 text-[#1E82A6] shrink-0" />
+              <a href={`mailto:${email}`} className="flex items-center gap-3 rounded-xl border border-border bg-surface p-5 shadow-xs hover:border-brand-blue transition">
+                <Mail className="h-6 w-6 text-brand-blue shrink-0" />
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#1E82A6]">Email Address</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-brand-blue">Email Address</span>
                   <div className="font-bold text-sm text-foreground">{email}</div>
                 </div>
               </a>
@@ -172,24 +172,24 @@ function ContactPage() {
             </div>
           </div>
 
-          <form onSubmit={submit} className="rounded-xl border border-border bg-white p-6 shadow-sm flex flex-col justify-between">
+          <form onSubmit={submit} className="rounded-xl border border-border bg-surface p-6 shadow-sm flex flex-col justify-between">
             <div>
               <h2 className="font-display text-xl font-bold text-foreground">Direct Sales Inquiry</h2>
               <p className="mt-1 text-xs text-muted-foreground">Request a call back or security and door solutions consultation via WhatsApp.</p>
               <div className="mt-5 space-y-4">
                 <div>
                   <label className="block text-xs font-bold text-foreground mb-1">Your Name</label>
-                  <input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Full Name / Company" className="w-full rounded-lg border border-border bg-surface-2 px-3.5 py-2.5 text-sm text-foreground outline-none focus:border-[#1E82A6] focus:bg-white" />
+                  <input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Full Name / Company" className="w-full rounded-lg border border-border bg-surface-elevated px-3.5 py-2.5 text-sm text-foreground outline-none focus:border-brand-orange focus:bg-surface" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-foreground mb-1">Phone Number</label>
-                  <input required value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Phone Number" className="w-full rounded-lg border border-border bg-surface-2 px-3.5 py-2.5 text-sm text-foreground outline-none focus:border-[#1E82A6] focus:bg-white" />
+                  <input required value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Phone Number" className="w-full rounded-lg border border-border bg-surface-elevated px-3.5 py-2.5 text-sm text-foreground outline-none focus:border-brand-orange focus:bg-surface" />
                 </div>
               </div>
             </div>
 
             <div className="mt-6">
-              <button disabled={busy} className="w-full rounded-lg bg-[#C0262D] px-5 py-3 text-sm font-bold text-white hover:bg-[#9A1B21] disabled:opacity-60 transition shadow-sm">
+              <button disabled={busy} className="w-full rounded-lg bg-brand-orange px-5 py-3 text-sm font-bold text-canvas hover:bg-brand-orange-hover disabled:opacity-60 transition shadow-sm">
                 {busy ? "Sending…" : "Connect With Sales Representative"}
               </button>
             </div>

@@ -178,7 +178,7 @@ function HomePage() {
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
-        className="relative w-full h-[70vh] min-h-[500px] overflow-hidden bg-slate-950"
+        className="relative w-full h-[70vh] min-h-[500px] overflow-hidden bg-canvas"
       >
         {heroVideos.length > 0 && (
           <div className="absolute inset-0 w-full h-full">
@@ -193,21 +193,21 @@ function HomePage() {
               preload="auto"
             />
             {/* Dark Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-slate-950/20" />
+            <div className="absolute inset-0 bg-gradient-to-t from-canvas via-canvas/60 to-canvas/20" />
           </div>
         )}
 
         {/* Content Overlays */}
-        <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-14 text-white">
+        <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-14 text-foreground">
           <div className="max-w-3xl space-y-4">
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.25em] backdrop-blur">
-              <Sparkles className="h-3.5 w-3.5 text-[#1E82A6]" /> Security & Door Solutions Showroom
+            <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface-elevated/80 px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.25em] backdrop-blur text-brand-blue">
+              <Sparkles className="h-3.5 w-3.5 text-brand-orange" /> Security & Door Solutions Showroom
             </span>
 
-            <h1 className="font-display text-4xl sm:text-6xl font-extrabold leading-none tracking-tight text-white uppercase">
+            <h1 className="font-display text-4xl sm:text-6xl font-extrabold leading-none tracking-tight text-foreground uppercase">
               {companyName}
             </h1>
-            <p className="font-display text-sm sm:text-base text-gray-200 max-w-xl leading-relaxed">
+            <p className="font-display text-sm sm:text-base text-text-secondary max-w-xl leading-relaxed">
               {homepageDesc}
             </p>
 
@@ -215,15 +215,15 @@ function HomePage() {
               <Link
                 to="/search"
                 search={{ q: "" }}
-                className="inline-flex items-center gap-2 rounded-lg bg-[#C0262D] px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-white hover:bg-[#9A1B21] transition shadow-lg"
+                className="inline-flex items-center gap-2 rounded-lg bg-brand-orange px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-canvas hover:bg-brand-orange-hover transition shadow-lg"
               >
                 <Compass className="h-4 w-4" /> Explore Digital Showroom <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 to="/collection"
-                className="inline-flex items-center gap-2 rounded-lg border border-white/30 bg-white/10 backdrop-blur px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-white hover:bg-white/20 transition"
+                className="inline-flex items-center gap-2 rounded-lg border border-border bg-surface-elevated/80 backdrop-blur px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-foreground hover:bg-surface transition"
               >
-                <Bookmark className="h-4 w-4 text-[#1E82A6]" /> Project Collections
+                <Bookmark className="h-4 w-4 text-brand-orange" /> Project Collections
               </Link>
             </div>
           </div>
@@ -236,7 +236,7 @@ function HomePage() {
                   key={i}
                   onClick={() => setCurrentVideoIndex(i)}
                   className={`h-2 rounded-full transition-all duration-300 ${
-                    currentVideoIndex === i ? "w-8 bg-[#1E82A6]" : "w-2 bg-white/40"
+                    currentVideoIndex === i ? "w-8 bg-brand-orange" : "w-2 bg-white/40"
                   }`}
                   aria-label={`Slide ${i + 1}`}
                 />
@@ -247,24 +247,24 @@ function HomePage() {
       </section>
 
       {/* Trust & Company Highlights */}
-      <section className="bg-white border-b border-border py-8">
+      <section className="bg-surface border-b border-border py-8">
         <div className="container-app grid gap-6 sm:grid-cols-3">
-          <div className="flex items-start gap-4 p-4 rounded-xl border border-border bg-surface-2">
-            <Building2 className="h-8 w-8 text-[#1E82A6] shrink-0" />
+          <div className="flex items-start gap-4 p-4 rounded-xl border border-border bg-surface-elevated">
+            <Building2 className="h-8 w-8 text-brand-blue shrink-0" />
             <div>
               <h4 className="font-bold text-sm text-foreground">Security Electronics & CCTV</h4>
               <p className="text-xs text-muted-foreground mt-1">Solar & wired CCTV cameras, high-definition surveillance, and intelligent property monitoring.</p>
             </div>
           </div>
-          <div className="flex items-start gap-4 p-4 rounded-xl border border-border bg-surface-2">
-            <ShieldCheck className="h-8 w-8 text-[#C0262D] shrink-0" />
+          <div className="flex items-start gap-4 p-4 rounded-xl border border-border bg-surface-elevated">
+            <ShieldCheck className="h-8 w-8 text-brand-orange shrink-0" />
             <div>
               <h4 className="font-bold text-sm text-foreground">Smart Locks & Security Doors</h4>
               <p className="text-xs text-muted-foreground mt-1">Biometric digital door locks, armored security doors, flush doors, pivot doors & toilet doors.</p>
             </div>
           </div>
-          <div className="flex items-start gap-4 p-4 rounded-xl border border-border bg-surface-2">
-            <MessageCircle className="h-8 w-8 text-[#1E82A6] shrink-0" />
+          <div className="flex items-start gap-4 p-4 rounded-xl border border-border bg-surface-elevated">
+            <MessageCircle className="h-8 w-8 text-brand-blue shrink-0" />
             <div>
               <h4 className="font-bold text-sm text-foreground">Nationwide Service & Quotes</h4>
               <p className="text-xs text-muted-foreground mt-1">Dei-Dei Abuja showroom presence serving residential, commercial & building projects nationwide.</p>
@@ -275,28 +275,28 @@ function HomePage() {
 
       {/* APEX SECURITY Showcase Video Slider (Continuous Showcase) */}
       {showcaseVideos.length > 0 && (
-        <section className="bg-slate-950 text-white py-12 border-y border-slate-800 shadow-2xl relative overflow-hidden">
+        <section className="bg-canvas text-foreground py-12 border-y border-border shadow-2xl relative overflow-hidden">
           {/* Ambient Background Glow */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-[#1E82A6]/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-brand-blue-soft rounded-full blur-3xl pointer-events-none" />
 
           <div className="container-app space-y-6 relative z-10">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-white/10 pb-4">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-border pb-4">
               <div>
-                <div className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.25em] text-[#1E82A6]">
-                  <Film className="h-3.5 w-3.5 text-[#C0262D]" /> Architectural Showcase Reel
+                <div className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.25em] text-brand-orange">
+                  <Film className="h-3.5 w-3.5 text-brand-orange" /> Security & Door Solutions Showcase
                 </div>
-                <h3 className="font-display text-2xl sm:text-3xl font-extrabold text-white uppercase tracking-tight mt-1">
+                <h3 className="font-display text-2xl sm:text-3xl font-extrabold text-foreground uppercase tracking-tight mt-1">
                   APEX SECURITY Video Showcase
                 </h3>
               </div>
-              <p className="text-xs text-slate-400 max-w-md">
+              <p className="text-xs text-muted-foreground max-w-md">
                 Watch our latest product videos, showroom installations, imported security doors, and premium craftsmanship.
               </p>
             </div>
 
             {/* Video Player Box */}
-            <div className="relative w-full aspect-video max-h-[550px] rounded-2xl overflow-hidden bg-slate-900 border border-white/15 shadow-2xl group">
+            <div className="relative w-full aspect-video max-h-[550px] rounded-2xl overflow-hidden bg-surface border border-border shadow-2xl group">
               <video
                 key={showcaseVideos[currentShowcaseIndex]?.id || currentShowcaseIndex}
                 autoPlay={showcasePlaying}
@@ -309,15 +309,15 @@ function HomePage() {
               />
 
               {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-slate-950/30 pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-t from-canvas/90 via-transparent to-canvas/30 pointer-events-none" />
 
               {/* Top Title Overlay Badge */}
               <div className="absolute top-4 left-4 sm:top-6 sm:left-6 flex items-center gap-2.5 z-10">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-[#C0262D] px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-white shadow-md">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-orange px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-canvas shadow-md">
                   <Tv className="h-3 w-3" /> Video #{currentShowcaseIndex + 1} of {showcaseVideos.length}
                 </span>
                 {showcaseVideos[currentShowcaseIndex]?.title && (
-                  <span className="hidden sm:inline-block rounded-full bg-slate-900/80 border border-white/20 px-3.5 py-1 text-xs font-bold text-slate-200 backdrop-blur">
+                  <span className="hidden sm:inline-block rounded-full bg-surface-elevated/80 border border-border px-3.5 py-1 text-xs font-bold text-foreground backdrop-blur">
                     {showcaseVideos[currentShowcaseIndex].title}
                   </span>
                 )}
@@ -326,11 +326,11 @@ function HomePage() {
               {/* Center Play/Pause Button */}
               <button
                 onClick={() => setShowcasePlaying((p) => !p)}
-                className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 backdrop-blur-2xs"
+                className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/30 backdrop-blur-2xs"
                 aria-label={showcasePlaying ? "Pause Video" : "Play Video"}
               >
-                <div className="rounded-full bg-slate-900/90 border border-white/30 p-4 text-white shadow-xl hover:scale-110 transition-transform">
-                  {showcasePlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6 text-[#1E82A6] fill-[#1E82A6] ml-0.5" />}
+                <div className="rounded-full bg-surface-elevated/90 border border-border p-4 text-foreground shadow-xl hover:scale-110 transition-transform">
+                  {showcasePlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6 text-brand-orange fill-brand-orange ml-0.5" />}
                 </div>
               </button>
 
@@ -339,9 +339,9 @@ function HomePage() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setShowcaseMuted((m) => !m)}
-                    className="inline-flex items-center gap-1.5 rounded-full bg-slate-900/80 border border-white/20 px-3 py-1.5 text-xs font-bold text-white hover:bg-white/20 transition backdrop-blur"
+                    className="inline-flex items-center gap-1.5 rounded-full bg-surface-elevated/80 border border-border px-3 py-1.5 text-xs font-bold text-foreground hover:bg-surface transition backdrop-blur"
                   >
-                    {showcaseMuted ? <VolumeX className="h-4 w-4 text-[#C0262D]" /> : <Volume2 className="h-4 w-4 text-[#1E82A6]" />}
+                    {showcaseMuted ? <VolumeX className="h-4 w-4 text-brand-orange" /> : <Volume2 className="h-4 w-4 text-brand-blue" />}
                     <span className="hidden sm:inline text-[10px]">{showcaseMuted ? "Unmute" : "Mute"}</span>
                   </button>
                 </div>
@@ -353,7 +353,7 @@ function HomePage() {
                       key={idx}
                       onClick={() => setCurrentShowcaseIndex(idx)}
                       className={`h-2 rounded-full transition-all duration-300 ${
-                        currentShowcaseIndex === idx ? "w-6 bg-[#1E82A6]" : "w-2 bg-white/40 hover:bg-white/70"
+                        currentShowcaseIndex === idx ? "w-6 bg-brand-orange" : "w-2 bg-white/40 hover:bg-white/70"
                       }`}
                       aria-label={`Go to video ${idx + 1}`}
                     />
@@ -368,7 +368,7 @@ function HomePage() {
                         (prev) => (prev - 1 + showcaseVideos.length) % showcaseVideos.length
                       )
                     }
-                    className="p-2 rounded-full bg-slate-900/80 border border-white/20 text-white hover:bg-white/20 transition backdrop-blur"
+                    className="p-2 rounded-full bg-surface-elevated/80 border border-border text-foreground hover:bg-surface transition backdrop-blur"
                     aria-label="Previous Video"
                   >
                     <ChevronLeft className="h-4 w-4" />
@@ -377,7 +377,7 @@ function HomePage() {
                     onClick={() =>
                       setCurrentShowcaseIndex((prev) => (prev + 1) % showcaseVideos.length)
                     }
-                    className="p-2 rounded-full bg-slate-900/80 border border-white/20 text-white hover:bg-white/20 transition backdrop-blur"
+                    className="p-2 rounded-full bg-surface-elevated/80 border border-border text-foreground hover:bg-surface transition backdrop-blur"
                     aria-label="Next Video"
                   >
                     <ChevronRight className="h-4 w-4" />
@@ -392,7 +392,7 @@ function HomePage() {
       {/* Company / Contact Section */}
       <section className="container-app mt-12">
         <div className="text-center max-w-xl mx-auto mb-8 space-y-2">
-          <h2 className="font-display text-xs uppercase tracking-[0.2em] font-bold text-[#1E82A6]">
+          <h2 className="font-display text-xs uppercase tracking-[0.2em] font-bold text-brand-orange">
             Get In Touch With {companyName}
           </h2>
           <h3 className="font-display text-3xl font-extrabold text-foreground">Visit Our Showroom & Offices</h3>
@@ -407,13 +407,13 @@ function HomePage() {
               href={s?.map_url || "https://maps.google.com/?q=Opposite+Timber+Shed+Dei-Dei+Abuja+Nigeria"}
               target="_blank"
               rel="noopener noreferrer"
-              className="block rounded-xl border border-border bg-white p-5 shadow-xs space-y-3 hover:border-[#C0262D] transition group"
+              className="block rounded-xl border border-border bg-surface p-5 shadow-xs space-y-3 hover:border-brand-orange transition group"
             >
               <div className="flex items-center gap-3">
-                <MapPin className="h-6 w-6 text-[#C0262D] shrink-0 group-hover:scale-110 transition-transform" />
+                <MapPin className="h-6 w-6 text-brand-orange shrink-0 group-hover:scale-110 transition-transform" />
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#C0262D]">Business Address (Click for Map)</span>
-                  <div className="font-bold text-sm text-foreground group-hover:text-[#C0262D] transition">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-brand-orange">Business Address (Click for Map)</span>
+                  <div className="font-bold text-sm text-foreground group-hover:text-brand-orange transition">
                     {s?.company_address || "Opposite Timber Shed, Dei-Dei, Abuja, Nigeria"}
                   </div>
                   <p className="text-xs text-muted-foreground">Dei-Dei Building Materials Market area · Serving Abuja & Nationwide</p>
@@ -421,13 +421,13 @@ function HomePage() {
               </div>
             </a>
 
-            <div className="rounded-xl border border-border bg-white p-5 shadow-xs space-y-3">
+            <div className="rounded-xl border border-border bg-surface p-5 shadow-xs space-y-3">
               <div className="flex items-center gap-3">
-                <Phone className="h-6 w-6 text-[#1E82A6] shrink-0" />
+                <Phone className="h-6 w-6 text-brand-blue shrink-0" />
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#1E82A6]">Customer Service Line</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-brand-blue">Customer Service Line</span>
                   <div className="font-bold text-sm text-foreground">
-                    <a href={`tel:${s?.company_phone || "07063492581"}`} className="hover:text-[#1E82A6] transition">
+                    <a href={`tel:${s?.company_phone || "07063492581"}`} className="hover:text-brand-orange transition">
                       {s?.company_phone || "07063492581"}
                     </a>
                   </div>
@@ -435,7 +435,7 @@ function HomePage() {
               </div>
             </div>
 
-            <div className="rounded-xl border border-border bg-white p-5 shadow-xs space-y-3">
+            <div className="rounded-xl border border-border bg-surface p-5 shadow-xs space-y-3">
               <div className="flex items-center gap-3">
                 <Phone className="h-6 w-6 text-[#25D366] shrink-0" />
                 <div>
@@ -457,13 +457,13 @@ function HomePage() {
             {s?.company_email && (
               <a
                 href={`mailto:${s.company_email}`}
-                className="block rounded-xl border border-border bg-white p-5 shadow-xs space-y-3 hover:border-[#1E82A6] transition group"
+                className="block rounded-xl border border-border bg-surface p-5 shadow-xs space-y-3 hover:border-brand-blue transition group"
               >
                 <div className="flex items-center gap-3">
-                  <Mail className="h-6 w-6 text-[#1E82A6] shrink-0" />
+                  <Mail className="h-6 w-6 text-brand-blue shrink-0" />
                   <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#1E82A6]">Email Inquiry</span>
-                    <div className="font-bold text-sm text-foreground group-hover:text-[#1E82A6] transition">{s.company_email}</div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-brand-blue">Email Inquiry</span>
+                    <div className="font-bold text-sm text-foreground group-hover:text-brand-orange transition">{s.company_email}</div>
                   </div>
                 </div>
               </a>
@@ -472,7 +472,7 @@ function HomePage() {
 
           <form
             onSubmit={submit}
-            className="rounded-xl border border-border bg-white p-6 shadow-sm flex flex-col justify-between"
+            className="rounded-xl border border-border bg-surface p-6 shadow-sm flex flex-col justify-between"
           >
             <div>
               <h3 className="font-display text-xl font-bold text-foreground">Request Security & Door Consultation</h3>
@@ -487,7 +487,7 @@ function HomePage() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="e.g. Arc. Johnson / Engr. Musa"
-                    className="w-full rounded-lg border border-border bg-surface-2 px-3.5 py-2.5 text-sm outline-none focus:border-[#1E82A6] focus:bg-white"
+                    className="w-full rounded-lg border border-border bg-surface-elevated px-3.5 py-2.5 text-sm text-foreground outline-none focus:border-brand-orange focus:bg-surface"
                   />
                 </div>
                 <div>
@@ -497,7 +497,7 @@ function HomePage() {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="e.g. 0706 349 2581"
-                    className="w-full rounded-lg border border-border bg-surface-2 px-3.5 py-2.5 text-sm outline-none focus:border-[#1E82A6] focus:bg-white"
+                    className="w-full rounded-lg border border-border bg-surface-elevated px-3.5 py-2.5 text-sm text-foreground outline-none focus:border-brand-orange focus:bg-surface"
                   />
                 </div>
               </div>
@@ -506,7 +506,7 @@ function HomePage() {
             <div className="mt-6">
               <button
                 disabled={busy}
-                className="w-full rounded-lg bg-[#C0262D] px-5 py-3 text-sm font-bold text-white hover:bg-[#9A1B21] disabled:opacity-60 transition shadow-sm"
+                className="w-full rounded-lg bg-brand-orange px-5 py-3 text-sm font-bold text-canvas hover:bg-brand-orange-hover disabled:opacity-60 transition shadow-sm"
               >
                 {busy ? "Connecting…" : "Send WhatsApp Request"}
               </button>

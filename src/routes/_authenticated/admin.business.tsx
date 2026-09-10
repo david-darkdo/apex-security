@@ -807,13 +807,13 @@ function BusinessOpsPage() {
         <div className="rounded-xl border border-border bg-card p-6 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border pb-4 gap-2">
             <div className="flex items-center gap-2">
-              <Tv className="h-5 w-5 text-[#1E82A6]" />
+              <Tv className="h-5 w-5 text-brand-blue" />
               <div>
                 <h2 className="font-display text-lg font-bold text-foreground">Homepage Showcase Video Manager</h2>
                 <p className="text-xs text-muted-foreground">Upload and arrange video clips displayed in the continuous showcase slider on the homepage.</p>
               </div>
             </div>
-            <span className="rounded-full bg-[#1E82A6]/10 px-3 py-1 text-xs font-bold text-[#1E82A6] shrink-0 self-start sm:self-center">
+            <span className="rounded-full bg-brand-blue-soft px-3 py-1 text-xs font-bold text-brand-blue shrink-0 self-start sm:self-center">
               {showcaseVideos.filter(v => v.is_active).length} Active Video{showcaseVideos.filter(v => v.is_active).length !== 1 ? "s" : ""}
             </span>
           </div>
@@ -829,8 +829,8 @@ function BusinessOpsPage() {
                   <input
                     value={newShowcaseTitle}
                     onChange={(e) => setNewShowcaseTitle(e.target.value)}
-                    placeholder="e.g. Italian Marble Living Room Installation"
-                    className="w-full rounded-lg border border-border bg-background px-3.5 py-2 text-xs outline-none focus:border-[#1E82A6]"
+                    placeholder="e.g. CCTV Surveillance Installation at Commercial Center"
+                    className="w-full rounded-lg border border-border bg-background px-3.5 py-2 text-xs outline-none focus:border-brand-orange"
                   />
                 </div>
 
@@ -841,12 +841,12 @@ function BusinessOpsPage() {
                       value={newShowcaseUrl}
                       onChange={(e) => setNewShowcaseUrl(e.target.value)}
                       placeholder="Paste background video URL (.mp4 / .webm / .mov)"
-                      className="flex-1 rounded-lg border border-border bg-background px-3.5 py-2 text-xs outline-none focus:border-[#1E82A6]"
+                      className="flex-1 rounded-lg border border-border bg-background px-3.5 py-2 text-xs outline-none focus:border-brand-orange"
                     />
                     <button
                       disabled={busy || !newShowcaseUrl.trim()}
                       onClick={addShowcaseVideo}
-                      className="inline-flex items-center gap-1.5 rounded-lg bg-[#C0262D] px-4 py-2 text-xs font-bold text-white hover:bg-[#9A1B21] disabled:opacity-50 transition shadow-xs shrink-0"
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-brand-orange px-4 py-2 text-xs font-bold text-canvas hover:bg-brand-orange-hover disabled:opacity-50 transition shadow-xs shrink-0"
                     >
                       <Plus className="h-4 w-4" /> Save Video
                     </button>
@@ -883,7 +883,7 @@ function BusinessOpsPage() {
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                   />
                   <Tv className="mx-auto h-8 w-8 text-muted-foreground/60 mb-2" />
-                  <p className="text-xs font-bold text-foreground">Drag and drop video file here, or <span className="text-[#1E82A6] underline cursor-pointer">browse local files</span></p>
+                  <p className="text-xs font-bold text-foreground">Drag and drop video file here, or <span className="text-brand-orange underline cursor-pointer">browse local files</span></p>
                   <p className="text-[10px] text-muted-foreground mt-1">Supports MP4, WebM, MOV & high-definition video files (large files supported directly).</p>
                 </div>
               </div>

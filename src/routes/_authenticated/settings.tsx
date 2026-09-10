@@ -9,436 +9,126 @@ import { Settings as SettingsIcon, ShieldAlert } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 
 export const Route = createFileRoute("/_authenticated/settings")({
+  head: () => ({ meta: [{ title: "Company Settings — APEX SECURITY LIMITED" }] }),
   component: SettingsPage,
 });
 
+const FIELDS: [string, string, string?][] = [
+  ["company_name", "Business / Company Name", "Official business name (e.g. Apex Security Ltd)"],
+  ["company_owner", "Business Owner", "e.g. Gift Fidelis"],
+  ["company_phone", "Customer Service Telephone", "Primary voice telephone line (e.g. 07063492581)"],
+  ["support_whatsapp", "Support WhatsApp", "Used for the floating WhatsApp button (e.g. 07063492581)"],
+  ["sales_whatsapp", "Sales WhatsApp", "Used for Push to WhatsApp from collections (e.g. 07063492581)"],
+  ["company_email", "Company Email", "Official inquiries email (e.g. igwezegift@gmail.com)"],
+  ["company_address", "Business Physical Address", "e.g. Opposite Timber Shed, Dei-Dei, Abuja, Nigeria"],
+  ["company_state", "State", "State value (e.g. Anambra) — editable separately from address"],
+  ["company_country", "Country", "e.g. Nigeria"],
+  ["company_service_area", "Primary Service Area", "e.g. Nationwide"],
+  ["master_description", "Master Company Description", "Comprehensive company positioning description"],
+  ["short_description", "Short Company Description", "Concise description for compact UI locations"],
+  ["seo_description", "Google / SEO Description", "Semantic description for search engines and metadata"],
+  ["homepage_description", "Homepage Description", "Customer-facing description featured on the home route"],
+  ["about_description", "About / Company Description", "Description for the About / company profile section"],
+  ["contact_description", "Contact Page Description", "Description on the contact page"],
+  ["footer_description", "Footer Description", "Concise identity text rendered in the footer"],
+  ["map_url", "Google Map URL", "Full Google Maps / Business Profile URL"],
+  ["facebook_url", "Facebook URL"],
+  ["instagram_url", "Instagram URL"],
+  ["tiktok_url", "TikTok URL"],
+  ["youtube_url", "YouTube URL"],
+  ["google_site_verification", "Google Site Verification", "Paste the Google Search Console meta tag content code"],
+  ["bing_site_verification", "Bing Site Verification", "Paste the Bing Webmaster tools xml/meta verification code"],
+];
+
 function SettingsPage() {
-  const { user, isSuperAdmin, loading: authLoading } = useAuth();
-  const { data: settings, isLoading: settingsLoading } = useAppSettings();
   const queryClient = useQueryClient();
-
-  const [formData, setFormData] = useState({
-    company_name: "",
-    company_owner: "",
-    company_phone: "",
-    support_whatsapp: "",
-    sales_whatsapp: "",
-    company_email: "",
-    company_address: "",
-    company_state: "",
-    company_country: "",
-    company_service_area: "",
-    master_description: "",
-    short_description: "",
-    seo_description: "",
-    homepage_description: "",
-    about_description: "",
-    contact_description: "",
-    footer_description: "",
-    map_url: "",
-    banner_announcement: "",
-    banner_announcement_enabled: true,
-    watermark_text: "",
-    watermark_enabled: true,
-  });
-
+  const { data: settings } = useAppSettings();
+  const { loading: authLoading, isSuperAdmin } = useAuth();
+  const [form, setForm] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (settings) {
-      setFormData({
-        company_name: settings.company_name || "",
-        company_owner: settings.company_owner || "",
-        company_phone: settings.company_phone || "",
-        support_whatsapp: settings.support_whatsapp || "",
-        sales_whatsapp: settings.sales_whatsapp || "",
-        company_email: settings.company_email || "",
-        company_address: settings.company_address || "",
-        company_state: settings.company_state || "",
-        company_country: settings.company_country || "",
-        company_service_area: settings.company_service_area || "",
-        master_description: settings.master_description || "",
-        short_description: settings.short_description || "",
-        seo_description: settings.seo_description || "",
-        homepage_description: settings.homepage_description || "",
-        about_description: settings.about_description || "",
-        contact_description: settings.contact_description || "",
-        footer_description: settings.footer_description || "",
-        map_url: settings.map_url || "",
-        banner_announcement: settings.banner_announcement || "",
-        banner_announcement_enabled: !!settings.banner_announcement_enabled,
-        watermark_text: settings.watermark_text || "",
-        watermark_enabled: !!settings.watermark_enabled,
-      });
-    }
+    if (!settings) return;
+    const next: Record<string, string> = {};
+    for (const [k] of FIELDS) next[k] = (settings as any)[k] ?? "";
+    setForm(next);
   }, [settings]);
 
-  if (authLoading || settingsLoading) {
-    return (
-      <AppShell>
-        <div className="flex h-64 items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-amber-600 border-t-transparent" />
-        </div>
-      </AppShell>
-    );
+  const save = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    const payload: Record<string, string | null> = {};
+    for (const [k] of FIELDS) payload[k] = form[k]?.trim() || null;
+    const { error } = settings?.id
+      ? await supabase.from("app_settings").update(payload as any).eq("id", settings.id)
+      : await supabase.from("app_settings").insert(payload as any);
+    setSaving(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("APEX SECURITY Company Settings saved");
+    await queryClient.invalidateQueries({ queryKey: APP_SETTINGS_QUERY_KEY });
+  };
+
+  if (authLoading) {
+    return <AppShell><div className="container-app py-10 text-sm text-muted-foreground">Loading settings…</div></AppShell>;
   }
 
   if (!isSuperAdmin) {
     return (
       <AppShell>
-        <div className="mx-auto max-w-2xl px-4 py-16 text-center">
-          <ShieldAlert className="mx-auto h-12 w-12 text-amber-600" />
-          <h2 className="mt-4 text-2xl font-bold text-slate-900">Access Restricted</h2>
-          <p className="mt-2 text-slate-600">
-            Only Super Administrators can modify global company information, descriptions, and showroom settings.
-          </p>
-          <Link
-            to="/home"
-            className="mt-6 inline-block rounded-lg bg-slate-900 px-6 py-2.5 text-sm font-semibold text-white hover:bg-slate-800"
-          >
-            Return to Showroom
-          </Link>
+        <div className="container-app py-12">
+          <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-6 max-w-md mx-auto">
+            <div className="flex items-center gap-2 text-destructive">
+              <ShieldAlert className="h-5 w-5" />
+              <h1 className="font-display text-lg font-bold">Super Admin Only</h1>
+            </div>
+            <p className="mt-2 text-xs text-muted-foreground">
+              APEX SECURITY company settings can only be edited by a super admin.
+            </p>
+            <Link to="/account" className="mt-4 inline-block rounded-lg border border-border bg-surface-elevated px-4 py-2 text-xs font-bold text-foreground hover:bg-surface">
+              Back to Account
+            </Link>
+          </div>
         </div>
       </AppShell>
     );
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSaving(true);
-    try {
-      const { data: existingRow } = await supabase
-        .from("app_settings")
-        .select("id")
-        .limit(1)
-        .maybeSingle();
-
-      let err;
-      if (existingRow?.id) {
-        const { error } = await supabase
-          .from("app_settings")
-          .update({
-            ...formData,
-            updated_at: new Date().toISOString(),
-            updated_by: user?.id,
-          })
-          .eq("id", existingRow.id);
-        err = error;
-      } else {
-        const { error } = await supabase
-          .from("app_settings")
-          .insert({
-            ...formData,
-            updated_at: new Date().toISOString(),
-            updated_by: user?.id,
-          });
-        err = error;
-      }
-
-      if (err) throw err;
-
-      toast.success("Apex Security settings updated successfully");
-      queryClient.invalidateQueries({ queryKey: APP_SETTINGS_QUERY_KEY });
-    } catch (error: any) {
-      toast.error(error.message || "Failed to save settings");
-    } finally {
-      setSaving(false);
-    }
-  };
-
   return (
     <AppShell>
-      <div className="mx-auto max-w-4xl px-4 py-8">
-        <div className="mb-8 flex items-center gap-3 border-b border-slate-200 pb-4">
-          <SettingsIcon className="h-8 w-8 text-amber-600" />
+      <div className="container-app py-8 space-y-6">
+        <div className="flex items-center gap-2 border-b border-border pb-4">
+          <SettingsIcon className="h-6 w-6 text-brand-blue" />
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">Showroom Settings & Identity</h1>
-            <p className="text-sm text-slate-500">
-              Manage live company details, contact channels, descriptions, and showroom controls
+            <h1 className="font-display text-2xl font-bold text-foreground">APEX SECURITY Company Settings</h1>
+            <p className="text-xs text-muted-foreground">
+              Configure corporate phone numbers, WhatsApp, addresses, and Search Console verification tokens.
             </p>
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Company Identity */}
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-slate-900 mb-4">Official Company Identity</h2>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">
-                  Business Name
-                </label>
-                <input
-                  type="text"
-                  value={formData.company_name}
-                  onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">
-                  Business Owner
-                </label>
-                <input
-                  type="text"
-                  value={formData.company_owner}
-                  onChange={(e) => setFormData({ ...formData, company_owner: e.target.value })}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">
-                  Customer Service Phone
-                </label>
-                <input
-                  type="text"
-                  value={formData.company_phone}
-                  onChange={(e) => setFormData({ ...formData, company_phone: e.target.value })}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">
-                  WhatsApp Support / Sales Number
-                </label>
-                <input
-                  type="text"
-                  value={formData.support_whatsapp}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      support_whatsapp: e.target.value,
-                      sales_whatsapp: e.target.value,
-                    })
-                  }
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">
-                  Official Email Address
-                </label>
-                <input
-                  type="email"
-                  value={formData.company_email}
-                  onChange={(e) => setFormData({ ...formData, company_email: e.target.value })}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">
-                  State
-                </label>
-                <input
-                  type="text"
-                  value={formData.company_state}
-                  onChange={(e) => setFormData({ ...formData, company_state: e.target.value })}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none"
-                  required
-                />
-              </div>
-
-              <div className="sm:col-span-2">
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">
-                  Business Address (Showroom & Office Location)
-                </label>
-                <input
-                  type="text"
-                  value={formData.company_address}
-                  onChange={(e) => setFormData({ ...formData, company_address: e.target.value })}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none"
-                  required
-                />
-              </div>
-
-              <div className="sm:col-span-2">
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">
-                  Google Maps URL
-                </label>
-                <input
-                  type="url"
-                  value={formData.map_url}
-                  onChange={(e) => setFormData({ ...formData, map_url: e.target.value })}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none"
-                />
-              </div>
-
-              <div className="sm:col-span-2">
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">
-                  Service Area Scope
-                </label>
-                <input
-                  type="text"
-                  value={formData.company_service_area}
-                  onChange={(e) => setFormData({ ...formData, company_service_area: e.target.value })}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Descriptions */}
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
-            <h2 className="text-lg font-semibold text-slate-900 mb-2">Company Positioning & Descriptions</h2>
-
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">
-                Master Company Description (Official Overview)
-              </label>
-              <textarea
-                rows={3}
-                value={formData.master_description}
-                onChange={(e) => setFormData({ ...formData, master_description: e.target.value })}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">
-                Short Description (Card & UI Summaries)
-              </label>
-              <textarea
-                rows={2}
-                value={formData.short_description}
-                onChange={(e) => setFormData({ ...formData, short_description: e.target.value })}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">
-                SEO & Meta Description
-              </label>
-              <textarea
-                rows={2}
-                value={formData.seo_description}
-                onChange={(e) => setFormData({ ...formData, seo_description: e.target.value })}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">
-                  Homepage Section Description
-                </label>
-                <textarea
-                  rows={2}
-                  value={formData.homepage_description}
-                  onChange={(e) => setFormData({ ...formData, homepage_description: e.target.value })}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">
-                  About Section Description
-                </label>
-                <textarea
-                  rows={2}
-                  value={formData.about_description}
-                  onChange={(e) => setFormData({ ...formData, about_description: e.target.value })}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">
-                  Contact Page Description
-                </label>
-                <textarea
-                  rows={2}
-                  value={formData.contact_description}
-                  onChange={(e) => setFormData({ ...formData, contact_description: e.target.value })}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">
-                  Footer Positioning Description
-                </label>
-                <textarea
-                  rows={2}
-                  value={formData.footer_description}
-                  onChange={(e) => setFormData({ ...formData, footer_description: e.target.value })}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Announcement Banner & Watermark */}
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
-            <h2 className="text-lg font-semibold text-slate-900 mb-2">Showroom Announcement & Watermark</h2>
-
-            <div className="flex items-center gap-3">
+        <form onSubmit={save} className="grid gap-4 sm:grid-cols-2">
+          {FIELDS.map(([key, label, hint]) => (
+            <label key={key} className="text-xs space-y-1">
+              <span className="block font-bold uppercase tracking-wider text-brand-orange">
+                {label}
+              </span>
               <input
-                type="checkbox"
-                id="banner_enabled"
-                checked={formData.banner_announcement_enabled}
-                onChange={(e) => setFormData({ ...formData, banner_announcement_enabled: e.target.checked })}
-                className="h-4 w-4 rounded border-slate-300 text-amber-600 focus:ring-amber-500"
+                value={form[key] ?? ""}
+                onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
+                className="w-full rounded-lg border border-border bg-surface-elevated px-3.5 py-2 text-sm text-foreground outline-none focus:border-brand-orange"
               />
-              <label htmlFor="banner_enabled" className="text-sm font-medium text-slate-700">
-                Enable Top Announcement Banner
-              </label>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">
-                Announcement Text
-              </label>
-              <input
-                type="text"
-                value={formData.banner_announcement}
-                onChange={(e) => setFormData({ ...formData, banner_announcement: e.target.value })}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none"
-              />
-            </div>
-
-            <div className="pt-2 border-t border-slate-100 flex items-center gap-3">
-              <input
-                type="checkbox"
-                id="watermark_enabled"
-                checked={formData.watermark_enabled}
-                onChange={(e) => setFormData({ ...formData, watermark_enabled: e.target.checked })}
-                className="h-4 w-4 rounded border-slate-300 text-amber-600 focus:ring-amber-500"
-              />
-              <label htmlFor="watermark_enabled" className="text-sm font-medium text-slate-700">
-                Enable Image Watermark Protection
-              </label>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">
-                Watermark Text
-              </label>
-              <input
-                type="text"
-                value={formData.watermark_text}
-                onChange={(e) => setFormData({ ...formData, watermark_text: e.target.value })}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none"
-              />
-            </div>
-          </div>
-
-          <div className="flex justify-end">
+              {hint && <span className="block text-[11px] text-muted-foreground">{hint}</span>}
+            </label>
+          ))}
+          <div className="sm:col-span-2 pt-2">
             <button
-              type="submit"
               disabled={saving}
-              className="rounded-lg bg-amber-600 px-8 py-3 text-sm font-bold text-white shadow-md transition hover:bg-amber-700 disabled:opacity-50"
+              className="rounded-lg bg-brand-orange px-6 py-3 text-xs font-bold uppercase tracking-wider text-canvas hover:bg-brand-orange-hover disabled:opacity-60 transition shadow-sm"
             >
-              {saving ? "Saving Changes..." : "Save Apex Security Settings"}
+              {saving ? "Saving…" : "Save APEX SECURITY Settings"}
             </button>
           </div>
         </form>

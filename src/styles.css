@@ -14,6 +14,25 @@
   --radius-xl: calc(var(--radius) + 4px);
   --radius-2xl: calc(var(--radius) + 8px);
 
+  /* Semantic Architecture Tokens */
+  --color-canvas: #080C13;
+  --color-surface: #101722;
+  --color-surface-elevated: #151E2A;
+  --color-border-subtle: rgba(255, 255, 255, 0.10);
+  --color-border-strong: rgba(255, 255, 255, 0.16);
+  --color-text-primary: #F5F7FA;
+  --color-text-secondary: #AEB7C4;
+  --color-text-muted: #778292;
+
+  /* Official Brand Colors (Extracted from Logo) */
+  --color-brand-orange: #FD7603;
+  --color-brand-orange-hover: #E06700;
+  --color-brand-orange-soft: rgba(253, 118, 3, 0.14);
+  --color-brand-blue: #0068DD;
+  --color-brand-blue-hover: #0056B8;
+  --color-brand-blue-soft: rgba(0, 104, 221, 0.14);
+
+  /* System UI Semantic Mappings */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -33,51 +52,55 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-gold: var(--gold);
-  --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
 }
 
 /*
- * Mature, refined palette: warm cream backgrounds with a single
- * sage / forest-green primary and a brushed-gold accent. Avoids the
- * heavy dark-green look of the reference mock.
+ * APEX SECURITY LTD — MASTER COLOR SYSTEM
+ *
+ * Canvas (60-70%): Deep Charcoal / Near-Black #080C13 (NO pure #000000)
+ * Surface: #101722
+ * Elevated Surface: #151E2A
+ * Information / Typography (20-25%): Primary #F5F7FA, Secondary #AEB7C4, Muted #778292
+ * Primary Brand (Action / Conversion, 5-10%): Official Orange #FD7603
+ * Secondary Brand (Trust / Security / Status, 3-7%): Official Blue #0068DD
  */
 :root {
   --radius: 0.75rem;
 
-  /* Backgrounds — warm off-white, paper feel */
-  --background: oklch(0.985 0.005 95);
-  --foreground: oklch(0.18 0.012 145);
-  --surface: oklch(0.965 0.008 95);
-  --surface-2: oklch(0.94 0.012 95);
+  /* Canvas & Surfaces */
+  --background: #080C13;
+  --foreground: #F5F7FA;
+  --surface: #101722;
+  --surface-2: #151E2A;
 
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.012 145);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.012 145);
+  --card: #101722;
+  --card-foreground: #F5F7FA;
+  --popover: #151E2A;
+  --popover-foreground: #F5F7FA;
 
-  /* Primary: muted forest-sage green (mature, not vibrant) */
-  --primary: oklch(0.42 0.055 150);
-  --primary-foreground: oklch(0.98 0.005 95);
+  /* Primary Brand: Apex Security Orange (Action / CTA / Key Highlights) */
+  --primary: #FD7603;
+  --primary-foreground: #080C13;
 
-  /* Accent: brushed gold */
-  --gold: oklch(0.72 0.115 82);
-  --accent: oklch(0.72 0.115 82);
-  --accent-foreground: oklch(0.18 0.012 145);
+  /* Secondary Brand: Apex Security Blue (Trust / Technology / Verification) */
+  --secondary: #151E2A;
+  --secondary-foreground: #F5F7FA;
 
-  --secondary: oklch(0.93 0.012 145);
-  --secondary-foreground: oklch(0.25 0.02 145);
+  /* Accent: Apex Security Blue */
+  --accent: #0068DD;
+  --accent-foreground: #FFFFFF;
 
-  --muted: oklch(0.93 0.008 95);
-  --muted-foreground: oklch(0.45 0.012 145);
+  --muted: #151E2A;
+  --muted-foreground: #AEB7C4;
 
-  --destructive: oklch(0.55 0.18 27);
-  --destructive-foreground: oklch(0.98 0 0);
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
 
-  --border: oklch(0.88 0.012 95);
-  --input: oklch(0.9 0.012 95);
-  --ring: oklch(0.42 0.055 150);
+  /* Architectural Borders */
+  --border: rgba(255, 255, 255, 0.10);
+  --input: rgba(255, 255, 255, 0.14);
+  --ring: #FD7603;
 }
 
 @layer base {
@@ -87,6 +110,8 @@
 
   html {
     font-family: var(--font-sans);
+    background-color: #080C13;
+    color: #F5F7FA;
   }
 
   body {
@@ -99,6 +124,11 @@
   h1, h2, h3, h4, h5 {
     font-family: var(--font-display);
     letter-spacing: -0.01em;
+  }
+
+  ::selection {
+    background-color: rgba(253, 118, 3, 0.3);
+    color: #FFFFFF;
   }
 }
 

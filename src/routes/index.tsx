@@ -121,20 +121,20 @@ function FeedPage() {
     <AppShell>
       <div className="container-app pt-4 pb-12 space-y-4">
         {/* Apex Security Ltd Brand Intro Card */}
-        <div className="rounded-2xl border border-border bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 p-5 sm:p-7 text-white shadow-md relative overflow-hidden">
+        <div className="rounded-2xl border border-border bg-gradient-to-r from-surface via-surface-elevated to-surface p-5 sm:p-7 text-foreground shadow-md relative overflow-hidden">
           <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
             <div className="flex items-start sm:items-center gap-4">
-              <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl bg-white p-2.5 shadow-md shrink-0 flex items-center justify-center">
+              <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl bg-surface-elevated border border-border p-2.5 shadow-md shrink-0 flex items-center justify-center">
                 <BrandLogo alt={`${companyName} Logo`} className="h-full w-full object-contain" />
               </div>
               <div className="space-y-1">
-                <div className="inline-flex items-center gap-1.5 rounded-full bg-[#1E82A6]/20 border border-[#1E82A6]/30 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#1E82A6]">
+                <div className="inline-flex items-center gap-1.5 rounded-full bg-brand-blue-soft border border-brand-blue/30 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-brand-blue">
                   <Sparkles className="h-3 w-3" /> Official Showroom
                 </div>
-                <h1 className="font-display text-xl sm:text-2xl font-extrabold text-white tracking-tight">
+                <h1 className="font-display text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">
                   {companyName}
                 </h1>
-                <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+                <p className="text-xs sm:text-sm text-text-secondary max-w-2xl leading-relaxed">
                   {shortDesc}
                 </p>
               </div>
@@ -142,13 +142,13 @@ function FeedPage() {
             <div className="flex flex-wrap items-center gap-2.5 shrink-0 pt-1 md:pt-0">
               <Link
                 to="/home"
-                className="rounded-lg bg-[#C0262D] px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-white hover:bg-[#9A1B21] transition shadow-sm"
+                className="rounded-lg bg-brand-orange px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-canvas hover:bg-brand-orange-hover transition shadow-sm"
               >
                 About Showroom
               </Link>
               <Link
                 to="/contact"
-                className="rounded-lg border border-white/20 bg-white/10 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-white hover:bg-white/20 transition"
+                className="rounded-lg border border-border bg-surface-elevated px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-foreground hover:bg-surface transition"
               >
                 Contact & Location
               </Link>

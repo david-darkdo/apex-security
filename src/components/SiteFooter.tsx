@@ -59,12 +59,12 @@ export function SiteFooter() {
   const footerDesc = s?.footer_description || "Apex Security Ltd — CCTV, smart locks and security door solutions for homes, businesses and building projects across Abuja and Nigeria.";
 
   return (
-    <footer className="mt-6 border-t border-border bg-white text-foreground">
+    <footer className="mt-6 border-t border-border bg-surface text-foreground">
       <div className="container-app grid gap-8 py-12 sm:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-3">
           <div className="flex items-center gap-2.5">
             <BrandLogo alt={`${companyName} Logo`} className="h-9 w-auto object-contain" />
-            <div className="font-display text-base font-bold tracking-tight text-[#1E82A6]">
+            <div className="font-display text-base font-bold tracking-tight text-brand-orange">
               {companyName}
             </div>
           </div>
@@ -78,57 +78,57 @@ export function SiteFooter() {
         </div>
 
         <div>
-          <div className="text-xs font-bold uppercase tracking-wider text-[#1E82A6]">Showroom Discovery</div>
+          <div className="text-xs font-bold uppercase tracking-wider text-brand-blue">Showroom Discovery</div>
           <ul className="mt-4 space-y-2.5 text-sm">
-            <li><Link to="/home" className="text-muted-foreground hover:text-[#1E82A6] transition">Showroom Home</Link></li>
-            <li><Link to="/search" search={{ q: "" }} className="text-muted-foreground hover:text-[#1E82A6] transition">Catalog & Search</Link></li>
-            <li><Link to="/collection" className="text-muted-foreground hover:text-[#1E82A6] transition">Project Collection Workspace</Link></li>
-            <li><Link to="/contact" className="text-muted-foreground hover:text-[#1E82A6] transition">Contact & Business Location</Link></li>
+            <li><Link to="/home" className="text-muted-foreground hover:text-brand-orange transition">Showroom Home</Link></li>
+            <li><Link to="/search" search={{ q: "" }} className="text-muted-foreground hover:text-brand-orange transition">Catalog & Search</Link></li>
+            <li><Link to="/collection" className="text-muted-foreground hover:text-brand-orange transition">Project Collection Workspace</Link></li>
+            <li><Link to="/contact" className="text-muted-foreground hover:text-brand-orange transition">Contact & Business Location</Link></li>
           </ul>
         </div>
 
         <div>
-          <div className="text-xs font-bold uppercase tracking-wider text-[#1E82A6]">Location & Contacts</div>
+          <div className="text-xs font-bold uppercase tracking-wider text-brand-blue">Location & Contacts</div>
           <ul className="mt-4 space-y-3 text-xs text-muted-foreground">
             <li className="flex items-start gap-2">
-              <MapPin className="mt-0.5 h-4 w-4 text-[#C0262D] shrink-0" />
+              <MapPin className="mt-0.5 h-4 w-4 text-brand-orange shrink-0" />
               <div>
                 <strong className="block text-foreground font-semibold">Business Address:</strong>
                 <a
                   href={mapUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-[#1E82A6] hover:underline transition block"
+                  className="hover:text-brand-orange hover:underline transition block"
                 >
                   {address}
                 </a>
               </div>
             </li>
             <li className="flex items-center gap-2">
-              <Phone className="h-4 w-4 text-[#1E82A6] shrink-0" />
+              <Phone className="h-4 w-4 text-brand-blue shrink-0" />
               <div>
                 <strong className="text-foreground font-semibold">Phone: </strong>
-                <a href={`tel:${phone}`} className="hover:text-[#1E82A6] transition">{phone}</a>
+                <a href={`tel:${phone}`} className="hover:text-brand-orange transition">{phone}</a>
               </div>
             </li>
             <li className="flex items-center gap-2">
               <Phone className="h-4 w-4 text-[#25D366] shrink-0" />
               <div>
                 <strong className="text-foreground font-semibold">WhatsApp: </strong>
-                <a href={`https://wa.me/${whatsapp.replace(/[^\d]/g, "")}`} target="_blank" rel="noopener noreferrer" className="hover:text-[#1E82A6] transition">{whatsapp}</a>
+                <a href={`https://wa.me/${whatsapp.replace(/[^\d]/g, "")}`} target="_blank" rel="noopener noreferrer" className="hover:text-[#25D366] transition">{whatsapp}</a>
               </div>
             </li>
             {email && (
               <li className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-[#1E82A6] shrink-0" />
-                <a href={`mailto:${email}`} className="hover:text-[#1E82A6] transition">{email}</a>
+                <Mail className="h-4 w-4 text-brand-blue shrink-0" />
+                <a href={`mailto:${email}`} className="hover:text-brand-orange transition">{email}</a>
               </li>
             )}
           </ul>
         </div>
 
         <div>
-          <div className="text-xs font-bold uppercase tracking-wider text-[#1E82A6]">Connect & Inquiries</div>
+          <div className="text-xs font-bold uppercase tracking-wider text-brand-blue">Connect & Inquiries</div>
           <p className="mt-4 text-xs text-muted-foreground leading-relaxed">
             Need pricing, security consultation, or project quotes? Speak directly with our team via WhatsApp.
           </p>
@@ -137,9 +137,9 @@ export function SiteFooter() {
               href={`https://wa.me/${whatsapp.replace(/[^\d]/g, "")}?text=${encodeURIComponent(`Hello ${companyName}, I would like to inquire about your security solutions and door products.`)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-lg bg-[#C0262D] px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-[#9A1B21]"
+              className="inline-flex items-center gap-2 rounded-lg bg-brand-orange px-4 py-2.5 text-xs font-bold text-canvas shadow-sm transition hover:bg-brand-orange-hover"
             >
-              <Phone className="h-4 w-4" />
+              <Phone className="h-4 w-4 text-canvas" />
               <span>WhatsApp Sales Consultation</span>
             </a>
           </div>

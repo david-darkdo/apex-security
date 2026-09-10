@@ -66,10 +66,10 @@ export function ProductCard({ product }: { product: ProductRow }) {
   };
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:border-primary/20">
+    <div className="group relative flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:border-brand-orange/40">
       {/* Floating Badges */}
       {isNew && (
-        <span className="absolute top-2.5 left-2.5 z-10 bg-primary/90 backdrop-blur px-2 py-0.5 rounded text-[9px] font-bold text-primary-foreground tracking-wide uppercase shadow">
+        <span className="absolute top-2.5 left-2.5 z-10 bg-brand-orange px-2 py-0.5 rounded text-[9px] font-bold text-canvas tracking-wide uppercase shadow">
           New
         </span>
       )}
@@ -77,10 +77,10 @@ export function ProductCard({ product }: { product: ProductRow }) {
       {/* Floating Favorite Heart Icon */}
       <button
         onClick={handleToggleFavorite}
-        className="absolute top-2.5 right-2.5 z-10 rounded-full p-2 bg-background/85 hover:bg-background text-foreground transition shadow border border-border/80 focus:outline-none"
+        className="absolute top-2.5 right-2.5 z-10 rounded-full p-2 bg-surface/85 hover:bg-surface text-foreground transition shadow border border-border focus:outline-none"
         aria-label={isFav ? "Remove from favorites" : "Save to favorites"}
       >
-        <Heart className={`h-3.5 w-3.5 transition-colors duration-300 text-red-500 hover:text-red-600 ${isFav ? "fill-red-500 text-red-500" : ""}`} />
+        <Heart className={`h-3.5 w-3.5 transition-colors duration-300 text-brand-orange hover:text-brand-orange-hover ${isFav ? "fill-brand-orange text-brand-orange" : ""}`} />
       </button>
 
       <Link

@@ -70,7 +70,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* Seamless Scrolling Marquee Trust Ticker Belt */}
       {trustFeatures.length > 0 && (
-        <section className="fixed bottom-12 md:bottom-0 left-0 right-0 z-20 border-t border-border bg-white/95 py-2.5 shadow-md overflow-hidden backdrop-blur select-none">
+        <section className="fixed bottom-12 md:bottom-0 left-0 right-0 z-20 border-t border-border bg-surface/95 py-2.5 shadow-md overflow-hidden backdrop-blur select-none">
           <style>{`
             @keyframes marquee {
               0% { transform: translateX(0); }
@@ -93,7 +93,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 t.icon_name === "Headphones" ? Headphones : HelpCircle;
               return (
                 <div key={`${t.id}-1`} className="flex gap-2.5 items-center shrink-0">
-                  <div className="rounded-full bg-[#1E82A6]/10 p-1.5 text-[#1E82A6] shrink-0">
+                  <div className="rounded-full bg-brand-blue-soft p-1.5 text-brand-blue shrink-0">
                     <IconComponent className="h-3.5 w-3.5" />
                   </div>
                   <div className="min-w-0 flex items-baseline gap-1.5">
@@ -114,7 +114,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 t.icon_name === "Headphones" ? Headphones : HelpCircle;
               return (
                 <div key={`${t.id}-2`} className="flex gap-2.5 items-center shrink-0">
-                  <div className="rounded-full bg-[#1E82A6]/10 p-1.5 text-[#1E82A6] shrink-0">
+                  <div className="rounded-full bg-brand-blue-soft p-1.5 text-brand-blue shrink-0">
                     <IconComponent className="h-3.5 w-3.5" />
                   </div>
                   <div className="min-w-0 flex items-baseline gap-1.5">
@@ -215,12 +215,12 @@ function TopBar() {
   };
 
   return (
-    <header className="sticky top-0 z-30 border-b border-border bg-white/95 backdrop-blur shadow-xs">
+    <header className="sticky top-0 z-30 border-b border-border bg-surface/95 backdrop-blur shadow-xs">
       <div className="container-app flex items-center gap-4 py-3">
         <Link to="/" className="flex items-center gap-2.5 group">
           <BrandLogo alt={`${companyName} Logo`} className="h-8 w-auto object-contain" />
           <div className="flex flex-col">
-            <span className="font-display text-base sm:text-lg font-bold tracking-tight text-[#1E82A6] leading-none uppercase">
+            <span className="font-display text-base sm:text-lg font-bold tracking-tight text-brand-orange leading-none uppercase">
               {companyName}
             </span>
             <span className="hidden text-[9px] font-semibold tracking-wider text-muted-foreground uppercase sm:block mt-0.5">
@@ -242,7 +242,7 @@ function TopBar() {
             name="q"
             defaultValue={search?.q ?? ""}
             placeholder="Search CCTV Cameras, Smart Locks, Security Doors & Finishes…"
-            className="w-full rounded-full border border-border bg-surface-2 py-2 pl-10 pr-4 text-sm text-foreground outline-none transition focus:border-[#1E82A6] focus:bg-white focus:ring-1 focus:ring-[#1E82A6]"
+            className="w-full rounded-full border border-border bg-surface-elevated py-2 pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground outline-none transition focus:border-brand-orange focus:bg-surface focus:ring-1 focus:ring-brand-orange"
           />
         </form>
         
@@ -250,31 +250,31 @@ function TopBar() {
         <nav className="hidden md:flex items-center gap-1.5 shrink-0">
           <Link
             to="/home"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-white px-3 py-1.5 text-xs font-bold text-foreground hover:bg-[#1E82A6]/10 hover:text-[#1E82A6] hover:border-[#1E82A6] transition shadow-2xs"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface-elevated px-3 py-1.5 text-xs font-bold text-foreground hover:bg-brand-orange-soft hover:text-brand-orange hover:border-brand-orange transition shadow-2xs"
           >
-            <Home className="h-3.5 w-3.5 text-[#1E82A6]" />
+            <Home className="h-3.5 w-3.5 text-brand-orange" />
             <span>Home</span>
           </Link>
           <Link
             to="/"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-white px-3 py-1.5 text-xs font-bold text-foreground hover:bg-[#1E82A6]/10 hover:text-[#1E82A6] hover:border-[#1E82A6] transition shadow-2xs"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface-elevated px-3 py-1.5 text-xs font-bold text-foreground hover:bg-brand-orange-soft hover:text-brand-orange hover:border-brand-orange transition shadow-2xs"
           >
-            <Compass className="h-3.5 w-3.5 text-[#1E82A6]" />
+            <Compass className="h-3.5 w-3.5 text-brand-orange" />
             <span>Showroom</span>
           </Link>
           <Link
             to="/collection"
             search={{ autoPush: false }}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-white px-3 py-1.5 text-xs font-bold text-foreground hover:bg-[#1E82A6]/10 hover:text-[#1E82A6] hover:border-[#1E82A6] transition shadow-2xs"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface-elevated px-3 py-1.5 text-xs font-bold text-foreground hover:bg-brand-orange-soft hover:text-brand-orange hover:border-brand-orange transition shadow-2xs"
           >
-            <Bookmark className="h-3.5 w-3.5 text-[#1E82A6]" />
+            <Bookmark className="h-3.5 w-3.5 text-brand-orange" />
             <span>Workspace</span>
           </Link>
           <Link
             to="/contact"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-white px-3 py-1.5 text-xs font-bold text-foreground hover:bg-[#1E82A6]/10 hover:text-[#1E82A6] hover:border-[#1E82A6] transition shadow-2xs"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface-elevated px-3 py-1.5 text-xs font-bold text-foreground hover:bg-brand-orange-soft hover:text-brand-orange hover:border-brand-orange transition shadow-2xs"
           >
-            <Phone className="h-3.5 w-3.5 text-[#1E82A6]" />
+            <Phone className="h-3.5 w-3.5 text-brand-blue" />
             <span>Contact</span>
           </Link>
         </nav>
@@ -285,11 +285,11 @@ function TopBar() {
             <div className="relative">
               <button
                 onClick={openNotifications}
-                className="relative grid h-9 w-9 place-items-center rounded-full border border-border bg-white text-foreground transition hover:border-[#1E82A6]"
+                className="relative grid h-9 w-9 place-items-center rounded-full border border-border bg-surface-elevated text-foreground transition hover:border-brand-orange"
               >
-                <Bell className="h-4 w-4 text-[#1E82A6]" />
+                <Bell className="h-4 w-4 text-brand-orange" />
                 {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#C0262D] text-[8px] font-bold text-white shadow-sm animate-pulse">
+                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-brand-orange text-[8px] font-bold text-canvas shadow-sm animate-pulse">
                     {unreadCount}
                   </span>
                 )}
@@ -299,26 +299,26 @@ function TopBar() {
                 <>
                   <div 
                     onClick={() => setShowNotifications(false)}
-                    className="fixed inset-0 bg-black/40 backdrop-blur-xs z-40 md:hidden"
+                    className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 md:hidden"
                   />
                   
-                  <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-[340px] rounded-xl border border-border bg-white shadow-2xl p-4 text-xs space-y-3 z-50 md:absolute md:top-auto md:left-auto md:right-0 md:translate-x-0 md:translate-y-0 md:mt-2 md:w-80 md:rounded-lg md:shadow-xl md:p-4">
+                  <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-[340px] rounded-xl border border-border-strong bg-surface-elevated shadow-2xl p-4 text-xs space-y-3 z-50 md:absolute md:top-auto md:left-auto md:right-0 md:translate-x-0 md:translate-y-0 md:mt-2 md:w-80 md:rounded-lg md:shadow-xl md:p-4">
                     <div className="flex items-center justify-between border-b border-border pb-2">
                       <span className="font-bold text-foreground text-sm md:text-xs">Notifications</span>
-                      <button onClick={() => setShowNotifications(false)} className="text-muted-foreground hover:text-foreground p-1 rounded-full hover:bg-muted"><X className="h-4 w-4" /></button>
+                      <button onClick={() => setShowNotifications(false)} className="text-muted-foreground hover:text-foreground p-1 rounded-full hover:bg-surface"><X className="h-4 w-4" /></button>
                     </div>
 
                     <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
                       {notifications.map((notif) => (
-                        <div key={notif.id} className="p-2.5 border border-border rounded bg-surface-2 flex gap-2 relative group text-left">
-                          <AlertCircle className="h-4 w-4 text-[#1E82A6] shrink-0 mt-0.5" />
+                        <div key={notif.id} className="p-2.5 border border-border rounded bg-surface flex gap-2 relative group text-left">
+                          <AlertCircle className="h-4 w-4 text-brand-blue shrink-0 mt-0.5" />
                           <div className="flex-1 min-w-0">
                             <div className="font-semibold text-foreground truncate">{notif.subject || "Alert"}</div>
                             <p className="text-[10px] text-muted-foreground mt-0.5 leading-tight">{notif.body}</p>
                           </div>
                           <button
                             onClick={(e) => { e.stopPropagation(); clearNotification(notif.id); }}
-                            className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-[#C0262D] transition"
+                            className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-red-400 transition"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
@@ -342,42 +342,42 @@ function TopBar() {
                 setShowNotifications(false);
               }}
               aria-label="Account menu"
-              className="grid h-9 w-9 place-items-center rounded-full border border-border bg-white text-[#1E82A6] hover:border-[#1E82A6]"
+              className="grid h-9 w-9 place-items-center rounded-full border border-border bg-surface-elevated text-brand-orange hover:border-brand-orange"
             >
               <User className="h-4 w-4" />
             </button>
             {menuOpen && (
-              <div className="absolute right-0 mt-2 w-52 rounded-lg border border-border bg-white py-1.5 shadow-xl z-50">
+              <div className="absolute right-0 mt-2 w-52 rounded-lg border border-border-strong bg-surface-elevated py-1.5 shadow-xl z-50">
                 <Link
                   to="/collection"
                   search={{ autoPush: false }}
                   onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-[#1E82A6]/10 hover:text-[#1E82A6]"
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-brand-orange-soft hover:text-brand-orange"
                 >
-                  <Bookmark className="h-4 w-4 text-[#1E82A6]" />
+                  <Bookmark className="h-4 w-4 text-brand-orange" />
                   <span>Active Workspace</span>
                 </Link>
                 <Link
                   to="/my-collections"
                   onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-[#1E82A6]/10 hover:text-[#1E82A6]"
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-brand-blue-soft hover:text-brand-blue"
                 >
-                  <Bookmark className="h-4 w-4 text-[#C0262D]" />
+                  <Bookmark className="h-4 w-4 text-brand-blue" />
                   <span>Collection History</span>
                 </Link>
                 {isAdmin && (
                   <Link
                     to="/admin"
                     onClick={() => setMenuOpen(false)}
-                    className="flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-[#1E82A6]/10 hover:text-[#1E82A6]"
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-brand-blue-soft hover:text-brand-blue"
                   >
-                    <Shield className="h-4 w-4 text-[#1E82A6]" />
+                    <Shield className="h-4 w-4 text-brand-blue" />
                     <span>Admin Command Center</span>
                   </Link>
                 )}
                 <button
                   onClick={handleSignOut}
-                  className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-[#C0262D] hover:bg-[#C0262D]/10"
+                  className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-red-400 hover:bg-red-500/10"
                 >
                   <LogOut className="h-4 w-4" />
                   <span>Sign out</span>
@@ -423,20 +423,20 @@ function BottomNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-30 border-t border-border bg-white/95 py-2 backdrop-blur md:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-30 border-t border-border bg-surface/95 py-2 backdrop-blur md:hidden">
       <div className="flex justify-around">
         {nav.map((t) => (
           <Link
             key={t.label}
             to={t.to}
             className={`flex flex-col items-center gap-0.5 text-[10px] font-medium transition ${
-              t.active ? "text-[#1E82A6] font-bold" : "text-muted-foreground hover:text-foreground"
+              t.active ? "text-brand-orange font-bold" : "text-muted-foreground hover:text-foreground"
             }`}
           >
             <div className="relative">
               <t.icon className="h-5 w-5" />
               {t.label === "Collection" && collectionCount > 0 && (
-                <span className="absolute -top-1.5 -right-2 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[#C0262D] text-[8px] font-bold text-white shadow-sm">
+                <span className="absolute -top-1.5 -right-2 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-brand-orange text-[8px] font-bold text-canvas shadow-sm">
                   +{collectionCount}
                 </span>
               )}

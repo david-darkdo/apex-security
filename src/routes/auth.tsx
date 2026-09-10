@@ -140,7 +140,7 @@ function AuthPage() {
       <div className="mb-6 space-y-2">
         <div className="flex items-center gap-2">
           <BrandLogo alt="Apex Security Ltd" className="h-9 w-auto object-contain" />
-          <span className="text-xs font-bold uppercase tracking-[0.15em] text-[#1E82A6]">
+          <span className="text-xs font-bold uppercase tracking-[0.15em] text-brand-orange">
             Apex Security Ltd
           </span>
         </div>
@@ -157,9 +157,9 @@ function AuthPage() {
       <button
         onClick={google}
         disabled={busy}
-        className="flex w-full items-center justify-center gap-2.5 rounded-lg border border-border bg-white px-4 py-2.5 text-xs font-bold text-foreground hover:bg-surface-2 transition shadow-xs"
+        className="flex w-full items-center justify-center gap-2.5 rounded-lg border border-border bg-surface-elevated px-4 py-2.5 text-xs font-bold text-foreground hover:bg-surface transition shadow-xs"
       >
-        <span className="grid h-5 w-5 place-items-center rounded-full bg-white text-[10px] font-bold text-[#4285F4] shadow-xs border border-slate-100">G</span>
+        <span className="grid h-5 w-5 place-items-center rounded-full bg-surface text-[10px] font-bold text-[#4285F4] shadow-xs border border-border">G</span>
         Continue with Google
       </button>
 
@@ -177,7 +177,7 @@ function AuthPage() {
               placeholder="e.g. Arc. David or Chief Japhet"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full rounded-lg border border-border bg-white px-3.5 py-2.5 text-sm outline-none focus:border-[#1E82A6] focus:ring-1 focus:ring-[#1E82A6]"
+              className="w-full rounded-lg border border-border bg-surface-elevated px-3.5 py-2.5 text-sm text-foreground outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange"
             />
           </div>
         )}
@@ -189,7 +189,7 @@ function AuthPage() {
             placeholder="yourname@gmail.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-lg border border-border bg-white px-3.5 py-2.5 text-sm outline-none focus:border-[#1E82A6] focus:ring-1 focus:ring-[#1E82A6]"
+            className="w-full rounded-lg border border-border bg-surface-elevated px-3.5 py-2.5 text-sm text-foreground outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange"
           />
         </div>
         <div>
@@ -203,13 +203,13 @@ function AuthPage() {
             placeholder="••••••••"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-lg border border-border bg-white px-3.5 py-2.5 text-sm outline-none focus:border-[#1E82A6] focus:ring-1 focus:ring-[#1E82A6]"
+            className="w-full rounded-lg border border-border bg-surface-elevated px-3.5 py-2.5 text-sm text-foreground outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange"
           />
         </div>
         <button
           type="submit"
           disabled={busy}
-          className="w-full rounded-lg bg-[#C0262D] px-4 py-3 text-xs font-bold uppercase tracking-wider text-white hover:bg-[#9A1B21] disabled:opacity-60 transition shadow-sm mt-2"
+          className="w-full rounded-lg bg-brand-orange px-4 py-3 text-xs font-bold uppercase tracking-wider text-canvas hover:bg-brand-orange-hover disabled:opacity-60 transition shadow-sm mt-2"
         >
           {busy ? "Please wait…" : mode === "signin" ? "Sign In" : "Create Account"}
         </button>
@@ -219,7 +219,7 @@ function AuthPage() {
         {mode === "signin" ? "Don't have an account yet?" : "Already have an account?"}{" "}
         <button
           onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-          className="font-bold text-[#1E82A6] hover:underline"
+          className="font-bold text-brand-orange hover:underline"
         >
           {mode === "signin" ? "Create an account" : "Sign in here"}
         </button>
