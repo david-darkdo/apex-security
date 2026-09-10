@@ -1570,6 +1570,7 @@ export type Database = {
           image_title: string | null
           image_url: string | null
           installation_context_id: string | null
+          installation_images: string[] | null
           is_ai_processing: boolean
           is_published: boolean
           last_processed_at: string | null
@@ -1630,6 +1631,7 @@ export type Database = {
           image_title?: string | null
           image_url?: string | null
           installation_context_id?: string | null
+          installation_images?: string[] | null
           is_ai_processing?: boolean
           is_published?: boolean
           last_processed_at?: string | null
@@ -1690,6 +1692,7 @@ export type Database = {
           image_title?: string | null
           image_url?: string | null
           installation_context_id?: string | null
+          installation_images?: string[] | null
           is_ai_processing?: boolean
           is_published?: boolean
           last_processed_at?: string | null

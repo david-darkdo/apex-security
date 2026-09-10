@@ -29,6 +29,9 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/business")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    tab: typeof search.tab === "string" ? search.tab : undefined,
+  }),
   head: () => ({ meta: [{ title: "Business Operations — Admin" }] }),
   component: BusinessOpsPage,
 });
@@ -83,12 +86,15 @@ type TrustFeature = {
   created_at: string;
 };
 
-type BusinessTab = "pipeline" | "collections" | "experience" | "home_videos";
+type BusinessTab = "pipeline" | "collections" | "feed_video" | "home_videos" | "trust";
 
 function BusinessOpsPage() {
   const { isAdmin, loading, user } = useAuth();
+  const search = Route.useSearch();
   const getSignatureFn = useServerFn(getCloudinarySignatureServer);
-  const [activeTab, setActiveTab] = useState<BusinessTab>("pipeline");
+  const [activeTab, setActiveTab] = useState<BusinessTab>(
+    (search.tab as BusinessTab) || "pipeline"
+  );
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [collections, setCollections] = useState<CollectionRow[]>([]);
   const [profilesById, setProfilesById] = useState<Record<string, { email: string | null; full_name: string | null }>>({});
@@ -487,12 +493,12 @@ function BusinessOpsPage() {
             Collections Manager
           </button>
           <button
-            onClick={() => setActiveTab("experience")}
-            className={`rounded-md px-3.5 py-1.5 text-xs font-semibold capitalize transition ${
-              activeTab === "experience" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+            onClick={() => setActiveTab("feed_video")}
+            className={`rounded-md px-3.5 py-1.5 text-xs font-bold transition ${
+              activeTab === "feed_video" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            Experience Manager
+            Feed Video
           </button>
           <button
             onClick={() => setActiveTab("home_videos")}
@@ -501,6 +507,14 @@ function BusinessOpsPage() {
             }`}
           >
             Home Videos
+          </button>
+          <button
+            onClick={() => setActiveTab("trust")}
+            className={`rounded-md px-3.5 py-1.5 text-xs font-semibold transition ${
+              activeTab === "trust" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Trust Strip
           </button>
         </div>
       </div>
@@ -635,170 +649,269 @@ function BusinessOpsPage() {
         </section>
       )}
 
-      {activeTab === "experience" && (
-        <div className="grid gap-6 md:grid-cols-2">
-          {/* HERO VIDEOS MANAGER */}
-          <div className="rounded-xl border border-border bg-card p-5 space-y-4">
-            <div className="flex items-center gap-1.5 border-b border-border pb-3">
-              <Tv className="h-4 w-4 text-primary" />
-              <h2 className="font-display text-base font-bold text-foreground">Hero Videos Carousel Manager</h2>
-            </div>
-            
-            {/* Add video form with upload & URL support */}
-            <div className="space-y-2">
-              <div className="flex gap-2">
-                <input
-                  value={newVideoUrl}
-                  onChange={(e) => setNewVideoUrl(e.target.value)}
-                  placeholder="Paste background video URL (.mp4)"
-                  className="flex-1 rounded border border-border bg-background px-3 py-1.5 text-xs outline-none focus:border-primary"
-                />
-                <button
-                  disabled={busy || !newVideoUrl}
-                  onClick={addHeroVideo}
-                  className="inline-flex items-center gap-1 rounded bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/95 disabled:opacity-60 transition"
-                >
-                  <Plus className="h-3.5 w-3.5" /> Add
-                </button>
-              </div>
-              <div className="relative border border-dashed border-border rounded-lg p-3 text-center bg-background/50 hover:bg-background transition">
-                <input
-                  type="file"
-                  accept="video/mp4,video/webm,video/quicktime,video/*"
-                  onChange={async (e) => {
-                    const file = e.target.files?.[0];
-                    if (!file) return;
-                    
-                    const uploadToast = toast.loading("Uploading hero video (0%)...", { duration: 0 });
-                    try {
-                      const url = await uploadLargeMediaFileClient({
-                        file,
-                        folder: "hero-videos",
-                        resourceType: "video",
-                        getSignatureFn,
-                        onProgress: (pct) => {
-                          toast.loading(`Uploading hero video (${pct}%)...`, { id: uploadToast });
-                        },
-                      });
-                      setNewVideoUrl(url);
-                      toast.dismiss(uploadToast);
-                      toast.success("Video uploaded! Click 'Add' to activate.");
-                    } catch (err: any) {
-                      toast.dismiss(uploadToast);
-                      toast.error(err.message || "Failed to upload video");
-                    }
-                  }}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                />
-                <p className="text-xs text-muted-foreground font-medium">Drag and drop video here, or <span className="text-primary underline cursor-pointer">browse local files</span></p>
-                <p className="text-[10px] text-muted-foreground/80 mt-1">Supports MP4, WebM, MOV & high-resolution videos (large files supported).</p>
+      {activeTab === "feed_video" && (
+        <div className="rounded-xl border border-border bg-card p-6 space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border pb-4 gap-2">
+            <div className="flex items-center gap-2">
+              <Tv className="h-5 w-5 text-brand-orange" />
+              <div>
+                <h2 className="font-display text-lg font-bold text-foreground">Feed Video (Showroom Hero)</h2>
+                <p className="text-xs text-muted-foreground">
+                  Upload, preview, activate, deactivate, and arrange the videos displayed on the main Showroom Feed hero.
+                </p>
               </div>
             </div>
-
-            {/* Videos List */}
-            <div className="space-y-3.5 max-h-[350px] overflow-y-auto pr-1">
-              {videos.map((vid, idx) => (
-                <div key={vid.id} className="rounded-lg border border-border bg-background p-3 flex gap-3 items-center text-xs justify-between group">
-                  <div className="min-w-0 flex-1 space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-foreground">Video #{idx + 1}</span>
-                      <span className={`rounded-full px-1.5 py-0.2 text-[8px] font-bold uppercase ${vid.is_active ? "bg-green-500/10 text-green-500" : "bg-muted text-muted-foreground"}`}>
-                        {vid.is_active ? "Active" : "Disabled"}
-                      </span>
-                    </div>
-                    <p className="text-[10px] text-muted-foreground truncate">{vid.url}</p>
-                  </div>
-
-                  <div className="flex items-center gap-1">
-                    <button onClick={() => reorderVideo(vid, "up")} disabled={idx === 0} className="p-1 rounded border border-border hover:bg-muted disabled:opacity-30"><ArrowUp className="h-3 w-3" /></button>
-                    <button onClick={() => reorderVideo(vid, "down")} disabled={idx === videos.length - 1} className="p-1 rounded border border-border hover:bg-muted disabled:opacity-30"><ArrowDown className="h-3 w-3" /></button>
-                    <button onClick={() => toggleHeroVideo(vid.id, vid.is_active)} className="rounded border border-border px-2 py-0.5 text-[9px] font-semibold hover:bg-muted transition">Toggle</button>
-                    <button onClick={() => deleteHeroVideo(vid.id)} className="p-1.5 rounded text-destructive hover:bg-destructive/5 transition"><Trash2 className="h-3.5 w-3.5" /></button>
-                  </div>
-                </div>
-              ))}
-              {videos.length === 0 && (
-                <div className="text-center py-10 border border-dashed border-border rounded-lg text-xs text-muted-foreground italic">No hero videos configured. Autoplay defaults will load.</div>
-              )}
+            <div className="flex items-center gap-2">
+              <span className="rounded-full bg-brand-orange/15 border border-brand-orange/30 px-3 py-1 text-xs font-bold text-brand-orange shrink-0">
+                {videos.filter((v) => v.is_active).length} Active in Feed Hero
+              </span>
+              <a
+                href="/"
+                target="_blank"
+                rel="noreferrer"
+                className="rounded border border-border px-3 py-1 text-xs font-semibold hover:bg-muted transition text-foreground"
+              >
+                View Live Feed ↗
+              </a>
             </div>
           </div>
 
-          {/* TRUST FEATURE STRIP MANAGER */}
-          <div className="rounded-xl border border-border bg-card p-5 space-y-4">
-            <div className="flex items-center gap-1.5 border-b border-border pb-3">
-              <Award className="h-4 w-4 text-primary" />
-              <h2 className="font-display text-base font-bold text-foreground">Trust features strip</h2>
+          <div className="grid gap-6 md:grid-cols-2">
+            {/* Upload & Add Video Form */}
+            <div className="space-y-4 rounded-xl border border-border/80 bg-surface p-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">Upload New Feed Video</h3>
+
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-[11px] font-semibold text-muted-foreground mb-1">Video URL or Direct File Upload</label>
+                  <div className="flex gap-2">
+                    <input
+                      value={newVideoUrl}
+                      onChange={(e) => setNewVideoUrl(e.target.value)}
+                      placeholder="Paste video URL (.mp4 / .webm / .mov)"
+                      className="flex-1 rounded-lg border border-border bg-background px-3.5 py-2 text-xs outline-none focus:border-brand-orange"
+                    />
+                    <button
+                      disabled={busy || !newVideoUrl.trim()}
+                      onClick={addHeroVideo}
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-brand-orange px-4 py-2 text-xs font-bold text-canvas hover:bg-brand-orange-hover disabled:opacity-50 transition shadow-xs shrink-0"
+                    >
+                      <Plus className="h-4 w-4" /> Save Video
+                    </button>
+                  </div>
+                </div>
+
+                {/* Staged Preview */}
+                {newVideoUrl.trim() && (
+                  <div className="rounded-lg border border-border overflow-hidden bg-black aspect-video flex items-center justify-center">
+                    <video
+                      src={newVideoUrl}
+                      controls
+                      playsInline
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+
+                <div className="relative border-2 border-dashed border-border rounded-xl p-5 text-center bg-background/80 hover:bg-background transition">
+                  <input
+                    type="file"
+                    accept="video/mp4,video/webm,video/quicktime,video/*"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+
+                      const uploadToast = toast.loading("Uploading feed video to Cloudinary (0%)...", { duration: 0 });
+                      try {
+                        const url = await uploadLargeMediaFileClient({
+                          file,
+                          folder: "feed-videos",
+                          resourceType: "video",
+                          getSignatureFn,
+                          onProgress: (pct) => {
+                            toast.loading(`Uploading feed video (${pct}%)...`, { id: uploadToast });
+                          },
+                        });
+                        setNewVideoUrl(url);
+                        toast.dismiss(uploadToast);
+                        toast.success("Video uploaded to Cloudinary! Click 'Save Video' to add.");
+                      } catch (err: any) {
+                        toast.dismiss(uploadToast);
+                        toast.error(err.message || "Failed to upload video");
+                      }
+                    }}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  />
+                  <Tv className="mx-auto h-8 w-8 text-muted-foreground/60 mb-2" />
+                  <p className="text-xs font-bold text-foreground">
+                    Drag and drop video file here, or <span className="text-brand-orange underline cursor-pointer">browse local files</span>
+                  </p>
+                  <p className="text-[10px] text-muted-foreground mt-1">
+                    Supports MP4, WebM, MOV & large showroom video files stored directly on Cloudinary.
+                  </p>
+                </div>
+              </div>
             </div>
 
-            {/* Add feature Form */}
-            {editingTrust ? (
-              <div className="rounded border border-border/80 p-3 bg-surface text-xs space-y-3">
-                <div className="font-bold text-foreground">Edit Trust Feature</div>
-                <div className="grid gap-2 sm:grid-cols-2">
-                  <label className="block text-xs">
-                    <span className="text-muted-foreground">Title</span>
-                    <input value={editingTrust.title} onChange={(e) => setEditingTrust({ ...editingTrust, title: e.target.value })} className="mt-1 w-full rounded border border-border bg-background px-2.5 py-1" />
-                  </label>
-                  <label className="block text-xs">
-                    <span className="text-muted-foreground">Icon Identifier</span>
-                    <select value={editingTrust.icon_name} onChange={(e) => setEditingTrust({ ...editingTrust, icon_name: e.target.value })} className="mt-1 w-full rounded border border-border bg-background px-2.5 py-1">
-                      {["Shield", "Truck", "CreditCard", "Headphones", "FileCheck", "HelpCircle"].map(i => <option key={i} value={i}>{i}</option>)}
-                    </select>
-                  </label>
-                </div>
-                <label className="block text-xs">
-                  <span className="text-muted-foreground">Description</span>
-                  <input value={editingTrust.description} onChange={(e) => setEditingTrust({ ...editingTrust, description: e.target.value })} className="mt-1 w-full rounded border border-border bg-background px-2.5 py-1" />
-                </label>
-                <div className="flex gap-2">
-                  <button onClick={updateTrustFeature} className="rounded bg-primary px-3 py-1.5 text-xs text-primary-foreground font-semibold">Save Changes</button>
-                  <button onClick={() => setEditingTrust(null)} className="rounded border border-border px-3 py-1.5 text-xs">Cancel</button>
-                </div>
-              </div>
-            ) : (
-              <div className="rounded border border-border/50 p-3 bg-muted/20 text-xs space-y-3">
-                <div className="font-semibold text-foreground">Add New Feature Strip Item</div>
-                <div className="grid gap-2 sm:grid-cols-2">
-                  <label className="block text-[10px] text-muted-foreground">
-                    Title
-                    <input value={newTrust.title} onChange={(e) => setNewTrust({ ...newTrust, title: e.target.value })} className="mt-1 w-full rounded border border-border bg-background px-2.5 py-1" />
-                  </label>
-                  <label className="block text-[10px] text-muted-foreground">
-                    Icon Name
-                    <select value={newTrust.icon_name} onChange={(e) => setNewTrust({ ...newTrust, icon_name: e.target.value })} className="mt-1 w-full rounded border border-border bg-background px-2.5 py-1">
-                      {["Shield", "Truck", "CreditCard", "Headphones", "FileCheck", "HelpCircle"].map(i => <option key={i} value={i}>{i}</option>)}
-                    </select>
-                  </label>
-                </div>
-                <label className="block text-[10px] text-muted-foreground">
-                  Description
-                  <input value={newTrust.description} onChange={(e) => setNewTrust({ ...newTrust, description: e.target.value })} className="mt-1 w-full rounded border border-border bg-background px-2.5 py-1" />
-                </label>
-                <button disabled={busy} onClick={addTrustFeature} className="rounded bg-primary px-3 py-1.5 font-semibold text-primary-foreground">Add Feature Strip</button>
-              </div>
-            )}
+            {/* Videos Playlist List */}
+            <div className="space-y-3 max-h-[550px] overflow-y-auto pr-1">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">
+                Feed Hero Playlist ({videos.length})
+              </h3>
 
-            {/* Trusts List */}
-            <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
-              {trusts.map((t, idx) => (
-                <div key={t.id} className="rounded-lg border border-border bg-background p-3 flex justify-between items-center text-xs">
-                  <div>
-                    <div className="font-bold text-foreground flex items-center gap-1.5">
-                      <span className="rounded bg-muted px-1.5 py-0.2 font-mono text-[9px]">{t.icon_name}</span>
-                      {t.title}
+              {videos.map((vid, idx) => (
+                <div key={vid.id} className="rounded-xl border border-border bg-background p-3.5 space-y-2.5 shadow-2xs group">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-xs text-foreground">Video #{idx + 1}</span>
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-[9px] font-bold uppercase ${
+                          vid.is_active
+                            ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                            : "bg-muted text-muted-foreground border border-border"
+                        }`}
+                      >
+                        {vid.is_active ? "Active in Feed Hero" : "Deactivated / Hidden"}
+                      </span>
                     </div>
-                    <p className="text-[10px] text-muted-foreground mt-0.5">{t.description}</p>
+
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => reorderVideo(vid, "up")}
+                        disabled={idx === 0}
+                        className="p-1 rounded border border-border hover:bg-muted disabled:opacity-30"
+                        title="Move Up"
+                      >
+                        <ArrowUp className="h-3 w-3" />
+                      </button>
+                      <button
+                        onClick={() => reorderVideo(vid, "down")}
+                        disabled={idx === videos.length - 1}
+                        className="p-1 rounded border border-border hover:bg-muted disabled:opacity-30"
+                        title="Move Down"
+                      >
+                        <ArrowDown className="h-3 w-3" />
+                      </button>
+                      <button
+                        onClick={() => toggleHeroVideo(vid.id, vid.is_active)}
+                        className={`rounded px-2.5 py-1 text-[10px] font-bold transition ${
+                          vid.is_active
+                            ? "bg-amber-500/10 border border-amber-500/30 text-amber-400 hover:bg-amber-500/20"
+                            : "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20"
+                        }`}
+                      >
+                        {vid.is_active ? "Deactivate" : "Activate"}
+                      </button>
+                      <button
+                        onClick={() => deleteHeroVideo(vid.id)}
+                        className="p-1.5 rounded text-destructive hover:bg-destructive/10 transition ml-1"
+                        title="Delete Video"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
                   </div>
 
-                  <div className="flex items-center gap-1 shrink-0 ml-4">
-                    <button onClick={() => reorderTrust(t, "up")} disabled={idx === 0} className="p-1 rounded border border-border hover:bg-muted disabled:opacity-30"><ArrowUp className="h-3 w-3" /></button>
-                    <button onClick={() => reorderTrust(t, "down")} disabled={idx === trusts.length - 1} className="p-1 rounded border border-border hover:bg-muted disabled:opacity-30"><ArrowDown className="h-3 w-3" /></button>
-                    <button onClick={() => setEditingTrust(t)} className="p-1.5 rounded hover:bg-muted transition text-muted-foreground hover:text-foreground"><Edit className="h-3.5 w-3.5" /></button>
-                    <button onClick={() => deleteTrustFeature(t.id)} className="p-1.5 rounded text-destructive hover:bg-destructive/5 transition"><Trash2 className="h-3.5 w-3.5" /></button>
+                  {/* Video preview container */}
+                  <div className="rounded-lg border border-border overflow-hidden bg-black aspect-video max-h-40 flex items-center justify-center">
+                    <video
+                      src={vid.url}
+                      controls
+                      playsInline
+                      preload="metadata"
+                      className="w-full h-full object-cover"
+                    />
                   </div>
+
+                  <p className="text-[10px] text-muted-foreground truncate font-mono">{vid.url}</p>
                 </div>
               ))}
+
+              {videos.length === 0 && (
+                <div className="text-center py-10 border border-dashed border-border rounded-xl text-xs text-muted-foreground italic">
+                  No Feed videos uploaded yet. Upload a video above to activate the Feed Hero.
+                </div>
+              )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "trust" && (
+        <div className="rounded-xl border border-border bg-card p-6 space-y-4">
+          <div className="flex items-center gap-1.5 border-b border-border pb-3">
+            <Award className="h-4 w-4 text-primary" />
+            <h2 className="font-display text-base font-bold text-foreground">Trust features strip</h2>
+          </div>
+
+          {/* Add feature Form */}
+          {editingTrust ? (
+            <div className="rounded border border-border/80 p-3 bg-surface text-xs space-y-3">
+              <div className="font-bold text-foreground">Edit Trust Feature</div>
+              <div className="grid gap-2 sm:grid-cols-2">
+                <label className="block text-xs">
+                  <span className="text-muted-foreground">Title</span>
+                  <input value={editingTrust.title} onChange={(e) => setEditingTrust({ ...editingTrust, title: e.target.value })} className="mt-1 w-full rounded border border-border bg-background px-2.5 py-1" />
+                </label>
+                <label className="block text-xs">
+                  <span className="text-muted-foreground">Icon Identifier</span>
+                  <select value={editingTrust.icon_name} onChange={(e) => setEditingTrust({ ...editingTrust, icon_name: e.target.value })} className="mt-1 w-full rounded border border-border bg-background px-2.5 py-1">
+                    {["Shield", "Truck", "CreditCard", "Headphones", "FileCheck", "HelpCircle"].map(i => <option key={i} value={i}>{i}</option>)}
+                  </select>
+                </label>
+              </div>
+              <label className="block text-xs">
+                <span className="text-muted-foreground">Description</span>
+                <input value={editingTrust.description} onChange={(e) => setEditingTrust({ ...editingTrust, description: e.target.value })} className="mt-1 w-full rounded border border-border bg-background px-2.5 py-1" />
+              </label>
+              <div className="flex gap-2">
+                <button onClick={updateTrustFeature} className="rounded bg-primary px-3 py-1.5 text-xs text-primary-foreground font-semibold">Save Changes</button>
+                <button onClick={() => setEditingTrust(null)} className="rounded border border-border px-3 py-1.5 text-xs">Cancel</button>
+              </div>
+            </div>
+          ) : (
+            <div className="rounded border border-border/50 p-3 bg-muted/20 text-xs space-y-3">
+              <div className="font-semibold text-foreground">Add New Feature Strip Item</div>
+              <div className="grid gap-2 sm:grid-cols-2">
+                <label className="block text-[10px] text-muted-foreground">
+                  Title
+                  <input value={newTrust.title} onChange={(e) => setNewTrust({ ...newTrust, title: e.target.value })} className="mt-1 w-full rounded border border-border bg-background px-2.5 py-1" />
+                </label>
+                <label className="block text-[10px] text-muted-foreground">
+                  Icon Name
+                  <select value={newTrust.icon_name} onChange={(e) => setNewTrust({ ...newTrust, icon_name: e.target.value })} className="mt-1 w-full rounded border border-border bg-background px-2.5 py-1">
+                    {["Shield", "Truck", "CreditCard", "Headphones", "FileCheck", "HelpCircle"].map(i => <option key={i} value={i}>{i}</option>)}
+                  </select>
+                </label>
+              </div>
+              <label className="block text-[10px] text-muted-foreground">
+                Description
+                <input value={newTrust.description} onChange={(e) => setNewTrust({ ...newTrust, description: e.target.value })} className="mt-1 w-full rounded border border-border bg-background px-2.5 py-1" />
+              </label>
+              <button disabled={busy} onClick={addTrustFeature} className="rounded bg-primary px-3 py-1.5 font-semibold text-primary-foreground">Add Feature Strip</button>
+            </div>
+          )}
+
+          {/* Trusts List */}
+          <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
+            {trusts.map((t, idx) => (
+              <div key={t.id} className="rounded-lg border border-border bg-background p-3 flex justify-between items-center text-xs">
+                <div>
+                  <div className="font-bold text-foreground flex items-center gap-1.5">
+                    <span className="rounded bg-muted px-1.5 py-0.2 font-mono text-[9px]">{t.icon_name}</span>
+                    {t.title}
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{t.description}</p>
+                </div>
+
+                <div className="flex items-center gap-1 shrink-0 ml-4">
+                  <button onClick={() => reorderTrust(t, "up")} disabled={idx === 0} className="p-1 rounded border border-border hover:bg-muted disabled:opacity-30"><ArrowUp className="h-3 w-3" /></button>
+                  <button onClick={() => reorderTrust(t, "down")} disabled={idx === trusts.length - 1} className="p-1 rounded border border-border hover:bg-muted disabled:opacity-30"><ArrowDown className="h-3 w-3" /></button>
+                  <button onClick={() => setEditingTrust(t)} className="p-1.5 rounded hover:bg-muted transition text-muted-foreground hover:text-foreground"><Edit className="h-3.5 w-3.5" /></button>
+                  <button onClick={() => deleteTrustFeature(t.id)} className="p-1.5 rounded text-destructive hover:bg-destructive/5 transition"><Trash2 className="h-3.5 w-3.5" /></button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}

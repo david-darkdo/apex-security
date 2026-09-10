@@ -5,8 +5,7 @@ import { AppShell } from "@/components/AppShell";
 import { ProductCard, ProductCardSkeleton } from "@/components/ProductCard";
 import { fetchFeedProductsPaginated, fetchTaxonomy, type FeedFilters, type CursorParam } from "@/lib/catalog";
 import { useAppSettings } from "@/lib/settings";
-import { BrandLogo } from "@/components/BrandLogo";
-import { Sparkles, ChevronDown, Loader2 } from "lucide-react";
+import { ChevronDown, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 type FeedSearch = {
@@ -160,19 +159,6 @@ function FeedPage() {
           >
             <source src={currentVideoUrl} type="video/mp4" />
           </video>
-
-          {/* Cinematic subtle vignette & gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-canvas/90 via-canvas/30 to-black/25 pointer-events-none" />
-
-          {/* Minimal Overlay: Only Apex Security Logo & Official Showroom Badge */}
-          <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 space-y-2">
-            <div className="h-14 w-14 sm:h-18 sm:w-18 rounded-full bg-white/10 backdrop-blur-md border border-white/20 p-2 shadow-2xl flex items-center justify-center overflow-hidden ring-1 ring-white/15">
-              <BrandLogo alt={`${companyName} Logo`} className="h-full w-full object-contain" />
-            </div>
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-surface/90 backdrop-blur-md border border-brand-blue/30 px-3 py-0.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-brand-blue shadow-lg">
-              <Sparkles className="h-3 w-3 sm:h-3.5 sm:w-3.5" /> Official Showroom
-            </div>
-          </div>
 
           {/* Carousel navigation dots if multiple hero videos exist */}
           {heroVideos.length > 1 && (

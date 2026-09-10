@@ -3,7 +3,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
-import { Search, LayoutDashboard, Briefcase, Package, Layers, Users, FolderHeart, Mail, Activity, Sparkles, Wrench, Bell, X, AlertCircle, Trash2 } from "lucide-react";
+import { Search, LayoutDashboard, Briefcase, Package, Layers, Users, FolderHeart, Mail, Activity, Sparkles, Wrench, Bell, X, AlertCircle, Trash2, Tv } from "lucide-react";
 import { useEffect } from "react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -88,7 +88,8 @@ function AdminLayout() {
     { to: "/admin/customers" as const, label: "Customers", icon: Users, active: pathname.startsWith("/admin/customers") },
     { to: "/admin/collections" as const, label: "Collections", icon: FolderHeart, active: pathname.startsWith("/admin/collections") },
     { to: "/admin/email" as const, label: "Communication Center", icon: Mail, active: pathname.startsWith("/admin/email") },
-    { to: "/admin/business" as const, label: "Business", icon: Briefcase, active: pathname.startsWith("/admin/business") },
+    { to: "/admin/business" as const, search: undefined as any, label: "Business", icon: Briefcase, active: pathname.startsWith("/admin/business") && !pathname.includes("feed_video") },
+    { to: "/admin/business" as const, search: { tab: "feed_video" }, label: "Feed Video", icon: Tv, active: pathname.startsWith("/admin/feed-video") || (pathname.startsWith("/admin/business") && typeof window !== "undefined" && window.location.search.includes("feed_video")) },
   ];
 
   return (
@@ -96,10 +97,11 @@ function AdminLayout() {
       <div className="border-b border-border bg-background">
         <div className="container-app flex flex-wrap items-center gap-3 py-3">
           <div className="flex flex-wrap gap-1">
-            {tabs.map((t) => (
+            {tabs.map((t, idx) => (
               <Link
-                key={t.to}
+                key={idx}
                 to={t.to}
+                search={t.search}
                 className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition ${
                   t.active
                     ? "bg-primary text-primary-foreground"

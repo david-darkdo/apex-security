@@ -217,9 +217,15 @@ export const generateStandaloneLifestyleImage = createServerFn({ method: "POST" 
       },
     ]);
 
-    // Update ONLY generated_installed_image column on products table
+    // Update generated_installed_image and append to installation_images array
+    const existingInstallImages: string[] = Array.isArray(product.installation_images) && product.installation_images.length > 0
+      ? product.installation_images
+      : (product.generated_installed_image ? [product.generated_installed_image] : []);
+    const updatedInstallImages = Array.from(new Set([...existingInstallImages, installedUrl]));
+
     await supabase.from("products").update({
       generated_installed_image: installedUrl,
+      installation_images: updatedInstallImages,
       generation_version: nextVersion,
       last_processed_at: new Date().toISOString(),
     } as any).eq("id", productId);

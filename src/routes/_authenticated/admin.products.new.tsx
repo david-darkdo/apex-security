@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Check, Sparkles, Upload, FileText, Globe, Search, ChevronDown, ChevronUp, Image, Layers, Cpu, ShieldCheck } from "lucide-react";
+import { Check, Sparkles, Upload, FileText, Globe, Search, ChevronDown, ChevronUp, Image, Layers, Cpu, ShieldCheck, Trash2 } from "lucide-react";
 import { runProductPipeline } from "@/lib/ai-pipeline.functions";
 import { runProductDetailsEngine } from "@/lib/product-details.functions";
 import { generateStandaloneLifestyleImage } from "@/lib/lifestyle-image.functions";
@@ -51,7 +51,7 @@ function RebuiltNewProductPage() {
 
   // Uploaded media paths
   const [originalPath, setOriginalPath] = useState<string | null>(null);
-  const [installedPath, setInstalledPath] = useState<string | null>(null);
+  const [installedPaths, setInstalledPaths] = useState<string[]>([]);
 
   // Extracted AI Intelligence Object
   const [aiIntelligence, setAiIntelligence] = useState<any>(null);
@@ -236,7 +236,7 @@ function RebuiltNewProductPage() {
 
       const res = await generateStandaloneLifestyleImage({ data: { productId: tempProduct.id } });
       if (res.ok && res.imageUrl) {
-        setInstalledPath(res.imageUrl);
+        setInstalledPaths((prev) => [...prev, res.imageUrl]);
         toast.success("Engine 2: Installed lifestyle image generated successfully!");
       } else {
         toast.error("Failed to generate installed image");
@@ -325,7 +325,8 @@ function RebuiltNewProductPage() {
       seo_keywords_manual: !isAiMode,
       slug,
       is_published: finalStatus === "published",
-      generated_installed_image: installedPath || null,
+      installation_images: installedPaths,
+      generated_installed_image: installedPaths[0] || null,
     };
 
     const { data, error } = await supabase.from("products").insert(payload as any).select("id").single();
@@ -344,13 +345,13 @@ function RebuiltNewProductPage() {
           is_primary: true,
           generated_by_ai: false,
         },
-        ...(installedPath ? [{
+        ...installedPaths.map((url, i) => ({
           product_id: data.id,
           asset_type: "installed",
-          asset_url: installedPath,
-          is_primary: false,
-          generated_by_ai: true,
-        }] : [])
+          asset_url: url,
+          is_primary: i === 0,
+          generated_by_ai: false,
+        }))
       ] as any);
 
       // Rebuild search index & trigger SEO discovery sitemap update
@@ -574,35 +575,42 @@ function RebuiltNewProductPage() {
           {/* Installed Images Gallery */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-foreground">Installation & Lifestyle Images ({(installedPath ? [installedPath] : []).length})</label>
+              <label className="text-xs font-semibold text-foreground">Installation & Lifestyle Images ({installedPaths.length})</label>
               <span className="text-[10px] text-muted-foreground">Multi-Image Gallery</span>
             </div>
 
-            {installedPath ? (
-              <div className="space-y-2">
-                <ImageTile
-                  url={publicImageUrl(installedPath) || installedPath}
-                  onDelete={() => setInstalledPath(null)}
-                  onEdit={() => setEditingImage({ url: publicImageUrl(installedPath) || installedPath, target: "installed" })}
-                  badge="Installed Scene"
-                />
-                <ImageUploader
-                  multiple={true}
-                  onUploaded={(paths) => {
-                    if (paths.length > 0) setInstalledPath(paths[0]);
-                  }}
-                  label="Replace Installation Image"
-                />
+            {installedPaths.length > 0 && (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {installedPaths.map((url, idx) => (
+                  <div key={idx} className="relative group rounded-lg border border-border overflow-hidden bg-card aspect-square">
+                    <img src={publicImageUrl(url) || url} alt={`Installation ${idx + 1}`} className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5 p-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setInstalledPaths(installedPaths.filter((_, i) => i !== idx));
+                        }}
+                        className="rounded bg-destructive/90 hover:bg-destructive text-white p-1 text-[10px] font-bold"
+                        title="Delete this installation image"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                    <span className="absolute bottom-1 left-1 bg-black/70 text-white text-[8px] font-mono px-1.5 py-0.5 rounded">
+                      #{idx + 1}
+                    </span>
+                  </div>
+                ))}
               </div>
-            ) : (
-              <ImageUploader
-                multiple={true}
-                onUploaded={(paths) => {
-                  if (paths.length > 0) setInstalledPath(paths[0]);
-                }}
-                label="Upload Installation Images"
-              />
             )}
+
+            <ImageUploader
+              multiple={true}
+              onUploaded={(paths) => {
+                setInstalledPaths((prev) => [...prev, ...paths]);
+              }}
+              label={installedPaths.length > 0 ? "+ Add More Installation Images" : "Upload Installation Images (Multi-Image)"}
+            />
             <div className="pt-2">
               <button
                 type="button"
@@ -869,7 +877,7 @@ function RebuiltNewProductPage() {
             if (editingImage.target === "original") {
               setOriginalPath(newUrl);
             } else {
-              setInstalledPath(newUrl);
+              setInstalledPaths((prev) => [newUrl, ...prev.filter((u) => u !== editingImage.url)]);
             }
           }}
         />

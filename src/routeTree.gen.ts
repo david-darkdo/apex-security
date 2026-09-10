@@ -36,6 +36,7 @@ import { Route as AuthenticatedAdminPromptsRouteImport } from './routes/_authent
 import { Route as AuthenticatedAdminProductsRouteImport } from './routes/_authenticated/admin.products'
 import { Route as AuthenticatedAdminPipelineRouteImport } from './routes/_authenticated/admin.pipeline'
 import { Route as AuthenticatedAdminHierarchyRouteImport } from './routes/_authenticated/admin.hierarchy'
+import { Route as AuthenticatedAdminFeedVideoRouteImport } from './routes/_authenticated/admin.feed-video'
 import { Route as AuthenticatedAdminEmailRouteImport } from './routes/_authenticated/admin.email'
 import { Route as AuthenticatedAdminDiagnosticsRouteImport } from './routes/_authenticated/admin.diagnostics'
 import { Route as AuthenticatedAdminCustomersRouteImport } from './routes/_authenticated/admin.customers'
@@ -184,6 +185,12 @@ const AuthenticatedAdminHierarchyRoute =
     path: '/hierarchy',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminFeedVideoRoute =
+  AuthenticatedAdminFeedVideoRouteImport.update({
+    id: '/feed-video',
+    path: '/feed-video',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminEmailRoute = AuthenticatedAdminEmailRouteImport.update({
   id: '/email',
   path: '/email',
@@ -266,6 +273,7 @@ export interface FileRoutesByFullPath {
   '/admin/customers': typeof AuthenticatedAdminCustomersRouteWithChildren
   '/admin/diagnostics': typeof AuthenticatedAdminDiagnosticsRoute
   '/admin/email': typeof AuthenticatedAdminEmailRoute
+  '/admin/feed-video': typeof AuthenticatedAdminFeedVideoRoute
   '/admin/hierarchy': typeof AuthenticatedAdminHierarchyRoute
   '/admin/pipeline': typeof AuthenticatedAdminPipelineRoute
   '/admin/products': typeof AuthenticatedAdminProductsRouteWithChildren
@@ -302,6 +310,7 @@ export interface FileRoutesByTo {
   '/admin/customers': typeof AuthenticatedAdminCustomersRouteWithChildren
   '/admin/diagnostics': typeof AuthenticatedAdminDiagnosticsRoute
   '/admin/email': typeof AuthenticatedAdminEmailRoute
+  '/admin/feed-video': typeof AuthenticatedAdminFeedVideoRoute
   '/admin/hierarchy': typeof AuthenticatedAdminHierarchyRoute
   '/admin/pipeline': typeof AuthenticatedAdminPipelineRoute
   '/admin/products': typeof AuthenticatedAdminProductsRouteWithChildren
@@ -341,6 +350,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/customers': typeof AuthenticatedAdminCustomersRouteWithChildren
   '/_authenticated/admin/diagnostics': typeof AuthenticatedAdminDiagnosticsRoute
   '/_authenticated/admin/email': typeof AuthenticatedAdminEmailRoute
+  '/_authenticated/admin/feed-video': typeof AuthenticatedAdminFeedVideoRoute
   '/_authenticated/admin/hierarchy': typeof AuthenticatedAdminHierarchyRoute
   '/_authenticated/admin/pipeline': typeof AuthenticatedAdminPipelineRoute
   '/_authenticated/admin/products': typeof AuthenticatedAdminProductsRouteWithChildren
@@ -380,6 +390,7 @@ export interface FileRouteTypes {
     | '/admin/customers'
     | '/admin/diagnostics'
     | '/admin/email'
+    | '/admin/feed-video'
     | '/admin/hierarchy'
     | '/admin/pipeline'
     | '/admin/products'
@@ -416,6 +427,7 @@ export interface FileRouteTypes {
     | '/admin/customers'
     | '/admin/diagnostics'
     | '/admin/email'
+    | '/admin/feed-video'
     | '/admin/hierarchy'
     | '/admin/pipeline'
     | '/admin/products'
@@ -454,6 +466,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/customers'
     | '/_authenticated/admin/diagnostics'
     | '/_authenticated/admin/email'
+    | '/_authenticated/admin/feed-video'
     | '/_authenticated/admin/hierarchy'
     | '/_authenticated/admin/pipeline'
     | '/_authenticated/admin/products'
@@ -676,6 +689,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminHierarchyRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/feed-video': {
+      id: '/_authenticated/admin/feed-video'
+      path: '/feed-video'
+      fullPath: '/admin/feed-video'
+      preLoaderRoute: typeof AuthenticatedAdminFeedVideoRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/email': {
       id: '/_authenticated/admin/email'
       path: '/email'
@@ -779,6 +799,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminCustomersRoute: typeof AuthenticatedAdminCustomersRouteWithChildren
   AuthenticatedAdminDiagnosticsRoute: typeof AuthenticatedAdminDiagnosticsRoute
   AuthenticatedAdminEmailRoute: typeof AuthenticatedAdminEmailRoute
+  AuthenticatedAdminFeedVideoRoute: typeof AuthenticatedAdminFeedVideoRoute
   AuthenticatedAdminHierarchyRoute: typeof AuthenticatedAdminHierarchyRoute
   AuthenticatedAdminPipelineRoute: typeof AuthenticatedAdminPipelineRoute
   AuthenticatedAdminProductsRoute: typeof AuthenticatedAdminProductsRouteWithChildren
@@ -794,6 +815,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
     AuthenticatedAdminCustomersRouteWithChildren,
   AuthenticatedAdminDiagnosticsRoute: AuthenticatedAdminDiagnosticsRoute,
   AuthenticatedAdminEmailRoute: AuthenticatedAdminEmailRoute,
+  AuthenticatedAdminFeedVideoRoute: AuthenticatedAdminFeedVideoRoute,
   AuthenticatedAdminHierarchyRoute: AuthenticatedAdminHierarchyRoute,
   AuthenticatedAdminPipelineRoute: AuthenticatedAdminPipelineRoute,
   AuthenticatedAdminProductsRoute: AuthenticatedAdminProductsRouteWithChildren,
