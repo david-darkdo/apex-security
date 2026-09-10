@@ -117,8 +117,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: `${companyName} — Security Electronics & Modern Door Solutions` },
       { name: "twitter:description", content: seoDesc },
-      { property: "og:image", content: "/logo.png" },
-      { name: "twitter:image", content: "/logo.png" },
+      { property: "og:image", content: "/apex-logo.png?v=apex-2026-v1" },
+      { name: "twitter:image", content: "/apex-logo.png?v=apex-2026-v1" },
     ];
 
     if (googleVerify) {
@@ -132,9 +132,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       meta,
       links: [
         { rel: "stylesheet", href: appCss },
-        { rel: "manifest", href: "/manifest.webmanifest" },
-        { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
-        { rel: "icon", href: "/favicon.png", type: "image/png" },
+        { rel: "manifest", href: "/manifest.webmanifest?v=apex-2026-v1" },
+        { rel: "apple-touch-icon", href: "/apple-touch-icon.png?v=apex-2026-v1" },
+        { rel: "icon", href: "/favicon.png?v=apex-2026-v1", type: "image/png" },
       ],
     };
   },
@@ -150,7 +150,7 @@ function RootShell({ children }: { children: ReactNode }) {
     "@type": "Organization",
     "name": "Apex Security Ltd",
     "url": "https://apex-security-ltd.vercel.app",
-    "logo": "https://apex-security-ltd.vercel.app/logo.png",
+    "logo": "https://apex-security-ltd.vercel.app/apex-logo.png?v=apex-2026-v1",
     "description": "Apex Security Ltd is a security solutions company serving customers across Abuja and nationwide Nigeria, with a business presence around Dei-Dei Building Materials Market. We provide modern security electronics and door solutions for homes, businesses and building projects, including CCTV cameras, solar CCTV systems, smart locks, security doors, flush doors, pivot doors and toilet doors.",
     "address": {
       "@type": "PostalAddress",
@@ -280,9 +280,9 @@ function RootAppWrapper() {
   const orgSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": (settings as any)?.company_name || "APEX SECURITY LIMITED",
+    "name": (settings as any)?.company_name || "Apex Security Ltd",
     "url": typeof window !== "undefined" ? window.location.origin : "https://apex-security-ltd.vercel.app",
-    "logo": (settings as any)?.company_logo || (typeof window !== "undefined" ? `${window.location.origin}/icon-512.png` : "https://apex-security-ltd.vercel.app/icon-512.png"),
+    "logo": (settings as any)?.company_logo || (typeof window !== "undefined" ? `${window.location.origin}/apex-logo.png?v=apex-2026-v1` : "https://apex-security-ltd.vercel.app/apex-logo.png?v=apex-2026-v1"),
     "contactPoint": {
       "@type": "ContactPoint",
       "telephone": settings?.support_whatsapp || "",

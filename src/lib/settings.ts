@@ -38,7 +38,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   sales_whatsapp: "07063492581",
   company_email: "igwezegift@gmail.com",
   company_address: "Opposite Timber Shed, Dei-Dei, Abuja, Nigeria",
-  company_state: "Anambra",
+  company_state: "Abuja / FCT",
   company_country: "Nigeria",
   company_service_area: "Nationwide",
   master_description:

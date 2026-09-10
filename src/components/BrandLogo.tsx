@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { ShieldCheck } from "lucide-react";
+
+const CANONICAL_LOGO_URL = "/apex-logo.png?v=apex-2026-v1";
+const SECONDARY_LOGO_URL = "/logo.png?v=apex-2026-v1";
 
 interface BrandLogoProps {
   className?: string;
@@ -9,26 +11,26 @@ interface BrandLogoProps {
 
 export function BrandLogo({
   className = "h-8 w-auto object-contain",
-  fallbackClassName = "h-8 w-8 rounded-lg bg-brand-orange-soft text-brand-orange flex items-center justify-center font-display font-bold text-xs",
+  fallbackClassName = "h-8 w-auto object-contain",
   alt = "Apex Security Ltd Logo"
 }: BrandLogoProps) {
-  const [hasError, setHasError] = useState(false);
+  const [imgSrc, setImgSrc] = useState(CANONICAL_LOGO_URL);
 
-  if (hasError) {
-    return (
-      <div className={fallbackClassName} title={alt} aria-label={alt}>
-        <ShieldCheck className="h-5 w-5 text-brand-orange" />
-      </div>
-    );
-  }
+  const handleError = () => {
+    if (imgSrc === CANONICAL_LOGO_URL) {
+      setImgSrc(SECONDARY_LOGO_URL);
+    }
+  };
 
   return (
     <img
-      src="/logo.png"
+      src={imgSrc}
       alt={alt}
       className={className}
-      onError={() => setHasError(true)}
+      onError={handleError}
       loading="eager"
+      decoding="async"
     />
   );
 }
+
