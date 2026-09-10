@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
-const CANONICAL_LOGO_URL = "/apex-logo.png?v=apex-2026-v1";
-const SECONDARY_LOGO_URL = "/logo.png?v=apex-2026-v1";
+const CANONICAL_LOGO_URL = "/apex-logo.png?v=apex-circular-v1";
+const SECONDARY_LOGO_URL = "/logo.png?v=apex-circular-v1";
 
 interface BrandLogoProps {
   className?: string;
@@ -26,7 +26,7 @@ export function BrandLogo({
     <img
       src={imgSrc}
       alt={alt}
-      className={className}
+      className={`rounded-full ${className}`}
       onError={handleError}
       loading="eager"
       decoding="async"

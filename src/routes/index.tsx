@@ -124,7 +124,7 @@ function FeedPage() {
         <div className="rounded-2xl border border-border bg-gradient-to-r from-surface via-surface-elevated to-surface p-5 sm:p-7 text-foreground shadow-md relative overflow-hidden">
           <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
             <div className="flex items-start sm:items-center gap-4">
-              <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl bg-surface-elevated border border-border p-2.5 shadow-md shrink-0 flex items-center justify-center">
+              <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-white/5 backdrop-blur-md border border-white/15 p-2 shadow-lg shrink-0 flex items-center justify-center overflow-hidden ring-1 ring-white/10">
                 <BrandLogo alt={`${companyName} Logo`} className="h-full w-full object-contain" />
               </div>
               <div className="space-y-1">
