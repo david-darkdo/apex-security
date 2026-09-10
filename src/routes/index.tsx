@@ -1,12 +1,13 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useInfiniteQuery, useSuspenseQuery, queryOptions, infiniteQueryOptions } from "@tanstack/react-query";
-import { useEffect, useRef } from "react";
+import { useInfiniteQuery, useSuspenseQuery, useQuery, queryOptions, infiniteQueryOptions } from "@tanstack/react-query";
+import { useEffect, useRef, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { ProductCard, ProductCardSkeleton } from "@/components/ProductCard";
 import { fetchFeedProductsPaginated, fetchTaxonomy, type FeedFilters, type CursorParam } from "@/lib/catalog";
 import { useAppSettings } from "@/lib/settings";
 import { BrandLogo } from "@/components/BrandLogo";
 import { Sparkles, ChevronDown, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 type FeedSearch = {
   type?: string;
@@ -25,6 +26,19 @@ function validateFeedSearch(s: Record<string, unknown>): FeedSearch {
 const taxonomyQuery = queryOptions({
   queryKey: ["taxonomy"],
   queryFn: fetchTaxonomy,
+  staleTime: 5 * 60_000,
+});
+
+const heroVideosQuery = queryOptions({
+  queryKey: ["feed_hero_videos"],
+  queryFn: async () => {
+    const { data } = await supabase
+      .from("hero_videos")
+      .select("*")
+      .eq("is_active", true)
+      .order("order_index", { ascending: true });
+    return data || [];
+  },
   staleTime: 5 * 60_000,
 });
 
@@ -70,7 +84,21 @@ function FeedPage() {
   const search = Route.useSearch();
   const navigate = useNavigate();
   const { data: tax } = useSuspenseQuery(taxonomyQuery);
+  const { data: heroVideos = [] } = useQuery(heroVideosQuery);
   const feedQuery = useInfiniteQuery(feedInfiniteQuery(search));
+
+  const [activeHeroIndex, setActiveHeroIndex] = useState(0);
+
+  useEffect(() => {
+    if (heroVideos.length <= 1) return;
+    const timer = setInterval(() => {
+      setActiveHeroIndex((prev) => (prev + 1) % heroVideos.length);
+    }, 7000);
+    return () => clearInterval(timer);
+  }, [heroVideos.length]);
+
+  const currentHero = heroVideos[activeHeroIndex] || (heroVideos.length > 0 ? heroVideos[0] : null);
+  const currentVideoUrl = currentHero?.url || "https://assets.mixkit.co/videos/preview/mixkit-modern-apartment-interior-design-39908-large.mp4";
 
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
@@ -119,43 +147,52 @@ function FeedPage() {
 
   return (
     <AppShell>
-      <div className="container-app pt-4 pb-12 space-y-4">
-        {/* Apex Security Ltd Brand Intro Card */}
-        <div className="rounded-2xl border border-border bg-gradient-to-r from-surface via-surface-elevated to-surface p-5 sm:p-7 text-foreground shadow-md relative overflow-hidden">
-          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
-            <div className="flex items-start sm:items-center gap-4">
-              <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-white/5 backdrop-blur-md border border-white/15 p-2 shadow-lg shrink-0 flex items-center justify-center overflow-hidden ring-1 ring-white/10">
-                <BrandLogo alt={`${companyName} Logo`} className="h-full w-full object-contain" />
-              </div>
-              <div className="space-y-1">
-                <div className="inline-flex items-center gap-1.5 rounded-full bg-brand-blue-soft border border-brand-blue/30 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-brand-blue">
-                  <Sparkles className="h-3 w-3" /> Official Showroom
-                </div>
-                <h1 className="font-display text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">
-                  {companyName}
-                </h1>
-                <p className="text-xs sm:text-sm text-text-secondary max-w-2xl leading-relaxed">
-                  {shortDesc}
-                </p>
-              </div>
+      {/* FIX 1: Full-Bleed Cinematic Video Hero (edge-to-edge, zero margin) */}
+      <div className="relative w-full overflow-hidden bg-canvas border-b border-border/50">
+        <div className="relative w-full h-[190px] sm:h-[240px] md:h-[290px] lg:h-[330px] bg-canvas flex items-center justify-center overflow-hidden">
+          <video
+            key={currentVideoUrl}
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+          >
+            <source src={currentVideoUrl} type="video/mp4" />
+          </video>
+
+          {/* Cinematic subtle vignette & gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-canvas/90 via-canvas/30 to-black/25 pointer-events-none" />
+
+          {/* Minimal Overlay: Only Apex Security Logo & Official Showroom Badge */}
+          <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 space-y-2">
+            <div className="h-14 w-14 sm:h-18 sm:w-18 rounded-full bg-white/10 backdrop-blur-md border border-white/20 p-2 shadow-2xl flex items-center justify-center overflow-hidden ring-1 ring-white/15">
+              <BrandLogo alt={`${companyName} Logo`} className="h-full w-full object-contain" />
             </div>
-            <div className="flex flex-wrap items-center gap-2.5 shrink-0 pt-1 md:pt-0">
-              <Link
-                to="/home"
-                className="rounded-lg bg-brand-orange px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-canvas hover:bg-brand-orange-hover transition shadow-sm"
-              >
-                About Showroom
-              </Link>
-              <Link
-                to="/contact"
-                className="rounded-lg border border-border bg-surface-elevated px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-foreground hover:bg-surface transition"
-              >
-                Contact & Location
-              </Link>
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-surface/90 backdrop-blur-md border border-brand-blue/30 px-3 py-0.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-brand-blue shadow-lg">
+              <Sparkles className="h-3 w-3 sm:h-3.5 sm:w-3.5" /> Official Showroom
             </div>
           </div>
-        </div>
 
+          {/* Carousel navigation dots if multiple hero videos exist */}
+          {heroVideos.length > 1 && (
+            <div className="absolute bottom-2.5 z-10 flex gap-1.5">
+              {heroVideos.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setActiveHeroIndex(idx)}
+                  className={`h-1.5 rounded-full transition-all ${
+                    activeHeroIndex === idx ? "w-5 bg-brand-orange" : "w-1.5 bg-white/40 hover:bg-white/70"
+                  }`}
+                  aria-label={`Slide ${idx + 1}`}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="container-app pt-3 pb-12 space-y-3">
         {/* Type row */}
         <FilterRow>
           <Pill active={!search.type} onClick={() => setType(undefined)}>
@@ -204,30 +241,23 @@ function FeedPage() {
           </FilterRow>
         )}
 
-        <div className="mt-5 flex items-end justify-between border-b border-border pb-3">
-          <div>
-            <h1 className="font-display text-xs uppercase tracking-[0.18em] text-accent">
-              {activeSub
-                ? `${activeCategory?.name} · ${activeSub.name}`
-                : activeCategory
-                  ? activeCategory.name
-                  : activeType
-                    ? activeType.name
-                    : "Curated Showroom Feed"}
-            </h1>
-            <p className="mt-1 font-display text-2xl font-semibold tracking-tight text-foreground">
-              Discover the catalogue
-            </p>
-          </div>
-          {totalCount > 0 && (
-            <span className="text-xs font-mono text-muted-foreground">
-              Showing {allProducts.length} of {totalCount} products
-            </span>
-          )}
+        {/* FIX 1B: Preserved for SEO & Screen Readers, visually hidden without gap */}
+        <div className="sr-only">
+          <h2>
+            {activeSub
+              ? `${activeCategory?.name} · ${activeSub.name}`
+              : activeCategory
+                ? activeCategory.name
+                : activeType
+                  ? activeType.name
+                  : "Curated Showroom Feed"}
+          </h2>
+          <p>Discover the catalogue</p>
+          {totalCount > 0 && <span>Showing {allProducts.length} of {totalCount} products</span>}
         </div>
 
         {/* Product Grid */}
-        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+        <div className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {feedQuery.isLoading
             ? Array.from({ length: 8 }).map((_, i) => (
                 <ProductCardSkeleton key={i} />

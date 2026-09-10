@@ -571,21 +571,37 @@ function RebuiltNewProductPage() {
             )}
           </div>
 
-          {/* Installed Image */}
-          <div className="space-y-2">
+          {/* Installed Images Gallery */}
+          <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-foreground">Finished Installation Image</label>
-              <span className="text-[10px] text-muted-foreground">Lifestyle Reference</span>
+              <label className="text-xs font-semibold text-foreground">Installation & Lifestyle Images ({(installedPath ? [installedPath] : []).length})</label>
+              <span className="text-[10px] text-muted-foreground">Multi-Image Gallery</span>
             </div>
+
             {installedPath ? (
-              <ImageTile
-                url={publicImageUrl(installedPath) || installedPath}
-                onDelete={() => setInstalledPath(null)}
-                onEdit={() => setEditingImage({ url: publicImageUrl(installedPath) || installedPath, target: "installed" })}
-                badge="Installed Scene"
-              />
+              <div className="space-y-2">
+                <ImageTile
+                  url={publicImageUrl(installedPath) || installedPath}
+                  onDelete={() => setInstalledPath(null)}
+                  onEdit={() => setEditingImage({ url: publicImageUrl(installedPath) || installedPath, target: "installed" })}
+                  badge="Installed Scene"
+                />
+                <ImageUploader
+                  multiple={true}
+                  onUploaded={(paths) => {
+                    if (paths.length > 0) setInstalledPath(paths[0]);
+                  }}
+                  label="Replace Installation Image"
+                />
+              </div>
             ) : (
-              <ImageUploader multiple={false} onUploaded={(paths) => setInstalledPath(paths[0])} label="Upload Installed Image" />
+              <ImageUploader
+                multiple={true}
+                onUploaded={(paths) => {
+                  if (paths.length > 0) setInstalledPath(paths[0]);
+                }}
+                label="Upload Installation Images"
+              />
             )}
             <div className="pt-2">
               <button

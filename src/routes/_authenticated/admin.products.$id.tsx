@@ -384,23 +384,62 @@ function RebuiltEditProductPage() {
             )}
           </div>
 
-          {/* Installed Image */}
-          <div className="space-y-2">
+          {/* Installed Images Gallery */}
+          <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-foreground">Finished Installation Image</label>
-              <span className="text-[10px] text-muted-foreground">Lifestyle Reference</span>
+              <label className="text-xs font-semibold text-foreground">Installation & Lifestyle Images ({((p.installation_images as string[]) || (p.generated_installed_image ? [p.generated_installed_image] : [])).length})</label>
+              <span className="text-[10px] text-muted-foreground">Multi-Image Gallery</span>
             </div>
-            {p.generated_installed_image ? (
-              <ImageTile
-                url={publicImageUrl(p.generated_installed_image) || p.generated_installed_image}
-                onDelete={() => setField("generated_installed_image", null)}
-                onEdit={() => setEditingImage({ url: publicImageUrl(p.generated_installed_image) || p.generated_installed_image, target: "generated_installed_image" })}
-                badge="Installed Scene"
-              />
-            ) : (
-              <ImageUploader multiple={false} onUploaded={(paths) => setField("generated_installed_image", paths[0])} label="Upload Installed Image" />
-            )}
-            <div className="pt-2">
+
+            {/* Grid of existing installation images */}
+            {(() => {
+              const list: string[] = Array.isArray(p.installation_images) && p.installation_images.length > 0
+                ? p.installation_images
+                : (p.generated_installed_image ? [p.generated_installed_image] : []);
+
+              return (
+                <div className="space-y-2">
+                  {list.length > 0 && (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {list.map((url, idx) => (
+                        <div key={idx} className="relative group rounded-lg border border-border overflow-hidden bg-card aspect-square">
+                          <img src={publicImageUrl(url) || url} alt={`Installation ${idx + 1}`} className="w-full h-full object-cover" />
+                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5 p-1">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const updated = list.filter((_, i) => i !== idx);
+                                setField("installation_images", updated);
+                                setField("generated_installed_image", updated[0] || null);
+                              }}
+                              className="rounded bg-destructive/90 hover:bg-destructive text-white p-1 text-[10px] font-bold"
+                              title="Delete this installation image"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                          <span className="absolute bottom-1 left-1 bg-black/70 text-white text-[8px] font-mono px-1.5 py-0.5 rounded">
+                            #{idx + 1}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <ImageUploader
+                    multiple={true}
+                    onUploaded={(paths) => {
+                      const updated = [...list, ...paths];
+                      setField("installation_images", updated);
+                      setField("generated_installed_image", updated[0] || null);
+                    }}
+                    label={list.length > 0 ? "+ Add More Installation Images" : "Upload Installation Images (Multi-Image)"}
+                  />
+                </div>
+              );
+            })()}
+
+            <div className="pt-1">
               <button
                 type="button"
                 onClick={handleGenerateLifestyle}

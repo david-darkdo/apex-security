@@ -15,6 +15,7 @@ export type ProductRow = {
   type_id: string | null;
   category_id: string | null;
   subcategory_id: string | null;
+  installation_images?: string[] | null;
   color: string | null;
   material: string | null;
   finish: string | null;
@@ -28,7 +29,7 @@ export type ProductRow = {
 export type TaxonomyNode = { id: string; name: string; slug: string };
 
 const PRODUCT_FIELDS =
-  "id,slug,name,code,price,brand,image_url,generated_studio_image,generated_installed_image,short_description,family_id,type_id,category_id,subcategory_id,color,material,finish,app_keywords,featured_feed,featured_homepage,created_at";
+  "id,slug,name,code,price,brand,image_url,generated_studio_image,generated_installed_image,installation_images,short_description,family_id,type_id,category_id,subcategory_id,color,material,finish,app_keywords,featured_feed,featured_homepage,created_at";
 
 /** Customer-facing visibility: completed processing, published, not hidden, not soft-deleted. */
 function applyPublicFilters<T extends { eq: Function; is: Function }>(q: T): T {

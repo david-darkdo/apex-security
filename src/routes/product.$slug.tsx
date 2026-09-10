@@ -46,9 +46,11 @@ export const Route = createFileRoute("/product/$slug")({
       });
     }
 
-    context.queryClient.ensureQueryData(relatedQuery(product.family_id, product.id));
+    if (product.family_id) {
+      context.queryClient.ensureQueryData(relatedQuery(product.family_id, product.id));
+    }
 
-    // Fetch taxonomy parents
+    // Fetch taxonomy parents safely
     const [typeRes, categoryRes, subcategoryRes, familyRes] = await Promise.all([
       product.type_id ? supabase.from("product_types").select("name, slug").eq("id", product.type_id).maybeSingle() : Promise.resolve({ data: null }),
       product.category_id ? supabase.from("categories").select("name, slug").eq("id", product.category_id).maybeSingle() : Promise.resolve({ data: null }),
@@ -56,15 +58,17 @@ export const Route = createFileRoute("/product/$slug")({
       product.family_id ? supabase.from("family_groups").select("name, slug").eq("id", product.family_id).maybeSingle() : Promise.resolve({ data: null }),
     ]);
 
+    const taxonomy = {
+      type: typeRes?.data || null,
+      category: categoryRes?.data || null,
+      subcategory: subcategoryRes?.data || null,
+      family: familyRes?.data || null,
+    };
+
     return {
       product,
       origin,
-      taxonomy: {
-        type: typeRes.data,
-        category: categoryRes.data,
-        subcategory: subcategoryRes.data,
-        family: familyRes.data,
-      }
+      taxonomy,
     };
   },
   head: ({ loaderData }: any): any => {
@@ -145,7 +149,7 @@ function ProductDetailSkeleton() {
 function ProductPage() {
   const { product, origin, taxonomy } = Route.useLoaderData();
   const { data: related = [] } = useSuspenseQuery(
-    relatedQuery(product.family_id, product.id),
+    relatedQuery(product?.family_id || null, product?.id || ""),
   );
 
   const { user } = useAuth();
@@ -153,17 +157,28 @@ function ProductPage() {
   const isFav = isFavorite(product.id);
   const [recommendations, setRecommendations] = useState<any[]>([]);
 
-  // Gallery slider states
-  const [activeImgIndex, setActiveImgIndex] = useState(0);
+  // Lightbox modal state
   const [lightboxImg, setLightboxImg] = useState<string | null>(null);
   const [lightboxScale, setLightboxScale] = useState(1);
 
-  const studio = publicImageUrl(product.generated_studio_image) || publicImageUrl(product.image_url);
-  const installed = publicImageUrl(product.generated_installed_image) || publicImageUrl(product.image_url);
+  // 1. ORIGINAL PRODUCT IMAGE (Fixed, Single, Non-Switchable)
+  const originalImage = publicImageUrl(product.generated_studio_image) || publicImageUrl(product.image_url);
 
-  const galleryImages = useMemo(() => {
-    return [studio, installed].filter(Boolean) as string[];
-  }, [studio, installed]);
+  // 2. INSTALLATION IMAGES (Multiple, Switchable Gallery)
+  const rawInstallationImages: string[] = Array.isArray(product.installation_images) && product.installation_images.length > 0
+    ? product.installation_images
+    : (product.generated_installed_image ? [product.generated_installed_image] : []);
+
+  const installationImages = useMemo(() => {
+    return rawInstallationImages.map(img => publicImageUrl(img) || img).filter(Boolean);
+  }, [rawInstallationImages]);
+
+  const [activeInstallIndex, setActiveInstallIndex] = useState(0);
+  const currentInstallationImage = installationImages[activeInstallIndex] || installationImages[0] || null;
+
+  const allViewableImages = useMemo(() => {
+    return [originalImage, ...installationImages].filter(Boolean) as string[];
+  }, [originalImage, installationImages]);
 
   useEffect(() => {
     if (!product?.id) return;
@@ -181,7 +196,7 @@ function ProductPage() {
         await supabase.from("customer_activity").insert({
           user_id: profile.id,
           activity_type: "product_viewed",
-          metadata: { productId: product.id, name: product.name, category: (product as any).category || "Uncategorized" }
+          metadata: { productId: product.id, name: product.name, category: taxonomy?.category?.name || "Uncategorized" }
         });
       };
       void trackEvent();
@@ -207,14 +222,14 @@ function ProductPage() {
   // Breadcrumbs config
   const breadcrumbs = useMemo(() => {
     const list = [{ label: "Home", path: "/" }];
-    if (taxonomy.type) {
+    if (taxonomy?.type) {
       list.push({ label: taxonomy.type.name, path: `/${taxonomy.type.slug}` });
-      if (taxonomy.category) {
+      if (taxonomy?.category) {
         list.push({ label: taxonomy.category.name, path: `/${taxonomy.type.slug}/${taxonomy.category.slug}` });
-        if (taxonomy.subcategory) {
+        if (taxonomy?.subcategory) {
           list.push({ label: taxonomy.subcategory.name, path: `/${taxonomy.type.slug}/${taxonomy.category.slug}/${taxonomy.subcategory.slug}` });
-          if (taxonomy.family) {
-            list.push({ label: taxonomy.family.name, path: `/${taxonomy.type.slug}/${taxonomy.category.slug}/${subcategory.slug}/${taxonomy.family.slug}` });
+          if (taxonomy?.family) {
+            list.push({ label: taxonomy.family.name, path: `/${taxonomy.type.slug}/${taxonomy.category.slug}/${taxonomy.subcategory.slug}/${taxonomy.family.slug}` });
           }
         }
       }
@@ -240,7 +255,7 @@ function ProductPage() {
     "@context": "https://schema.org",
     "@type": "Product",
     "name": product.name,
-    "image": galleryImages.map((img) => ({
+    "image": allViewableImages.map((img) => ({
       "@type": "ImageObject",
       "url": img,
       "name": product.alt_text || product.name,
@@ -255,7 +270,7 @@ function ProductPage() {
     },
     "material": product.material || undefined,
     "color": product.color || undefined,
-    "category": taxonomy.subcategory?.name ? `${taxonomy.category?.name || "Material"} > ${taxonomy.subcategory.name}` : (taxonomy.category?.name || "Material"),
+    "category": taxonomy?.subcategory?.name ? `${taxonomy?.category?.name || "Security"} > ${taxonomy.subcategory.name}` : (taxonomy?.category?.name || "Security"),
     "offers": {
       "@type": "Offer",
       "url": canonicalProductUrl,
@@ -286,16 +301,16 @@ function ProductPage() {
   } : null;
 
   const handleLightboxNav = (dir: "prev" | "next") => {
-    const idx = galleryImages.indexOf(lightboxImg || "");
+    const idx = allViewableImages.indexOf(lightboxImg || "");
     if (idx === -1) return;
     if (dir === "prev") {
-      const nextIdx = (idx - 1 + galleryImages.length) % galleryImages.length;
-      setLightboxImg(galleryImages[nextIdx]);
+      const nextIdx = (idx - 1 + allViewableImages.length) % allViewableImages.length;
+      setLightboxImg(allViewableImages[nextIdx]);
     } else {
-      const nextIdx = (idx + 1) % galleryImages.length;
-      setLightboxImg(galleryImages[nextIdx]);
+      const nextIdx = (idx + 1) % allViewableImages.length;
+      setLightboxImg(allViewableImages[nextIdx]);
     }
-    setLightboxScale(1); // Reset zoom scale
+    setLightboxScale(1);
   };
 
   return (
@@ -325,59 +340,77 @@ function ProductPage() {
           ))}
         </nav>
 
-        {/* Gallery Grid */}
-        <div className="mt-3 grid gap-4 md:grid-cols-2">
-          {/* Main Studio View */}
-          <div className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-sm aspect-square flex items-center justify-center">
-            {galleryImages[activeImgIndex] ? (
-              <img
-                src={galleryImages[activeImgIndex]}
-                alt={product.name}
-                onClick={() => setLightboxImg(galleryImages[activeImgIndex])}
-                className="w-full h-full object-cover cursor-zoom-in hover:scale-[1.01] transition-transform duration-300"
-              />
-            ) : (
-              <div className="text-xs text-muted-foreground italic">No image assets</div>
-            )}
-          </div>
-
-          {/* Installed Lifestyle Reference - Full Frame Cover */}
-          <div className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-sm flex flex-col justify-between aspect-square">
-            <div className="flex-1 overflow-hidden">
-              {installed ? (
+        {/* Product Images Gallery (FIX 3 & 4: Separated Original vs Multi-Image Installation Switcher) */}
+        <div className="mt-3 grid gap-5 md:grid-cols-2">
+          {/* 1. ORIGINAL PRODUCT IMAGE: Fixed, Single, Non-Switchable Source of Truth */}
+          <div className="flex flex-col space-y-2">
+            <div className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-sm aspect-square flex items-center justify-center">
+              {originalImage ? (
                 <img
-                  src={installed}
-                  alt={`${product.name} installed scene`}
-                  loading="lazy"
-                  onClick={() => setLightboxImg(installed)}
+                  src={originalImage}
+                  alt={product.name}
+                  onClick={() => setLightboxImg(originalImage)}
                   className="w-full h-full object-cover cursor-zoom-in hover:scale-[1.01] transition-transform duration-300"
                 />
               ) : (
-                <div className="text-xs text-muted-foreground italic flex h-full items-center justify-center bg-muted/20">No installed preview uploaded</div>
+                <div className="text-xs text-muted-foreground italic">No image assets</div>
               )}
             </div>
-            <div className="border-t border-border px-3.5 py-2 text-[9px] uppercase tracking-[0.18em] text-muted-foreground font-semibold bg-background shrink-0">
-              Installed reference / lifestyle layout
+            <div className="border border-border/80 rounded-lg px-3 py-1.5 text-[9px] uppercase tracking-[0.16em] text-muted-foreground font-semibold bg-surface/50 text-center">
+              Original Product Reference
             </div>
           </div>
-        </div>
 
-        {/* Thumbnail Selector Bar */}
-        {galleryImages.length > 1 && (
-          <div className="flex gap-2.5 mt-3 overflow-x-auto pb-1 scrollbar-none">
-            {galleryImages.map((imgUrl, i) => (
-              <button
-                key={i}
-                onClick={() => setActiveImgIndex(i)}
-                className={`h-14 w-14 rounded-lg border overflow-hidden shrink-0 transition bg-card ${
-                  activeImgIndex === i ? "border-primary shadow-sm" : "border-border hover:border-primary/45"
-                }`}
-              >
-                <img src={imgUrl} alt="thumbnail" className="h-full w-full object-cover" />
-              </button>
-            ))}
+          {/* 2. INSTALLATION IMAGE GALLERY: Multi-Image Switchable Lifestyle Layout */}
+          <div className="flex flex-col space-y-2.5">
+            <div className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-sm aspect-square flex flex-col justify-between">
+              <div className="flex-1 overflow-hidden">
+                {currentInstallationImage ? (
+                  <img
+                    src={currentInstallationImage}
+                    alt={`${product.name} installation view ${activeInstallIndex + 1}`}
+                    loading="lazy"
+                    onClick={() => setLightboxImg(currentInstallationImage)}
+                    className="w-full h-full object-cover cursor-zoom-in hover:scale-[1.01] transition-transform duration-300"
+                  />
+                ) : (
+                  <div className="text-xs text-muted-foreground italic flex h-full items-center justify-center bg-muted/20">
+                    No installation images uploaded
+                  </div>
+                )}
+              </div>
+              <div className="border-t border-border px-3.5 py-2 text-[9px] uppercase tracking-[0.16em] text-muted-foreground font-semibold bg-background shrink-0 flex items-center justify-between">
+                <span>Installed Scene Reference</span>
+                {installationImages.length > 1 && (
+                  <span className="text-primary font-mono font-bold">
+                    {activeInstallIndex + 1} / {installationImages.length}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* FIX 4: Installation Thumbnail Selector Bar (Only Installation Images) */}
+            {installationImages.length > 1 && (
+              <div className="flex gap-2.5 overflow-x-auto pb-1 scrollbar-none">
+                {installationImages.map((imgUrl, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => setActiveInstallIndex(i)}
+                    className={`h-14 w-14 rounded-lg border overflow-hidden shrink-0 transition bg-card ${
+                      activeInstallIndex === i
+                        ? "border-brand-orange ring-2 ring-brand-orange/40 shadow-sm"
+                        : "border-border opacity-70 hover:opacity-100 hover:border-brand-orange/40"
+                    }`}
+                    aria-label={`Select installation image ${i + 1}`}
+                  >
+                    <img src={imgUrl} alt="" className="h-full w-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-        )}
+        </div>
 
         {/* Product Details Section */}
         <div className="mt-6 space-y-4">
