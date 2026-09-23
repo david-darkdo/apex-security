@@ -20,7 +20,6 @@ const productQuery = (slug: string) =>
     queryKey: ["product", slug],
     queryFn: async () => {
       const p = await fetchProductBySlug(slug);
-      if (!p) throw notFound();
       return p;
     },
   });
@@ -36,6 +35,29 @@ export const Route = createFileRoute("/product/$slug")({
   loader: async ({ context, params }) => {
     const origin = getProductionOrigin();
     const product = await context.queryClient.ensureQueryData(productQuery(params.slug));
+
+    if (!product) {
+      // Check redirects table for old/renamed slug
+      const { data: redirectRow } = await supabase
+        .from("redirects")
+        .select("new_path, target_slug")
+        .or(`source_slug.eq.${params.slug},old_path.eq./product/${params.slug}`)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (redirectRow) {
+        const destPath = redirectRow.new_path?.startsWith("/")
+          ? redirectRow.new_path
+          : `/product/${redirectRow.target_slug}`;
+        throw redirect({
+          href: `${origin.replace(/\/+$/, "")}${destPath}`,
+          statusCode: 301,
+        });
+      }
+
+      throw notFound();
+    }
 
     // Redirect unnormalized or legacy slug formats to canonical URL (HTTP 301)
     const canonicalSlug = getCanonicalProductSlug(product);
