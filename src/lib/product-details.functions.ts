@@ -195,17 +195,34 @@ Your output directly populates the Apex Security Digital Showroom products table
     if (json.faq) productPatch.faq = json.faq;
     if (json.structured_data) productPatch.structured_data = json.structured_data;
 
-    // Search Keywords, Terms & Tokens
+    // Canonical Search Intelligence & Legacy Array Mapping
+    const searchKeywords = Array.isArray(json.search_keywords) ? json.search_keywords : [];
+    const altTerms = Array.isArray(json.alternative_terms) ? json.alternative_terms : (Array.isArray(json.alternative_names) ? json.alternative_names : []);
+    const customerPhrases = Array.isArray(json.customer_phrases) ? json.customer_phrases : [];
+    const synonyms = Array.isArray(json.synonyms) ? json.synonyms : [];
+    const relatedTerms = Array.isArray(json.related_terms) ? json.related_terms : [];
+    const misspellings = Array.isArray(json.misspellings) ? json.misspellings : [];
+
+    productPatch.ai_understanding = {
+      ...(product.ai_understanding || {}),
+      search_keywords: searchKeywords,
+      alternative_terms: altTerms,
+      customer_phrases: customerPhrases,
+      synonyms: synonyms,
+      related_terms: relatedTerms,
+      misspellings: misspellings,
+    };
+
     const rawSearchKeywords = [
-      ...(Array.isArray(json.search_keywords) ? json.search_keywords : []),
-      ...(Array.isArray(json.alternative_terms) ? json.alternative_terms : []),
-      ...(Array.isArray(json.related_terms) ? json.related_terms : []),
-      ...(Array.isArray(json.synonyms) ? json.synonyms : []),
-      ...(Array.isArray(json.customer_phrases) ? json.customer_phrases : []),
+      ...searchKeywords,
+      ...altTerms,
+      ...relatedTerms,
+      ...synonyms,
+      ...customerPhrases,
       ...(Array.isArray(json.builder_terminology) ? json.builder_terminology : []),
       ...(Array.isArray(json.designer_terminology) ? json.designer_terminology : []),
       ...(Array.isArray(json.contractor_terminology) ? json.contractor_terminology : []),
-      ...(Array.isArray(json.misspellings) ? json.misspellings : []),
+      ...misspellings,
       ...(Array.isArray(json.filter_tokens) ? json.filter_tokens : []),
     ].filter(Boolean);
 

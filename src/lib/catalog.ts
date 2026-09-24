@@ -31,10 +31,9 @@ export type TaxonomyNode = { id: string; name: string; slug: string };
 const PRODUCT_FIELDS =
   "id,slug,name,code,price,brand,image_url,generated_studio_image,generated_installed_image,installation_images,short_description,family_id,type_id,category_id,subcategory_id,color,material,finish,app_keywords,featured_feed,featured_homepage,created_at";
 
-/** Customer-facing visibility: completed processing, published, not hidden, not soft-deleted. */
-function applyPublicFilters<T extends { eq: Function; is: Function }>(q: T): T {
+/** Customer-facing visibility: published, not hidden, not soft-deleted. */
+export function applyPublicFilters<T extends { eq: Function; is: Function }>(q: T): T {
   return (q as any)
-    .eq("processing_state", "completed")
     .eq("status", "published")
     .eq("hidden", false)
     .is("deleted_at", null);
@@ -60,6 +59,11 @@ export type FeedFilters = {
   type?: string;
   category?: string;
   subcategory?: string;
+  family?: string;
+  brand?: string;
+  material?: string;
+  finish?: string;
+  color?: string;
   q?: string;
 };
 
@@ -77,103 +81,76 @@ export type PaginatedFeedResult = {
 };
 
 /**
- * PRODUCTION CURSOR PAGINATION & INTELLIGENT PRODUCT DISTRIBUTION
- * Interleaves Product Types, Categories, Subcategories, and Brands deterministically.
- * Eliminates all hardcoded 60-item caps. Supports enterprise scale catalogs.
+ * CANONICAL DISCOVERY SEARCH RPC CONSUMER
+ * Executes server-side 17-tier deterministic search ranking and filtering via search_products RPC.
+ */
+export async function searchProductsWithDiscovery(
+  filters: FeedFilters,
+  limit: number = 24,
+  offset: number = 0
+): Promise<{ items: ProductRow[]; totalCount: number }> {
+  const { data: ranked, error: rpcError } = await supabase.rpc("search_products" as any, {
+    _q: filters.q || null,
+    _type: filters.type || null,
+    _category: filters.category || null,
+    _subcategory: filters.subcategory || null,
+    _family: filters.family || null,
+    _brand: filters.brand || null,
+    _material: filters.material || null,
+    _finish: filters.finish || null,
+    _color: filters.color || null,
+    _limit: limit,
+    _offset: offset,
+  } as any);
+
+  if (rpcError) throw rpcError;
+  if (!ranked || !Array.isArray(ranked) || ranked.length === 0) {
+    return { items: [], totalCount: 0 };
+  }
+
+  const ids = ranked.map((r: any) => r.product_id);
+  const totalCount = Number(ranked[0]?.total_count || ranked.length);
+
+  const { data: products, error: pError } = await applyPublicFilters(
+    supabase.from("products").select(PRODUCT_FIELDS)
+  ).in("id", ids);
+
+  if (pError) throw pError;
+
+  const idOrder = new Map(ids.map((id: string, idx: number) => [id, idx]));
+  const sorted = ((products || []) as ProductRow[]).sort(
+    (a, b) => (idOrder.get(a.id) ?? 0) - (idOrder.get(b.id) ?? 0)
+  );
+
+  return { items: sorted, totalCount };
+}
+
+/**
+ * PRODUCTION FEED & DISCOVERY CURSOR PAGINATION
+ * Seamlessly integrates Discovery Engine for search queries and Intelligent Distribution for browsing.
  */
 export async function fetchFeedProductsPaginated(
   filters: FeedFilters,
   cursor: CursorParam | null = null,
   limit: number = 24
 ): Promise<PaginatedFeedResult> {
-  // 1. Search Query Path
+  // 1. Discovery Search Query Path
   if (filters.q && filters.q.trim()) {
-    const term = filters.q.trim();
-    const matchedIdSet = new Set<string>();
-
-    const { data: ranked } = await supabase.rpc("search_products" as any, {
-      _q: term,
-      _limit: 500,
-    } as any);
-    if (ranked && Array.isArray(ranked)) {
-      ranked.forEach((r: any) => { if (r?.product_id) matchedIdSet.add(r.product_id); });
-    }
-
-    const { data: ilikeProducts } = await applyPublicFilters(
-      supabase.from("products").select("id")
-    ).or(`name.ilike.%${term}%,code.ilike.%${term}%,brand.ilike.%${term}%,short_description.ilike.%${term}%,material.ilike.%${term}%,finish.ilike.%${term}%,color.ilike.%${term}%,size.ilike.%${term}%`);
-
-    if (ilikeProducts) {
-      ilikeProducts.forEach((p: any) => matchedIdSet.add(p.id));
-    }
-
-    const [typeMatches, catMatches, subMatches, famMatches] = await Promise.all([
-      supabase.from("product_types").select("id").ilike("name", `%${term}%`),
-      supabase.from("categories").select("id").ilike("name", `%${term}%`),
-      supabase.from("subcategories").select("id").ilike("name", `%${term}%`),
-      supabase.from("family_groups").select("id").ilike("name", `%${term}%`),
-    ]);
-
-    const typeIds = (typeMatches.data || []).map((t: any) => t.id);
-    const catIds = (catMatches.data || []).map((c: any) => c.id);
-    const subIds = (subMatches.data || []).map((s: any) => s.id);
-    const famIds = (famMatches.data || []).map((f: any) => f.id);
-
-    const hierOrConditions: string[] = [];
-    if (typeIds.length) hierOrConditions.push(`type_id.in.(${typeIds.join(",")})`);
-    if (catIds.length) hierOrConditions.push(`category_id.in.(${catIds.join(",")})`);
-    if (subIds.length) hierOrConditions.push(`subcategory_id.in.(${subIds.join(",")})`);
-    if (famIds.length) hierOrConditions.push(`family_id.in.(${famIds.join(",")})`);
-
-    if (hierOrConditions.length > 0) {
-      const { data: hierProducts } = await applyPublicFilters(
-        supabase.from("products").select("id")
-      ).or(hierOrConditions.join(","));
-      if (hierProducts) {
-        hierProducts.forEach((p: any) => matchedIdSet.add(p.id));
-      }
-    }
-
-    const finalIds = Array.from(matchedIdSet);
-    if (finalIds.length === 0) {
-      return { items: [], nextCursor: null, hasMore: false, totalCount: 0 };
-    }
-
-    let byIdQuery = applyPublicFilters(
-      supabase.from("products").select(PRODUCT_FIELDS),
-    ).in("id", finalIds);
-
-    if (filters.type) {
-      const { data } = await supabase.from("product_types").select("id").eq("slug", filters.type).maybeSingle();
-      if (data?.id) byIdQuery = byIdQuery.eq("type_id", data.id);
-    }
-    if (filters.category) {
-      const { data } = await supabase.from("categories").select("id").eq("slug", filters.category).maybeSingle();
-      if (data?.id) byIdQuery = byIdQuery.eq("category_id", data.id);
-    }
-    if (filters.subcategory) {
-      const { data } = await supabase.from("subcategories").select("id").eq("slug", filters.subcategory).maybeSingle();
-      if (data?.id) byIdQuery = byIdQuery.eq("subcategory_id", data.id);
-    }
-
-    const { data, error } = await byIdQuery;
-    if (error) throw error;
-
-    const rankOrder = new Map(finalIds.map((id, i) => [id, i] as const));
-    const sorted = ((data ?? []) as ProductRow[]).sort(
-      (a, b) => (rankOrder.get(a.id) ?? 0) - (rankOrder.get(b.id) ?? 0),
+    const offset = cursor?.rank ?? 0;
+    const { items: rawItems, totalCount } = await searchProductsWithDiscovery(
+      filters,
+      limit + 1,
+      offset
     );
 
-    // Apply cursor slicing for search
-    const startIndex = cursor?.rank ?? 0;
-    const items = sorted.slice(startIndex, startIndex + limit);
-    const hasMore = sorted.length > startIndex + limit;
-    const nextCursor = hasMore ? { rank: startIndex + limit } : null;
+    const items = rawItems.slice(0, limit);
+    const hasMore = rawItems.length > limit;
+    const nextCursor = hasMore ? { rank: offset + limit } : null;
 
-    return { items, nextCursor, hasMore, totalCount: sorted.length };
+    return { items, nextCursor, hasMore, totalCount };
   }
 
-  // 2. Intelligent Distribution & Cursor Pagination Path
+  // 2. Intelligent Distribution & Browsing Path (Non-search Feed)
   let query = applyPublicFilters(
     supabase.from("products").select(PRODUCT_FIELDS)
   ).order("created_at", { ascending: false });
@@ -210,8 +187,6 @@ export async function fetchFeedProductsPaginated(
   }
 
   // Assign Partition Rank for Intelligent Distribution
-  // If category filter active -> partition by subcategory_id
-  // Otherwise -> partition by category_id or type_id
   const partitionCounts = new Map<string, number>();
   const ranked = (rawProducts as any[]).map((p) => {
     const partitionKey = filters.category
@@ -320,4 +295,72 @@ export async function fetchRelatedProducts(
     .limit(8);
   if (error) throw error;
   return (data ?? []) as ProductRow[];
+}
+
+/**
+ * FETCH DYNAMIC DISCOVERY FACETS
+ */
+export async function fetchSearchFacets(filters: FeedFilters) {
+  const { data, error } = await supabase.rpc("get_search_facets" as any, {
+    _q: filters.q || null,
+    _type: filters.type || null,
+    _category: filters.category || null,
+    _subcategory: filters.subcategory || null,
+    _family: filters.family || null,
+    _brand: filters.brand || null,
+    _material: filters.material || null,
+    _finish: filters.finish || null,
+    _color: filters.color || null,
+  } as any);
+  if (error) throw error;
+  return (data || {
+    types: [],
+    categories: [],
+    subcategories: [],
+    brands: [],
+    materials: [],
+    finishes: [],
+    colors: [],
+  }) as {
+    types: { name: string; slug: string; count: number }[];
+    categories: { name: string; slug: string; count: number }[];
+    subcategories: { name: string; slug: string; count: number }[];
+    brands: { name: string; count: number }[];
+    materials: { name: string; count: number }[];
+    finishes: { name: string; count: number }[];
+    colors: { name: string; count: number }[];
+  };
+}
+
+/**
+ * FETCH REAL-TIME SEARCH SUGGESTIONS
+ */
+export async function fetchSearchSuggestions(prefix: string, limit: number = 8) {
+  if (!prefix || prefix.trim().length < 2) return [];
+  const { data, error } = await supabase.rpc("get_search_suggestions" as any, {
+    _prefix: prefix.trim(),
+    _limit: limit,
+  } as any);
+  if (error) throw error;
+  return (data || []) as { suggestion: string; suggestion_type: string; target_slug: string }[];
+}
+
+/**
+ * ASYNCHRONOUS SEARCH ANALYTICS LOGGER
+ */
+export async function logSearchAnalytics(
+  query: string,
+  resultCount: number,
+  sessionId?: string,
+  selectedProductId?: string
+) {
+  if (!query || !query.trim()) return;
+  try {
+    await supabase.rpc("log_search_query" as any, {
+      _query: query.trim(),
+      _result_count: resultCount,
+      _session_id: sessionId || null,
+      _selected_product_id: selectedProductId || null,
+    } as any);
+  } catch {}
 }
