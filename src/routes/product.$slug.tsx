@@ -48,19 +48,19 @@ export const Route = createFileRoute("/product/$slug")({
       // Check redirects table for old or renamed slug
       const { data: redirectRow } = await supabase
         .from("redirects")
-        .select("new_path, target_slug")
-        .or(`source_slug.eq.${params.slug},old_path.eq./product/${params.slug}`)
+        .select("new_path, status_code")
+        .or(`old_path.eq./product/${params.slug},old_path.eq.${params.slug}`)
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
 
-      if (redirectRow) {
-        const destPath = redirectRow.new_path?.startsWith("/")
+      if (redirectRow?.new_path) {
+        const destPath = redirectRow.new_path.startsWith("/")
           ? redirectRow.new_path
-          : `/product/${redirectRow.target_slug}`;
+          : `/${redirectRow.new_path}`;
         throw redirect({
           href: `${origin.replace(/\/+$/, "")}${destPath}`,
-          statusCode: 301,
+          statusCode: (redirectRow.status_code as any) || 301,
         });
       }
 

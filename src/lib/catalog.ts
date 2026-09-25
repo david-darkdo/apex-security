@@ -28,7 +28,7 @@ export type ProductRow = {
 
 export type TaxonomyNode = { id: string; name: string; slug: string };
 
-const PRODUCT_FIELDS =
+export const PRODUCT_FIELDS =
   "id,slug,name,code,price,brand,image_url,generated_studio_image,generated_installed_image,installation_images,short_description,family_id,type_id,category_id,subcategory_id,color,material,finish,app_keywords,featured_feed,featured_homepage,created_at";
 
 /** Customer-facing visibility: published, not hidden, not soft-deleted. */
