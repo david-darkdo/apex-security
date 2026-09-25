@@ -3,6 +3,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { getAIProvider, AIProviderError } from "./ai-providers";
 
 type JobType =
+  | "product_details"
   | "understanding"
   | "seo"
   | "lifestyle"
@@ -53,16 +54,16 @@ function normalizeIntelligenceObject(parsed: any) {
   return {
     master,
     seo_context: parsed.seo_context ?? {
-      copywriting_angle: master.design_language ?? "luxury architectural material",
-      target_audience: master.customer_intent ?? "architects, interior designers, contractors",
+      copywriting_angle: master.design_language ?? "security infrastructure",
+      target_audience: master.customer_intent ?? "homeowners, commercial facilities, contractors",
       core_benefits: master.visual_characteristics ?? [],
       luxury_highlights: [master.luxury_level, master.material, master.finish].filter(Boolean),
     },
     lifestyle_context: parsed.lifestyle_context ?? {
-      scene_setting: master.installation_context ?? "luxury showroom interior",
-      spatial_context: master.installation_area ?? "wall / floor",
-      architectural_environment: master.style ?? "modern luxury villa",
-      decor_style: master.design_language ?? "contemporary minimal",
+      scene_setting: master.installation_context ?? "modern security perimeter",
+      spatial_context: master.installation_area ?? "entryway / wall / gate",
+      architectural_environment: master.style ?? "contemporary commercial / residential",
+      decor_style: master.design_language ?? "robust architectural security",
       material: master.material,
       finish: master.finish,
       color: master.color,
@@ -108,12 +109,13 @@ async function resolvePromptTemplate(supabase: any, product: any) {
   }, {});
 
   return {
-    understanding_prompt: templatesMap.understanding || 'You are a luxury product understanding engine. Analyze the uploaded product image and details.\nProduct Details:\nName: {product_name}\nBrand: {brand}\nFinish: {finish}\nMaterial: {material}\nColor: {color}\nSize: {size}\nAdditional Directives: {family_override}\n\nOutput a strict JSON object containing:\n- master: { product_type, installation_area, indoor_outdoor, surface_types, material, finish, texture, color, pattern, shape, style, luxury_level, installation_context, customer_intent, architectural_use, visual_characteristics, design_language }\n- seo_context: { copywriting_angle, target_audience, core_benefits, luxury_highlights, technical_specifications }\n- lifestyle_context: { scene_setting, lighting_mood, spatial_context, complementary_decor, camera_angle, architectural_environment }\n- search_context: { search_aliases, builder_terminology, designer_terminology, contractor_terminology, common_misspellings, name_variations, material_terminology, regional_variations }\n- recommendation_context: { related_product_types, matching_collection_styles, cross_sell_categories, complementary_materials, upsell_triggers }\n- validation_context: { expected_material, expected_finish, expected_color, expected_texture, expected_geometry, expected_proportions, key_features_to_verify }',
+    product_details_prompt: templatesMap.product_details || "",
+    understanding_prompt: templatesMap.understanding || 'You are an Apex Security product understanding engine. Analyze the uploaded product image and details.\nProduct Details:\nName: {product_name}\nBrand: {brand}\nFinish: {finish}\nMaterial: {material}\nColor: {color}\nSize: {size}\nAdditional Directives: {family_override}',
     seo_prompt: templatesMap.seo || 'Consuming the following SEO Context:\n{seo_context}\n\nProduct Details:\nName: {product_name}\nBrand: {brand}\n\nGenerate a strict JSON object containing:\n- generated_description\n- seo_title\n- meta_description\n- seo_keywords (array)\n- canonical_slug\n- og_title\n- og_description\n- twitter_card\n- faq (array of 5 objects containing: { q, a })\n- structured_data (JSON-LD FAQPage metadata schema)',
-    lifestyle_prompt: templatesMap.lifestyle || 'You are a prompt engineer for an image generation pipeline. Create a prompt to place the product naturally inside a beautiful, realistic installation scene matching context: {lifestyle_context}. Maintain the original design, material, texture, finish, color, and geometric proportions of the product exactly.',
+    lifestyle_prompt: templatesMap.lifestyle || 'You are a prompt engineer for an image generation pipeline. Create a prompt to place the product naturally inside a realistic security installation scene matching context: {lifestyle_context}.',
     search_prompt: templatesMap.search || 'Analyze the Search Context:\n{search_context}\n\nGenerate search terms and variations as JSON: search_aliases (array), builder_terminology (array), designer_terminology (array), contractor_terminology (array), common_misspellings (array), name_variations (array), material_terminology (array), regional_variations (array)',
     recommendation_prompt: templatesMap.recommendation || 'Analyze the Recommendation Context:\n{recommendation_context}\n\nGenerate recommendation parameters as JSON: related_product_types (array), matching_collection_styles (array), cross_sell_categories (array), complementary_materials (array), upsell_triggers (array)',
-    quality_prompt: templatesMap.quality || 'Verify if the generated lifestyle image matches the original product image. Validation Context: {validation_context}\nOriginal Product Image: {original_image_url}\nGenerated Lifestyle Image: {generated_image_url}\n\nDetermine if the AI redesigned, replaced, or changed the product. Output JSON: passes_validation (boolean), confidence_score (0-100), product_preserved (boolean), failure_reasons (array)'
+    quality_prompt: templatesMap.quality || 'Verify if the generated lifestyle image matches the original product image.'
   };
 }
 
@@ -552,6 +554,7 @@ export const runSandboxStage = createServerFn({ method: "POST" })
       .from("product_understanding").select("*").eq("product_id", productId).maybeSingle();
 
     const templateMap: Record<string, string> = {
+      product_details: resolvedTemplates.product_details_prompt,
       understanding: resolvedTemplates.understanding_prompt,
       seo: resolvedTemplates.seo_prompt,
       lifestyle: resolvedTemplates.lifestyle_prompt,

@@ -65,14 +65,25 @@ export function ProductCard({ product }: { product: ProductRow }) {
     void toggleFavorite(product.id, product);
   };
 
+  const hasDiscount = Boolean(
+    product.original_price && Number(product.original_price) > Number(product.price || 0)
+  );
+
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:border-brand-orange/40">
       {/* Floating Badges */}
-      {isNew && (
-        <span className="absolute top-2.5 left-2.5 z-10 bg-brand-orange px-2 py-0.5 rounded text-[9px] font-bold text-canvas tracking-wide uppercase shadow">
-          New
-        </span>
-      )}
+      <div className="absolute top-2.5 left-2.5 z-10 flex flex-col gap-1">
+        {isNew && (
+          <span className="bg-brand-orange px-2 py-0.5 rounded text-[9px] font-bold text-canvas tracking-wide uppercase shadow">
+            New
+          </span>
+        )}
+        {hasDiscount && (
+          <span className="bg-emerald-600 px-2 py-0.5 rounded text-[9px] font-bold text-white tracking-wide uppercase shadow">
+            Offer
+          </span>
+        )}
+      </div>
 
       {/* Floating Favorite Heart Icon */}
       <button
@@ -105,9 +116,21 @@ export function ProductCard({ product }: { product: ProductRow }) {
             Code · {product.code}
           </p>
         </div>
-        <p className="font-display text-base font-bold text-primary mt-1">
-          ₦{Number(product.price).toLocaleString()}
-        </p>
+        
+        <div className="mt-1 flex flex-wrap items-baseline gap-1.5">
+          <span className="font-display text-base font-bold text-primary">
+            ₦{Number(product.price || 0).toLocaleString()}
+          </span>
+          <span className="text-[10px] text-muted-foreground font-mono">
+            / {product.pricing_unit || "piece"}
+          </span>
+          {hasDiscount && (
+            <span className="text-[11px] text-muted-foreground line-through decoration-muted-foreground/60 ml-auto">
+              ₦{Number(product.original_price).toLocaleString()}
+            </span>
+          )}
+        </div>
+
         <div className="mt-auto flex gap-2 pt-2 border-t border-border/40">
           <AddToCollectionButton productId={product.id} compact />
           <Link

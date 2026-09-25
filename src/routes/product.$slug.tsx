@@ -3,7 +3,23 @@ import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/AppShell";
 import { ProductCard } from "@/components/ProductCard";
 import { fetchProductBySlug, fetchRelatedProducts, applyPublicFilters, PRODUCT_FIELDS, ProductRow } from "@/lib/catalog";
-import { ArrowLeft, Heart, ShoppingBag, X, ZoomIn, ZoomOut, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ArrowLeft,
+  Heart,
+  ShoppingBag,
+  X,
+  ZoomIn,
+  ZoomOut,
+  ChevronLeft,
+  ChevronRight,
+  ShieldCheck,
+  CheckCircle2,
+  Award,
+  Zap,
+  HelpCircle,
+  Layers,
+  ChevronDown,
+} from "lucide-react";
 import { AddToCollectionButton } from "@/components/AddToCollectionButton";
 import { publicImageUrl } from "@/components/ImageUploader";
 import { useEffect, useState, useMemo } from "react";
@@ -190,6 +206,34 @@ function ProductPage() {
     return [originalImage, ...installationImages].filter(Boolean) as string[];
   }, [originalImage, installationImages]);
 
+  // Extract Master Document Intelligence
+  const masterDoc = (product.master_document as any) || {};
+  const prodIntel = masterDoc.product_intelligence || {};
+
+  const highlights: string[] = Array.isArray(prodIntel.product_highlights) && prodIntel.product_highlights.length > 0
+    ? prodIntel.product_highlights
+    : (Array.isArray((product as any).highlights) ? (product as any).highlights : []);
+
+  const features: string[] = Array.isArray(prodIntel.product_features) && prodIntel.product_features.length > 0
+    ? prodIntel.product_features
+    : (Array.isArray((product as any).features) ? (product as any).features : []);
+
+  const benefits: string[] = Array.isArray(prodIntel.product_benefits) && prodIntel.product_benefits.length > 0
+    ? prodIntel.product_benefits
+    : (Array.isArray((product as any).benefits) ? (product as any).benefits : []);
+
+  const faqs: { question: string; answer: string }[] = Array.isArray(masterDoc.faq) && masterDoc.faq.length > 0
+    ? masterDoc.faq
+    : (Array.isArray(product.faq) ? (product.faq as any) : []);
+
+  const differentiatorType = product.differentiator_type || masterDoc.differentiator?.differentiator_type || null;
+  const differentiatorNote = product.differentiator_note || masterDoc.differentiator?.differentiator_note || null;
+
+  const pricingUnit = product.pricing_unit || "piece";
+  const hasDiscount = Boolean(
+    product.original_price && Number(product.original_price) > Number(product.price || 0)
+  );
+
   useEffect(() => {
     if (!product?.id) return;
 
@@ -325,6 +369,12 @@ function ProductPage() {
       "url": canonicalProductUrl,
       "priceCurrency": "NGN",
       "price": product.price || 0,
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": product.price || 0,
+        "priceCurrency": "NGN",
+        "unitCode": pricingUnit,
+      },
       "availability": "https://schema.org/InStock",
       "itemCondition": "https://schema.org/NewCondition",
       "seller": {
@@ -335,14 +385,12 @@ function ProductPage() {
     }
   };
 
-  const hasFaq = Boolean(
-    product.faq && Array.isArray(product.faq) && (product.faq as any[]).length > 0
-  );
+  const hasFaq = faqs.length > 0;
 
   const faqSchema = hasFaq ? {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    "mainEntity": (product.faq as any[]).map((f) => ({
+    "mainEntity": faqs.map((f: any) => ({
       "@type": "Question",
       "name": f.question || f.q || "",
       "acceptedAnswer": {
@@ -463,46 +511,120 @@ function ProductPage() {
         </div>
 
         {/* Product Details Section */}
-        <div className="mt-6 space-y-4">
+        <div className="mt-6 space-y-5">
           <div>
-            <p className="text-xs font-mono uppercase tracking-[0.18em] text-primary font-bold">
-              {product.brand || "Apex Security Ltd"} {product.code ? `· Code ${product.code}` : ""}
-            </p>
-            <h1 className="mt-1 font-display text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight uppercase">
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="text-xs font-mono uppercase tracking-[0.18em] text-primary font-bold">
+                {product.brand || "Apex Security Ltd"} {product.code ? `· Code ${product.code}` : ""}
+              </p>
+              {differentiatorType && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 border border-primary/20 px-2.5 py-0.5 text-[9px] font-bold text-primary uppercase tracking-wider">
+                  <Award className="h-3 w-3" />
+                  {differentiatorType}
+                </span>
+              )}
+            </div>
+
+            <h1 className="mt-1.5 font-display text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight uppercase">
               {product.name}
             </h1>
-            <p className="mt-1.5 font-display text-2xl font-bold text-primary">
-              ₦{Number(product.price || 0).toLocaleString()}
-            </p>
+
+            {/* Pricing Section with Unit & Original Price */}
+            <div className="mt-2 flex flex-wrap items-baseline gap-2">
+              <span className="font-display text-2xl sm:text-3xl font-extrabold text-primary">
+                ₦{Number(product.price || 0).toLocaleString()}
+              </span>
+              <span className="text-xs font-semibold text-muted-foreground uppercase font-mono">
+                / {pricingUnit}
+              </span>
+              {hasDiscount && (
+                <span className="text-sm text-muted-foreground line-through decoration-muted-foreground/60 ml-2">
+                  ₦{Number(product.original_price).toLocaleString()}
+                </span>
+              )}
+              {hasDiscount && (
+                <span className="rounded bg-emerald-600/10 border border-emerald-600/20 px-2 py-0.5 text-[10px] font-bold text-emerald-600 uppercase">
+                  Save ₦{(Number(product.original_price) - Number(product.price || 0)).toLocaleString()}
+                </span>
+              )}
+            </div>
           </div>
+
+          {/* Differentiator Callout Card */}
+          {differentiatorNote && (
+            <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 text-xs shadow-sm max-w-2xl space-y-1.5">
+              <div className="flex items-center gap-1.5 font-bold uppercase tracking-wider text-primary text-[10px]">
+                <Zap className="h-3.5 w-3.5" />
+                <span>Security Edge: {differentiatorType || "Key Feature"}</span>
+              </div>
+              <p className="text-foreground leading-relaxed font-medium">{differentiatorNote}</p>
+            </div>
+          )}
 
           {/* Product Description */}
           {productDescription && (
-            <div className="rounded-xl border border-border/80 bg-card p-4 text-xs leading-relaxed text-muted-foreground max-w-prose shadow-sm">
-              {productDescription}
+            <div className="rounded-xl border border-border/80 bg-card p-4 text-xs leading-relaxed text-muted-foreground max-w-2xl shadow-sm">
+              <p>{productDescription}</p>
             </div>
           )}
 
-          {/* FAQ Accordion Section */}
-          {hasFaq && (
-            <div className="rounded-xl border border-border/80 bg-card p-4 text-xs space-y-3 max-w-prose shadow-sm">
-              <h3 className="font-display text-sm font-semibold uppercase tracking-wider text-foreground border-b border-border/40 pb-2">Frequently Asked Questions</h3>
-              <div className="space-y-4">
-                {(product.faq as any[]).map((f, i) => (
-                  <div key={i} className="space-y-1">
-                    <h4 className="font-semibold text-xs text-foreground flex gap-1.5 items-start">
-                      <span className="text-primary font-bold">Q:</span>
-                      <span>{f.question || f.q}</span>
-                    </h4>
-                    <p className="pl-4 text-xs text-muted-foreground leading-relaxed">{f.answer || f.a}</p>
-                  </div>
+          {/* Product Highlights Section */}
+          {highlights.length > 0 && (
+            <div className="rounded-xl border border-border/80 bg-card p-4 text-xs space-y-2.5 max-w-2xl shadow-sm">
+              <h3 className="font-display text-xs font-bold uppercase tracking-wider text-foreground flex items-center gap-1.5 border-b border-border/40 pb-2">
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                <span>Key Highlights</span>
+              </h3>
+              <ul className="grid gap-2 sm:grid-cols-2">
+                {highlights.map((hl, idx) => (
+                  <li key={idx} className="flex items-start gap-2 text-foreground/90 text-[11px] leading-snug">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
+                    <span>{hl}</span>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
           )}
 
-          {/* Technical Specifications (Only render present attributes) */}
-          <dl className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs max-w-xl">
+          {/* Product Features & Benefits Grid */}
+          {(features.length > 0 || benefits.length > 0) && (
+            <div className="grid gap-4 sm:grid-cols-2 max-w-2xl">
+              {features.length > 0 && (
+                <div className="rounded-xl border border-border/80 bg-card p-4 text-xs space-y-2.5 shadow-sm">
+                  <h3 className="font-display text-xs font-bold uppercase tracking-wider text-foreground border-b border-border/40 pb-2">
+                    Features & Specs
+                  </h3>
+                  <ul className="space-y-1.5">
+                    {features.map((ft, idx) => (
+                      <li key={idx} className="text-[11px] text-muted-foreground flex items-start gap-1.5 leading-snug">
+                        <span className="text-primary font-bold">•</span>
+                        <span>{ft}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {benefits.length > 0 && (
+                <div className="rounded-xl border border-border/80 bg-card p-4 text-xs space-y-2.5 shadow-sm">
+                  <h3 className="font-display text-xs font-bold uppercase tracking-wider text-foreground border-b border-border/40 pb-2">
+                    Security Benefits
+                  </h3>
+                  <ul className="space-y-1.5">
+                    {benefits.map((bn, idx) => (
+                      <li key={idx} className="text-[11px] text-muted-foreground flex items-start gap-1.5 leading-snug">
+                        <span className="text-emerald-500 font-bold">✓</span>
+                        <span>{bn}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Technical Specifications (Physical Attributes) */}
+          <dl className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs max-w-2xl">
             {product.code && (
               <div className="rounded-lg border border-border bg-card p-3 shadow-sm">
                 <dt className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Code</dt>
@@ -523,7 +645,7 @@ function ProductPage() {
             )}
             {[
               ["Material", product.material],
-              ["Finish", product.finish],
+              ["Finish", product.finish_name || product.finish],
               ["Color", product.color],
               ["Size", product.size],
             ].map(([k, v]) =>
@@ -535,6 +657,62 @@ function ProductPage() {
               ) : null,
             )}
           </dl>
+
+          {/* Family Variants Strip (If product has family siblings) */}
+          {related.length > 0 && (
+            <div className="rounded-xl border border-border bg-card p-4 space-y-3 max-w-2xl shadow-sm">
+              <div className="flex items-center justify-between border-b border-border/40 pb-2">
+                <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-foreground">
+                  <Layers className="h-4 w-4 text-primary" />
+                  <span>Series Variants ({related.length})</span>
+                </div>
+                {taxonomy?.family?.name && (
+                  <span className="text-[10px] text-muted-foreground font-mono">{taxonomy.family.name}</span>
+                )}
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                {related.map((v) => (
+                  <Link
+                    key={v.id}
+                    to="/product/$slug"
+                    params={{ slug: getCanonicalProductSlug(v) }}
+                    className="flex items-center gap-2 rounded-lg border border-border/80 bg-background p-2 hover:border-primary/50 transition group"
+                  >
+                    <img
+                      src={publicImageUrl(v.generated_studio_image) || publicImageUrl(v.image_url) || ""}
+                      alt={v.name}
+                      className="h-10 w-10 rounded object-cover shrink-0 bg-muted"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[11px] font-semibold text-foreground truncate group-hover:text-primary transition-colors">{v.name}</p>
+                      <p className="text-[10px] font-bold text-primary">₦{Number(v.price).toLocaleString()}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* FAQ Accordion Section */}
+          {hasFaq && (
+            <div className="rounded-xl border border-border/80 bg-card p-4 text-xs space-y-3 max-w-2xl shadow-sm">
+              <h3 className="font-display text-xs font-bold uppercase tracking-wider text-foreground border-b border-border/40 pb-2 flex items-center gap-1.5">
+                <HelpCircle className="h-4 w-4 text-primary" />
+                <span>Frequently Asked Questions</span>
+              </h3>
+              <div className="space-y-3 pt-1">
+                {faqs.map((f: any, i: number) => (
+                  <div key={i} className="rounded-lg border border-border/50 bg-background/50 p-3 space-y-1">
+                    <h4 className="font-semibold text-xs text-foreground flex gap-1.5 items-start">
+                      <span className="text-primary font-bold font-mono">Q:</span>
+                      <span>{f.question || f.q}</span>
+                    </h4>
+                    <p className="pl-4 text-[11px] text-muted-foreground leading-relaxed">{f.answer || f.a}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Actions Bar */}
           <div className="flex gap-2.5 max-w-md pt-2">

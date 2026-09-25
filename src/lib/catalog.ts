@@ -6,11 +6,16 @@ export type ProductRow = {
   name: string;
   code: string;
   price: number;
+  original_price?: number | null;
+  pricing_unit?: string;
   brand: string | null;
+  differentiator_type?: string | null;
+  differentiator_note?: string | null;
   image_url: string | null;
   generated_studio_image: string | null;
   generated_installed_image: string | null;
   short_description: string | null;
+  generated_description?: string | null;
   family_id: string | null;
   type_id: string | null;
   category_id: string | null;
@@ -24,12 +29,15 @@ export type ProductRow = {
   featured_homepage?: boolean | null;
   created_at?: string | null;
   distribution_rank?: number;
+  master_document?: any;
+  faq?: any;
+  structured_data?: any;
 };
 
 export type TaxonomyNode = { id: string; name: string; slug: string };
 
 export const PRODUCT_FIELDS =
-  "id,slug,name,code,price,brand,image_url,generated_studio_image,generated_installed_image,installation_images,short_description,family_id,type_id,category_id,subcategory_id,color,material,finish,app_keywords,featured_feed,featured_homepage,created_at";
+  "id,slug,name,code,price,original_price,pricing_unit,brand,differentiator_type,differentiator_note,image_url,generated_studio_image,generated_installed_image,installation_images,short_description,generated_description,family_id,type_id,category_id,subcategory_id,color,material,finish,app_keywords,featured_feed,featured_homepage,created_at,master_document,faq,structured_data";
 
 /** Customer-facing visibility: published, not hidden, not soft-deleted. */
 export function applyPublicFilters<T extends { eq: Function; is: Function }>(q: T): T {

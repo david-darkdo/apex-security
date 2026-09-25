@@ -48,7 +48,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   seo_description:
     "Apex Security Ltd provides CCTV cameras, solar CCTV systems, smart locks, security doors and modern door solutions in Abuja, Nigeria. Serving residential, commercial and building projects nationwide, our showroom connects customers with practical security technology and quality door solutions around Dei-Dei Building Materials Market.",
   homepage_description:
-    "Secure your space with modern technology and dependable door solutions. Apex Security Ltd brings CCTV cameras, solar security cameras, smart locks and quality security doors together for homes, businesses and building projects across Abuja and Nigeria.",
+    "Secure your space with modern technology and practical door solutions. Apex Security Ltd brings CCTV cameras, solar security cameras, smart locks and quality security doors together for homes, businesses and building projects across Abuja and Nigeria.",
   about_description:
     "Apex Security Ltd is focused on helping customers protect and improve their properties through modern security technology and dependable door solutions. From CCTV surveillance and solar-powered cameras to smart locks, security doors, flush doors, pivot doors and toilet doors, we provide solutions suited to residential, commercial and building projects. Based around Dei-Dei, Abuja, we serve customers across Nigeria.",
   contact_description:
@@ -75,7 +75,7 @@ export async function fetchAppSettings(): Promise<AppSettings> {
       .limit(1)
       .maybeSingle();
     if (error) return DEFAULT_SETTINGS;
-    if (data) return data as AppSettings;
+    if (data) return data as unknown as AppSettings;
 
     // No row yet — try to seed one (requires admin RLS). Ignore failures.
     try {
@@ -84,7 +84,7 @@ export async function fetchAppSettings(): Promise<AppSettings> {
         .insert({} as never)
         .select("*")
         .maybeSingle();
-      if (inserted) return inserted as AppSettings;
+      if (inserted) return inserted as unknown as AppSettings;
     } catch {
       /* RLS or network — fall back to in-memory defaults */
     }
