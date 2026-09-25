@@ -107,7 +107,6 @@ export function ProductCard({ product }: { product: ProductRow }) {
         </div>
         <p className="font-display text-base font-bold text-primary mt-1">
           ₦{Number(product.price).toLocaleString()}
-          <span className="ml-1 text-[10px] font-normal text-muted-foreground">/sqm</span>
         </p>
         <div className="mt-auto flex gap-2 pt-2 border-t border-border/40">
           <AddToCollectionButton productId={product.id} compact />

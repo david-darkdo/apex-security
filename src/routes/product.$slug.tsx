@@ -2,7 +2,7 @@ import { createFileRoute, Link, notFound, redirect } from "@tanstack/react-route
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/AppShell";
 import { ProductCard } from "@/components/ProductCard";
-import { fetchProductBySlug, fetchRelatedProducts } from "@/lib/catalog";
+import { fetchProductBySlug, fetchRelatedProducts, applyPublicFilters, PRODUCT_FIELDS, ProductRow } from "@/lib/catalog";
 import { ArrowLeft, Heart, ShoppingBag, X, ZoomIn, ZoomOut, ChevronLeft, ChevronRight } from "lucide-react";
 import { AddToCollectionButton } from "@/components/AddToCollectionButton";
 import { publicImageUrl } from "@/components/ImageUploader";
@@ -10,7 +10,6 @@ import { useEffect, useState, useMemo } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useFavorites } from "@/hooks/useFavorites";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 import { getProductionOrigin } from "@/lib/origin";
 import { getCanonicalProductSlug, getCanonicalProductUrl, getCanonicalProductPath } from "@/lib/product-url";
@@ -19,7 +18,16 @@ const productQuery = (slug: string) =>
   queryOptions({
     queryKey: ["product", slug],
     queryFn: async () => {
-      const p = await fetchProductBySlug(slug);
+      let p = await fetchProductBySlug(slug);
+      if (!p) {
+        // Check by canonical_slug if slug lookup returned null
+        const { data } = await applyPublicFilters(
+          supabase.from("products").select("*")
+        )
+          .eq("canonical_slug", slug)
+          .maybeSingle();
+        p = data;
+      }
       return p;
     },
   });
@@ -37,7 +45,7 @@ export const Route = createFileRoute("/product/$slug")({
     const product = await context.queryClient.ensureQueryData(productQuery(params.slug));
 
     if (!product) {
-      // Check redirects table for old/renamed slug
+      // Check redirects table for old or renamed slug
       const { data: redirectRow } = await supabase
         .from("redirects")
         .select("new_path, target_slug")
@@ -97,7 +105,7 @@ export const Route = createFileRoute("/product/$slug")({
     const product = loaderData?.product;
     const origin = loaderData?.origin || getProductionOrigin();
     const title = product?.seo_title || `${product?.name || "Product"} — Apex Security Ltd`;
-    const desc = product?.seo_description || product?.short_description || "Apex Security Ltd product details.";
+    const desc = product?.seo_description || product?.short_description || `Explore ${product?.name || "security products"} by ${product?.brand || "Apex Security Ltd"}.`;
     const imageUrl = product?.generated_studio_image || product?.image_url || "";
     const canonical = getCanonicalProductUrl(product, origin);
 
@@ -125,9 +133,10 @@ export const Route = createFileRoute("/product/$slug")({
   notFoundComponent: () => (
     <AppShell>
       <div className="container-app py-16 text-center">
-        <h1 className="font-display text-2xl">Product not found</h1>
-        <Link to="/" className="mt-4 inline-block text-primary underline">
-          Back to feed
+        <h1 className="font-display text-2xl font-bold uppercase tracking-wide">Product not found</h1>
+        <p className="mt-2 text-sm text-muted-foreground">The security product you requested is not available or has been moved.</p>
+        <Link to="/" className="mt-6 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-bold uppercase tracking-wider text-primary-foreground hover:bg-primary/90 transition shadow-sm">
+          <ArrowLeft className="h-4 w-4" /> Back to feed
         </Link>
       </div>
     </AppShell>
@@ -135,38 +144,15 @@ export const Route = createFileRoute("/product/$slug")({
   errorComponent: ({ error }) => (
     <AppShell>
       <div className="container-app py-16 text-center text-sm text-destructive">
-        <h2 className="font-semibold text-lg">Failed to load product page</h2>
+        <h2 className="font-semibold text-lg">Failed to load product details</h2>
         <p className="mt-2 text-muted-foreground">{error.message}</p>
-        <Link to="/" className="mt-4 inline-block text-primary underline">Back to feed</Link>
+        <Link to="/" className="mt-6 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-bold uppercase tracking-wider text-primary-foreground hover:bg-primary/90 transition shadow-sm">
+          <ArrowLeft className="h-4 w-4" /> Back to feed
+        </Link>
       </div>
     </AppShell>
   ),
 });
-
-function ProductDetailSkeleton() {
-  return (
-    <AppShell>
-      <div className="container-app py-8 space-y-6 animate-pulse">
-        {/* Breadcrumb skeleton */}
-        <div className="h-3 w-48 bg-muted rounded"></div>
-
-        {/* Gallery skeleton */}
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="aspect-square w-full bg-muted rounded-2xl"></div>
-          <div className="aspect-[4/3] w-full bg-muted rounded-2xl"></div>
-        </div>
-
-        {/* Details skeleton */}
-        <div className="space-y-3">
-          <div className="h-3.5 w-32 bg-muted rounded"></div>
-          <div className="h-8 w-80 bg-muted rounded"></div>
-          <div className="h-6 w-24 bg-muted rounded"></div>
-          <div className="h-20 w-full bg-muted rounded"></div>
-        </div>
-      </div>
-    </AppShell>
-  );
-}
 
 function ProductPage() {
   const { product, origin, taxonomy } = Route.useLoaderData();
@@ -177,22 +163,24 @@ function ProductPage() {
   const { user } = useAuth();
   const { isFavorite, toggleFavorite } = useFavorites();
   const isFav = isFavorite(product.id);
-  const [recommendations, setRecommendations] = useState<any[]>([]);
+  const [recommendations, setRecommendations] = useState<ProductRow[]>([]);
 
   // Lightbox modal state
   const [lightboxImg, setLightboxImg] = useState<string | null>(null);
   const [lightboxScale, setLightboxScale] = useState(1);
 
-  // 1. ORIGINAL PRODUCT IMAGE (Fixed, Single, Non-Switchable)
+  // 1. ORIGINAL PRODUCT IMAGE (Fixed, Single, Non-Switchable Source of Truth)
   const originalImage = publicImageUrl(product.generated_studio_image) || publicImageUrl(product.image_url);
 
-  // 2. INSTALLATION IMAGES (Multiple, Switchable Gallery)
+  // 2. INSTALLATION IMAGES (Multi-Image Switchable Lifestyle Gallery)
   const rawInstallationImages: string[] = Array.isArray(product.installation_images) && product.installation_images.length > 0
     ? product.installation_images
     : (product.generated_installed_image ? [product.generated_installed_image] : []);
 
   const installationImages = useMemo(() => {
-    return rawInstallationImages.map(img => publicImageUrl(img) || img).filter(Boolean);
+    return rawInstallationImages
+      .map(img => publicImageUrl(img) || img)
+      .filter(Boolean) as string[];
   }, [rawInstallationImages]);
 
   const [activeInstallIndex, setActiveInstallIndex] = useState(0);
@@ -206,7 +194,7 @@ function ProductPage() {
     if (!product?.id) return;
 
     if (user?.id) {
-      // Track page views
+      // Track customer product view
       const trackEvent = async () => {
         const { data: profile } = await supabase
           .from("profiles")
@@ -218,7 +206,7 @@ function ProductPage() {
         await supabase.from("customer_activity").insert({
           user_id: profile.id,
           activity_type: "product_viewed",
-          metadata: { productId: product.id, name: product.name, category: taxonomy?.category?.name || "Uncategorized" }
+          metadata: { productId: product.id, name: product.name, category: taxonomy?.category?.name || "Security" }
         });
       };
       void trackEvent();
@@ -226,16 +214,58 @@ function ProductPage() {
 
     // Load recommendations
     const loadRecs = async () => {
-      const { data } = await supabase
-        .from("products")
-        .select("*")
-        .eq("status" as any, "published")
+      // Priority 1: explicitly linked similar_product_ids
+      if (Array.isArray(product.similar_product_ids) && product.similar_product_ids.length > 0) {
+        const { data } = await applyPublicFilters(
+          supabase.from("products").select(PRODUCT_FIELDS)
+        )
+          .in("id", product.similar_product_ids)
+          .neq("id", product.id)
+          .limit(4);
+        if (data && data.length > 0) {
+          setRecommendations(data as ProductRow[]);
+          return;
+        }
+      }
+
+      // Priority 2: same subcategory
+      if (product.subcategory_id) {
+        const { data } = await applyPublicFilters(
+          supabase.from("products").select(PRODUCT_FIELDS)
+        )
+          .eq("subcategory_id", product.subcategory_id)
+          .neq("id", product.id)
+          .limit(4);
+        if (data && data.length > 0) {
+          setRecommendations(data as ProductRow[]);
+          return;
+        }
+      }
+
+      // Priority 3: same category
+      if (product.category_id) {
+        const { data } = await applyPublicFilters(
+          supabase.from("products").select(PRODUCT_FIELDS)
+        )
+          .eq("category_id", product.category_id)
+          .neq("id", product.id)
+          .limit(4);
+        if (data && data.length > 0) {
+          setRecommendations(data as ProductRow[]);
+          return;
+        }
+      }
+
+      // Priority 4: general published fallback
+      const { data } = await applyPublicFilters(
+        supabase.from("products").select(PRODUCT_FIELDS)
+      )
         .neq("id", product.id)
         .limit(4);
-      setRecommendations(data || []);
+      setRecommendations((data || []) as ProductRow[]);
     };
     void loadRecs();
-  }, [product?.id, user?.id]);
+  }, [product?.id, product?.similar_product_ids, product?.subcategory_id, product?.category_id, user?.id]);
 
   const handleToggleFavorite = () => {
     void toggleFavorite(product.id, product);
@@ -277,13 +307,8 @@ function ProductPage() {
     "@context": "https://schema.org",
     "@type": "Product",
     "name": product.name,
-    "image": allViewableImages.map((img) => ({
-      "@type": "ImageObject",
-      "url": img,
-      "name": product.alt_text || product.name,
-      "caption": product.seo_description || product.short_description || product.name
-    })),
-    "description": product.seo_description || product.generated_description || product.short_description || "",
+    "image": allViewableImages.length > 0 ? allViewableImages : (originalImage ? [originalImage] : []),
+    "description": product.seo_description || product.generated_description || product.short_description || product.name,
     "sku": product.code || product.id,
     "mpn": product.code || product.id,
     "brand": {
@@ -292,13 +317,14 @@ function ProductPage() {
     },
     "material": product.material || undefined,
     "color": product.color || undefined,
-    "category": taxonomy?.subcategory?.name ? `${taxonomy?.category?.name || "Security"} > ${taxonomy.subcategory.name}` : (taxonomy?.category?.name || "Security"),
+    "category": taxonomy?.subcategory?.name
+      ? `${taxonomy?.category?.name || "Security"} > ${taxonomy.subcategory.name}`
+      : (taxonomy?.category?.name || "Security"),
     "offers": {
       "@type": "Offer",
       "url": canonicalProductUrl,
       "priceCurrency": "NGN",
       "price": product.price || 0,
-      "priceValidUntil": "2027-12-31",
       "availability": "https://schema.org/InStock",
       "itemCondition": "https://schema.org/NewCondition",
       "seller": {
@@ -309,7 +335,11 @@ function ProductPage() {
     }
   };
 
-  const faqSchema = product.faq && Array.isArray(product.faq) ? {
+  const hasFaq = Boolean(
+    product.faq && Array.isArray(product.faq) && (product.faq as any[]).length > 0
+  );
+
+  const faqSchema = hasFaq ? {
     "@context": "https://schema.org",
     "@type": "FAQPage",
     "mainEntity": (product.faq as any[]).map((f) => ({
@@ -335,6 +365,8 @@ function ProductPage() {
     setLightboxScale(1);
   };
 
+  const productDescription = product.generated_description || product.short_description;
+
   return (
     <AppShell>
       {/* Schema LD Injections */}
@@ -349,12 +381,12 @@ function ProductPage() {
 
       <div className="container-app pt-2 pb-10">
         {/* Breadcrumb Row */}
-        <nav className="flex items-center gap-1.5 overflow-x-auto pb-3 text-[10px] uppercase tracking-wider text-muted-foreground scrollbar-none">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 overflow-x-auto pb-3 text-[10px] uppercase tracking-wider text-muted-foreground scrollbar-none">
           {breadcrumbs.map((b, index) => (
             <span key={index} className="flex items-center gap-1.5 shrink-0">
               {index > 0 && <span className="text-muted-foreground/30">/</span>}
               {index === breadcrumbs.length - 1 ? (
-                <span className="font-semibold text-foreground truncate max-w-[120px]">{b.label}</span>
+                <span className="font-semibold text-foreground truncate max-w-[150px]">{b.label}</span>
               ) : (
                 <Link to={b.path} className="hover:text-primary transition">{b.label}</Link>
               )}
@@ -362,8 +394,8 @@ function ProductPage() {
           ))}
         </nav>
 
-        {/* Product Images Gallery (FIX 3 & 4: Separated Original vs Multi-Image Installation Switcher) */}
-        <div className="mt-3 grid gap-5 md:grid-cols-2">
+        {/* Product Visual Experience (STRICTLY CONDITIONAL INSTALLATION SECTION) */}
+        <div className={`mt-3 ${installationImages.length > 0 ? "grid gap-5 md:grid-cols-2" : "max-w-xl"}`}>
           {/* 1. ORIGINAL PRODUCT IMAGE: Fixed, Single, Non-Switchable Source of Truth */}
           <div className="flex flex-col space-y-2">
             <div className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-sm aspect-square flex items-center justify-center">
@@ -383,11 +415,11 @@ function ProductPage() {
             </div>
           </div>
 
-          {/* 2. INSTALLATION IMAGE GALLERY: Multi-Image Switchable Lifestyle Layout */}
-          <div className="flex flex-col space-y-2.5">
-            <div className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-sm aspect-square flex flex-col justify-between">
-              <div className="flex-1 overflow-hidden">
-                {currentInstallationImage ? (
+          {/* 2. INSTALLATION IMAGE GALLERY: Strictly conditional — Case B (1 image) or Case C (multiple images) */}
+          {installationImages.length > 0 && currentInstallationImage && (
+            <div className="flex flex-col space-y-2.5">
+              <div className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-sm aspect-square flex flex-col justify-between">
+                <div className="flex-1 overflow-hidden">
                   <img
                     src={currentInstallationImage}
                     alt={`${product.name} installation view ${activeInstallIndex + 1}`}
@@ -395,68 +427,64 @@ function ProductPage() {
                     onClick={() => setLightboxImg(currentInstallationImage)}
                     className="w-full h-full object-cover cursor-zoom-in hover:scale-[1.01] transition-transform duration-300"
                   />
-                ) : (
-                  <div className="text-xs text-muted-foreground italic flex h-full items-center justify-center bg-muted/20">
-                    No installation images uploaded
-                  </div>
-                )}
+                </div>
+                <div className="border-t border-border px-3.5 py-2 text-[9px] uppercase tracking-[0.16em] text-muted-foreground font-semibold bg-background shrink-0 flex items-center justify-between">
+                  <span>Installed Scene Reference</span>
+                  {installationImages.length > 1 && (
+                    <span className="text-primary font-mono font-bold">
+                      {activeInstallIndex + 1} / {installationImages.length}
+                    </span>
+                  )}
+                </div>
               </div>
-              <div className="border-t border-border px-3.5 py-2 text-[9px] uppercase tracking-[0.16em] text-muted-foreground font-semibold bg-background shrink-0 flex items-center justify-between">
-                <span>Installed Scene Reference</span>
-                {installationImages.length > 1 && (
-                  <span className="text-primary font-mono font-bold">
-                    {activeInstallIndex + 1} / {installationImages.length}
-                  </span>
-                )}
-              </div>
-            </div>
 
-            {/* FIX 4: Installation Thumbnail Selector Bar (Only Installation Images) */}
-            {installationImages.length > 1 && (
-              <div className="flex gap-2.5 overflow-x-auto pb-1 scrollbar-none">
-                {installationImages.map((imgUrl, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    onClick={() => setActiveInstallIndex(i)}
-                    className={`h-14 w-14 rounded-lg border overflow-hidden shrink-0 transition bg-card ${
-                      activeInstallIndex === i
-                        ? "border-brand-orange ring-2 ring-brand-orange/40 shadow-sm"
-                        : "border-border opacity-70 hover:opacity-100 hover:border-brand-orange/40"
-                    }`}
-                    aria-label={`Select installation image ${i + 1}`}
-                  >
-                    <img src={imgUrl} alt="" className="h-full w-full object-cover" />
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+              {/* Case C: Installation Thumbnail Selector Bar (Only rendered when multiple installation images exist) */}
+              {installationImages.length > 1 && (
+                <div className="flex gap-2.5 overflow-x-auto pb-1 scrollbar-none">
+                  {installationImages.map((imgUrl, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setActiveInstallIndex(i)}
+                      className={`h-14 w-14 rounded-lg border overflow-hidden shrink-0 transition bg-card ${
+                        activeInstallIndex === i
+                          ? "border-primary ring-2 ring-primary/40 shadow-sm"
+                          : "border-border opacity-70 hover:opacity-100 hover:border-primary/40"
+                      }`}
+                      aria-label={`Select installation image ${i + 1}`}
+                    >
+                      <img src={imgUrl} alt="" className="h-full w-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Product Details Section */}
         <div className="mt-6 space-y-4">
           <div>
             <p className="text-xs font-mono uppercase tracking-[0.18em] text-primary font-bold">
-              {product.brand || "Apex Security Ltd"} · Code {product.code}
+              {product.brand || "Apex Security Ltd"} {product.code ? `· Code ${product.code}` : ""}
             </p>
             <h1 className="mt-1 font-display text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight uppercase">
               {product.name}
             </h1>
             <p className="mt-1.5 font-display text-2xl font-bold text-primary">
-              ₦{Number(product.price).toLocaleString()}
-              <span className="ml-1 text-sm font-normal text-muted-foreground">/sqm</span>
+              ₦{Number(product.price || 0).toLocaleString()}
             </p>
           </div>
 
-          {product.short_description && (
+          {/* Product Description */}
+          {productDescription && (
             <div className="rounded-xl border border-border/80 bg-card p-4 text-xs leading-relaxed text-muted-foreground max-w-prose shadow-sm">
-              {product.short_description}
+              {productDescription}
             </div>
           )}
 
           {/* FAQ Accordion Section */}
-          {product.faq && Array.isArray(product.faq) && (product.faq as any[]).length > 0 && (
+          {hasFaq && (
             <div className="rounded-xl border border-border/80 bg-card p-4 text-xs space-y-3 max-w-prose shadow-sm">
               <h3 className="font-display text-sm font-semibold uppercase tracking-wider text-foreground border-b border-border/40 pb-2">Frequently Asked Questions</h3>
               <div className="space-y-4">
@@ -473,18 +501,31 @@ function ProductPage() {
             </div>
           )}
 
-          {/* Technical Specifications & Subcategory Identity */}
+          {/* Technical Specifications (Only render present attributes) */}
           <dl className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs max-w-xl">
-            {taxonomy.subcategory?.name && (
+            {product.code && (
+              <div className="rounded-lg border border-border bg-card p-3 shadow-sm">
+                <dt className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Code</dt>
+                <dd className="mt-1 font-semibold text-foreground text-xs font-mono">{product.code}</dd>
+              </div>
+            )}
+            {product.brand && (
+              <div className="rounded-lg border border-border bg-card p-3 shadow-sm">
+                <dt className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Brand</dt>
+                <dd className="mt-1 font-semibold text-foreground text-xs">{product.brand}</dd>
+              </div>
+            )}
+            {taxonomy?.subcategory?.name && (
               <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 shadow-sm">
                 <dt className="text-[9px] font-bold uppercase tracking-wider text-primary">Subcategory</dt>
                 <dd className="mt-1 font-semibold text-foreground text-xs">{taxonomy.subcategory.name}</dd>
               </div>
             )}
             {[
-              ["Color", product.color],
               ["Material", product.material],
               ["Finish", product.finish],
+              ["Color", product.color],
+              ["Size", product.size],
             ].map(([k, v]) =>
               v ? (
                 <div key={k as string} className="rounded-lg border border-border bg-card p-3 shadow-sm">
@@ -515,13 +556,13 @@ function ProductPage() {
           </div>
         </div>
 
-        {/* RELATED PRODUCTS */}
+        {/* RELATED PRODUCTS (From the same design family) */}
         {related.length > 0 && (
           <section className="mt-12 border-t border-border/50 pt-8">
             <h2 className="font-display text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
-              From the same design family
+              From the same security family
             </h2>
-            <p className="font-display text-lg font-extrabold text-foreground uppercase tracking-tight">Related materials</p>
+            <p className="font-display text-lg font-extrabold text-foreground uppercase tracking-tight">Related security hardware</p>
             <div className="mt-3.5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
               {related.map((p) => (
                 <ProductCard key={p.id} product={p} />
@@ -534,7 +575,7 @@ function ProductPage() {
         {recommendations.length > 0 && (
           <section className="mt-12 border-t border-border pt-8">
             <h2 className="font-display text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
-              Tailored for your design style
+              Tailored for your security setup
             </h2>
             <p className="font-display text-lg font-extrabold text-foreground uppercase tracking-tight">Recommended for you</p>
             <div className="mt-3.5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
